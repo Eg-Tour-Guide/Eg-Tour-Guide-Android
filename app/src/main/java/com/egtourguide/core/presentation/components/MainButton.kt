@@ -1,6 +1,7 @@
 package com.egtourguide.core.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -11,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
@@ -30,18 +32,22 @@ private fun MainButtonPreview() {
 @Composable
 fun MainButton(
     modifier: Modifier = Modifier,
-    text: String = ""
+    text: String = "",
+    onClick: () -> Unit = {},
+    textStyle: TextStyle = MaterialTheme.typography.displayMedium
 ) {
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(16.dp))
             .background(MaterialTheme.colorScheme.primary)
+            .clickable { onClick() }
             .padding(horizontal = 24.dp, vertical = 16.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = text,
-            color = MaterialTheme.colorScheme.onPrimary
+            color = MaterialTheme.colorScheme.onPrimary,
+            style = textStyle
         )
     }
 }
