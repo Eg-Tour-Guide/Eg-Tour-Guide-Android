@@ -15,5 +15,7 @@ val LightColorScheme = lightColorScheme(
     onBackground = Color(0xFF44595C),
     primaryContainer = Color(0xFFE6E6E6),
     onPrimaryContainer = Color(0xFF44595C),
-    error = Color(0xFFDE3232)
+    error = Color(0xFFDE3232),
+    outline = Color(0xFFCFCFCF),
+    outlineVariant = Color(0xFF2879D8)
 )

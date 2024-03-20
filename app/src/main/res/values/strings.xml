@@ -1,3 +1,26 @@
 <resources>
     <string name="app_name">EG Tour Guide</string>
+    <string name="show_password">Show Password</string>
+    <string name="hide_password">Hide Password</string>
+    <string name="name">Name</string>
+    <string name="enter_your_name">Enter your name</string>
+    <string name="email">Email</string>
+    <string name="enter_your_email">Enter your email</string>
+    <string name="phone">Phone</string>
+    <string name="enter_your_phone">Enter your phone number</string>
+    <string name="password">Name</string>
+    <string name="enter_your_password">Enter your password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="reenter_your_password">Reenter your password</string>
+    <string name="hello_let_s_get_started">Hello! Let’s Get Started</string>
+    <string name="register">Register</string>
+    <string name="already_have_an_account">Already Have An Account?</string>
+    <string name="login_now">Login Now</string>
+    <string name="verification">Verification</string>
+    <string name="enter_verification_code_we_sent">Enter the verification code we just sent to you on your email address</string>
+    <string name="code">Code</string>
+    <string name="enter_verification_code">Enter verification code</string>
+    <string name="didn_t_receive_code">Didn’t Receive Code?</string>
+    <string name="resend_code">Resend Code</string>
+    <string name="verify">Verify</string>
 </resources>
