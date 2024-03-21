@@ -1,6 +1,5 @@
 package com.egtourguide.auth.presentation.signup
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -10,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -20,10 +20,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
@@ -33,7 +35,6 @@ import com.egtourguide.R
 import com.egtourguide.core.presentation.components.MainButton
 import com.egtourguide.core.presentation.components.MainTextField
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
-import com.egtourguide.core.utils.Constants.TAG
 
 @Preview(showBackground = true)
 @Composable
@@ -51,11 +52,14 @@ fun SignUpScreen(
     onNavigateToLogin: () -> Unit,
     onNavigateToOTP: () -> Unit,
 ) {
+    val scrollState = rememberScrollState()
+    val focusManager = LocalFocusManager.current
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(scrollState)
             .padding(horizontal = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -155,7 +159,13 @@ fun SignUpScreen(
             labelText = stringResource(id = R.string.confirm_password),
             placeholderText = stringResource(id = R.string.reenter_your_password),
             isPassword = true,
-            keyboardType = KeyboardType.Password
+            keyboardType = KeyboardType.Password,
+            imeAction = ImeAction.Done,
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()
+                }
+            )
         )
 
         MainButton(
@@ -164,7 +174,10 @@ fun SignUpScreen(
                 .padding(top = 16.dp)
                 .height(56.dp),
             text = stringResource(id = R.string.register),
-            onClick = onNavigateToOTP
+            onClick = {
+                focusManager.clearFocus()
+                onNavigateToOTP()
+            }
         )
 
         val annotatedString = buildAnnotatedString {
@@ -194,8 +207,7 @@ fun SignUpScreen(
                     tag = "login",
                     start = offset,
                     end = offset
-                ).first().let { annotation ->
-                    Log.e(TAG, "SignUpScreen: ${annotation.item}")
+                ).firstOrNull()?.let {
                     onNavigateToLogin()
                 }
             },

@@ -19,7 +19,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -77,14 +76,13 @@ fun MainTextField(
     keyboardType: KeyboardType = KeyboardType.Text,
     keyboardActions: KeyboardActions = KeyboardActions()
 ) {
-    var isFocused: Boolean by remember { mutableStateOf(false) }
     var isShowPassword: Boolean by remember { mutableStateOf(false) }
     var visualTransformation: VisualTransformation by remember { mutableStateOf(VisualTransformation.None) }
     visualTransformation =
         if (isPassword && !isShowPassword) PasswordVisualTransformation() else VisualTransformation.None
 
     OutlinedTextField(
-        modifier = modifier.onFocusChanged { isFocused = it.isFocused },
+        modifier = modifier,
         value = value,
         onValueChange = onValueChanged,
         shape = RoundedCornerShape(16.dp),
@@ -110,7 +108,7 @@ fun MainTextField(
         },
         colors = OutlinedTextFieldDefaults.colors(
             unfocusedBorderColor = MaterialTheme.colorScheme.primary,
-            unfocusedLabelColor = MaterialTheme.colorScheme.outline,
+            unfocusedLabelColor = MaterialTheme.colorScheme.primary,
             unfocusedTextColor = MaterialTheme.colorScheme.primary,
             focusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
             focusedLabelColor = MaterialTheme.colorScheme.outlineVariant,
@@ -119,8 +117,8 @@ fun MainTextField(
             errorLabelColor = MaterialTheme.colorScheme.error,
             errorSupportingTextColor = MaterialTheme.colorScheme.error,
             cursorColor = MaterialTheme.colorScheme.primary,
-//            disabledBorderColor = MaterialTheme.colorScheme.outline,
-//            disabledTextColor = MaterialTheme.colorScheme.outline,
+            disabledBorderColor = MaterialTheme.colorScheme.outline,
+            disabledTextColor = MaterialTheme.colorScheme.outline,
         ),
         leadingIcon = if (leadingIcon != null) {
             {
@@ -139,7 +137,7 @@ fun MainTextField(
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
-        } else if (isPassword) {
+        } else if (isPassword && value.isNotEmpty()) {
             {
                 if (isShowPassword) {
                     visualTransformation = PasswordVisualTransformation()
