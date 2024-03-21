@@ -16,5 +16,7 @@ fun LoginScreen() {
         contentAlignment = Alignment.Center
     ) {
         Text(text = "Login", fontSize = 28.sp, fontWeight = FontWeight.Bold)
+        Text(text = "Test", fontSize = 28.sp, fontWeight = FontWeight.Bold)
+
     }
 }
