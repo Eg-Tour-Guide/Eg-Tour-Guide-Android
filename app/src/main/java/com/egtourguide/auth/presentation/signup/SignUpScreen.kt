@@ -13,12 +13,12 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -28,6 +28,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.egtourguide.R
 import com.egtourguide.auth.presentation.components.AuthHeader
 import com.egtourguide.core.presentation.components.MainButton
@@ -38,9 +39,15 @@ import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 @Composable
 private fun SignUpScreenPreview() {
     EGTourGuideTheme {
-        SignUpScreen(
+        SignUpContent(
             onNavigateToLogin = {},
-            onNavigateToOTP = {}
+            uiState = SignUpUIState(),
+            onNameChanged = {},
+            onPhoneChanged = {},
+            onEmailChanged = {},
+            onPasswordChanged = {},
+            onConfirmPasswordChanged = {},
+            onRegisterClicked = {}
         )
     }
 }
@@ -49,6 +56,39 @@ private fun SignUpScreenPreview() {
 fun SignUpScreen(
     onNavigateToLogin: () -> Unit,
     onNavigateToOTP: () -> Unit,
+    viewModel: SignUpViewModel = hiltViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsState()
+
+    SignUpContent(
+        uiState = uiState,
+        onNavigateToLogin = onNavigateToLogin,
+        onNameChanged = viewModel::changeName,
+        onPhoneChanged = viewModel::changePhone,
+        onEmailChanged = viewModel::changeEmail,
+        onPasswordChanged = viewModel::changePassword,
+        onConfirmPasswordChanged = viewModel::changeConfirmPassword,
+        onRegisterClicked = viewModel::sendCode
+    )
+
+    LaunchedEffect(key1 = uiState.isSuccess) {
+        if (uiState.isSuccess) {
+            onNavigateToOTP()
+            viewModel.clearSuccess()
+        }
+    }
+}
+
+@Composable
+private fun SignUpContent(
+    uiState: SignUpUIState,
+    onNavigateToLogin: () -> Unit,
+    onNameChanged: (String) -> Unit,
+    onPhoneChanged: (String) -> Unit,
+    onEmailChanged: (String) -> Unit,
+    onPasswordChanged: (String) -> Unit,
+    onConfirmPasswordChanged: (String) -> Unit,
+    onRegisterClicked: () -> Unit
 ) {
     val scrollState = rememberScrollState()
     val focusManager = LocalFocusManager.current
@@ -66,132 +106,141 @@ fun SignUpScreen(
             title = stringResource(id = R.string.hello_let_s_get_started)
         )
 
-        var nameValue by remember {
-            mutableStateOf("")
-        }
-
-        var emailValue by remember {
-            mutableStateOf("")
-        }
-
-        var phoneValue by remember {
-            mutableStateOf("")
-        }
-
-        var passwordValue by remember {
-            mutableStateOf("")
-        }
-
-        var confirmValue by remember {
-            mutableStateOf("")
-        }
-
-        MainTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = nameValue,
-            onValueChanged = {
-                nameValue = it
-            },
-            labelText = stringResource(id = R.string.name),
-            placeholderText = stringResource(id = R.string.enter_your_name)
+        SignUpDataSection(
+            focusManager = focusManager,
+            name = uiState.name,
+            phone = uiState.phone,
+            email = uiState.email,
+            password = uiState.password,
+            confirmPassword = uiState.confirmPassword,
+            isLoading = uiState.isLoading,
+            onNameChanged = onNameChanged,
+            onPhoneChanged = onPhoneChanged,
+            onEmailChanged = onEmailChanged,
+            onPasswordChanged = onPasswordChanged,
+            onConfirmPasswordChanged = onConfirmPasswordChanged,
+            onRegisterClicked = onRegisterClicked
         )
 
-        MainTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = phoneValue,
-            onValueChanged = {
-                phoneValue = it
-            },
-            labelText = stringResource(id = R.string.phone),
-            placeholderText = stringResource(id = R.string.enter_your_phone),
-            keyboardType = KeyboardType.Phone
-        )
-
-        MainTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = emailValue,
-            onValueChanged = {
-                emailValue = it
-            },
-            labelText = stringResource(id = R.string.email),
-            placeholderText = stringResource(id = R.string.enter_your_email),
-            keyboardType = KeyboardType.Email
-        )
-
-        MainTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = passwordValue,
-            onValueChanged = {
-                passwordValue = it
-            },
-            labelText = stringResource(id = R.string.password),
-            placeholderText = stringResource(id = R.string.enter_your_password),
-            isPassword = true,
-            keyboardType = KeyboardType.Password
-        )
-
-        MainTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = confirmValue,
-            onValueChanged = {
-                confirmValue = it
-            },
-            labelText = stringResource(id = R.string.confirm_password),
-            placeholderText = stringResource(id = R.string.reenter_your_password),
-            isPassword = true,
-            keyboardType = KeyboardType.Password,
-            imeAction = ImeAction.Done,
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    focusManager.clearFocus()
-                }
-            )
-        )
-
-        MainButton(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            text = stringResource(id = R.string.register),
-            onClick = {
-                focusManager.clearFocus()
-                onNavigateToOTP()
-            }
-        )
-
-        val annotatedString = buildAnnotatedString {
-            withStyle(
-                style = SpanStyle(color = MaterialTheme.colorScheme.onBackground)
-            ) {
-                append(stringResource(id = R.string.already_have_an_account))
-            }
-
-            append(" ")
-
-            pushStringAnnotation(tag = "login", annotation = "login")
-
-            withStyle(
-                style = SpanStyle(color = MaterialTheme.colorScheme.outlineVariant)
-            ) {
-                append(stringResource(id = R.string.login_now))
-            }
-
-            pop()
-        }
-
-        ClickableText(
-            text = annotatedString,
-            onClick = { offset ->
-                annotatedString.getStringAnnotations(
-                    tag = "login",
-                    start = offset,
-                    end = offset
-                ).firstOrNull()?.let {
-                    onNavigateToLogin()
-                }
-            },
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+        SignUpFooter(onNavigateToLogin)
     }
+}
+
+@Composable
+private fun SignUpDataSection(
+    focusManager: FocusManager,
+    name: String,
+    phone: String,
+    email: String,
+    password: String,
+    isLoading: Boolean,
+    confirmPassword: String,
+    onNameChanged: (String) -> Unit,
+    onPhoneChanged: (String) -> Unit,
+    onEmailChanged: (String) -> Unit,
+    onPasswordChanged: (String) -> Unit,
+    onConfirmPasswordChanged: (String) -> Unit,
+    onRegisterClicked: () -> Unit
+) {
+    MainTextField(
+        modifier = Modifier.fillMaxWidth(),
+        value = name,
+        onValueChanged = onNameChanged,
+        labelText = stringResource(id = R.string.name),
+        placeholderText = stringResource(id = R.string.enter_your_name)
+    )
+
+    MainTextField(
+        modifier = Modifier.fillMaxWidth(),
+        value = phone,
+        onValueChanged = onPhoneChanged,
+        labelText = stringResource(id = R.string.phone),
+        placeholderText = stringResource(id = R.string.enter_your_phone),
+        keyboardType = KeyboardType.Phone
+    )
+
+    MainTextField(
+        modifier = Modifier.fillMaxWidth(),
+        value = email,
+        onValueChanged = onEmailChanged,
+        labelText = stringResource(id = R.string.email),
+        placeholderText = stringResource(id = R.string.enter_your_email),
+        keyboardType = KeyboardType.Email
+    )
+
+    MainTextField(
+        modifier = Modifier.fillMaxWidth(),
+        value = password,
+        onValueChanged = onPasswordChanged,
+        labelText = stringResource(id = R.string.password),
+        placeholderText = stringResource(id = R.string.enter_your_password),
+        isPassword = true,
+        keyboardType = KeyboardType.Password
+    )
+
+    MainTextField(
+        modifier = Modifier.fillMaxWidth(),
+        value = confirmPassword,
+        onValueChanged = onConfirmPasswordChanged,
+        labelText = stringResource(id = R.string.confirm_password),
+        placeholderText = stringResource(id = R.string.reenter_your_password),
+        isPassword = true,
+        keyboardType = KeyboardType.Password,
+        imeAction = ImeAction.Done,
+        keyboardActions = KeyboardActions(
+            onDone = {
+                focusManager.clearFocus()
+            }
+        )
+    )
+
+    MainButton(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp),
+        text = stringResource(id = R.string.register),
+        onClick = {
+            focusManager.clearFocus()
+            onRegisterClicked()
+        },
+        isLoading = isLoading
+    )
+}
+
+@Composable
+private fun SignUpFooter(onNavigateToLogin: () -> Unit) {
+    val annotatedString = buildAnnotatedString {
+        withStyle(
+            style = SpanStyle(color = MaterialTheme.colorScheme.onBackground)
+        ) {
+            append(stringResource(id = R.string.already_have_an_account))
+        }
+
+        append(" ")
+
+        pushStringAnnotation(tag = "login", annotation = "login")
+
+        withStyle(
+            style = SpanStyle(color = MaterialTheme.colorScheme.outlineVariant)
+        ) {
+            append(stringResource(id = R.string.login_now))
+        }
+
+        pop()
+    }
+
+    ClickableText(
+        text = annotatedString,
+        onClick = { offset ->
+            annotatedString.getStringAnnotations(
+                tag = "login",
+                start = offset,
+                end = offset
+            ).firstOrNull()?.let {
+                onNavigateToLogin()
+            }
+        },
+        style = MaterialTheme.typography.titleMedium,
+        modifier = Modifier.padding(bottom = 16.dp)
+    )
 }

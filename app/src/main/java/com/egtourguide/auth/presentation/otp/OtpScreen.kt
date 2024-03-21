@@ -1,5 +1,6 @@
 package com.egtourguide.auth.presentation.otp
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -15,12 +16,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -31,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.egtourguide.R
 import com.egtourguide.auth.presentation.components.AuthHeader
 import com.egtourguide.core.presentation.components.MainButton
@@ -41,15 +43,46 @@ import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 @Composable
 private fun OtpScreenPreview() {
     EGTourGuideTheme {
-        OtpScreen()
+        OtpContent(
+            uiState = OtpUIState(),
+            context = LocalContext.current,
+            onCodeChanged = {},
+            onVerifyClicked = {}
+        )
     }
 }
 
 @Composable
-fun OtpScreen() {
+fun OtpScreen(
+    viewModel: OtpViewModel = hiltViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
+    OtpContent(
+        uiState = uiState,
+        context = context,
+        onCodeChanged = viewModel::changeCode,
+        onVerifyClicked = viewModel::verifyCode
+    )
+
+    LaunchedEffect(key1 = uiState.isSuccess) {
+        if (uiState.isSuccess) {
+            Toast.makeText(context, "verified", Toast.LENGTH_SHORT).show()
+            viewModel.clearSuccess()
+        }
+    }
+}
+
+@Composable
+private fun OtpContent(
+    uiState: OtpUIState,
+    context: Context,
+    onCodeChanged: (String) -> Unit,
+    onVerifyClicked: () -> Unit
+) {
     val scrollState = rememberScrollState()
     val focusManager = LocalFocusManager.current
-    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -64,81 +97,104 @@ fun OtpScreen() {
             title = stringResource(id = R.string.verification)
         )
 
-        Text(
-            text = stringResource(id = R.string.enter_verification_code_we_sent),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.titleSmall,
-            color = MaterialTheme.colorScheme.onBackground
+        OtpDataSection(
+            code = uiState.code,
+            onCodeChanged = onCodeChanged,
+            focusManager = focusManager
         )
 
-        var codeValue by remember {
-            mutableStateOf("")
-        }
-
-        MainTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = codeValue,
-            onValueChanged = {
-                codeValue = it
-            },
-            labelText = stringResource(id = R.string.verification_code),
-            placeholderText = stringResource(id = R.string.enter_verification_code),
-            imeAction = ImeAction.Done,
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    focusManager.clearFocus()
-                }
-            )
-        )
-
-        val annotatedString = buildAnnotatedString {
-            withStyle(
-                style = SpanStyle(color = MaterialTheme.colorScheme.onBackground)
-            ) {
-                append(stringResource(id = R.string.didn_t_receive_code))
-            }
-
-            append(" ")
-
-            pushStringAnnotation(tag = "resend", annotation = "resend")
-
-            withStyle(
-                style = SpanStyle(color = MaterialTheme.colorScheme.outlineVariant)
-            ) {
-                append(stringResource(id = R.string.resend_code))
-            }
-
-            pop()
-        }
-
-        ClickableText(
-            text = annotatedString,
-            onClick = { offset ->
-                annotatedString.getStringAnnotations(
-                    tag = "resend",
-                    start = offset,
-                    end = offset
-                ).firstOrNull()?.let {
-                    Toast.makeText(
-                        context,
-                        context.getString(R.string.we_sent_new_code),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            },
-            style = MaterialTheme.typography.titleMedium
-        )
-
-        MainButton(
-            modifier = Modifier
-                .padding(bottom = 16.dp)
-                .fillMaxWidth()
-                .height(56.dp),
-            text = stringResource(id = R.string.verify),
-            onClick = {
-                focusManager.clearFocus()
-                Toast.makeText(context, "verified", Toast.LENGTH_SHORT).show()
-            }
+        OtpFooter(
+            context = context,
+            focusManager = focusManager,
+            onVerifyClicked = onVerifyClicked,
+            isLoading = uiState.isLoading
         )
     }
+}
+
+@Composable
+private fun OtpDataSection(
+    code: String,
+    onCodeChanged: (String) -> Unit,
+    focusManager: FocusManager
+) {
+    Text(
+        text = stringResource(id = R.string.enter_verification_code_we_sent),
+        textAlign = TextAlign.Center,
+        style = MaterialTheme.typography.titleSmall,
+        color = MaterialTheme.colorScheme.onBackground
+    )
+
+    MainTextField(
+        modifier = Modifier.fillMaxWidth(),
+        value = code,
+        onValueChanged = onCodeChanged,
+        labelText = stringResource(id = R.string.verification_code),
+        placeholderText = stringResource(id = R.string.enter_verification_code),
+        imeAction = ImeAction.Done,
+        keyboardActions = KeyboardActions(
+            onDone = {
+                focusManager.clearFocus()
+            }
+        )
+    )
+}
+
+@Composable
+private fun OtpFooter(
+    context: Context,
+    focusManager: FocusManager,
+    onVerifyClicked: () -> Unit,
+    isLoading: Boolean
+) {
+    val annotatedString = buildAnnotatedString {
+        withStyle(
+            style = SpanStyle(color = MaterialTheme.colorScheme.onBackground)
+        ) {
+            append(stringResource(id = R.string.didn_t_receive_code))
+        }
+
+        append(" ")
+
+        pushStringAnnotation(tag = "resend", annotation = "resend")
+
+        withStyle(
+            style = SpanStyle(color = MaterialTheme.colorScheme.outlineVariant)
+        ) {
+            append(stringResource(id = R.string.resend_code))
+        }
+
+        pop()
+    }
+
+    ClickableText(
+        text = annotatedString,
+        onClick = { offset ->
+            annotatedString.getStringAnnotations(
+                tag = "resend",
+                start = offset,
+                end = offset
+            ).firstOrNull()?.let {
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.we_sent_new_code),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        },
+        style = MaterialTheme.typography.titleMedium
+    )
+
+    MainButton(
+        modifier = Modifier
+            .padding(bottom = 16.dp)
+            .fillMaxWidth()
+            .height(56.dp),
+        text = stringResource(id = R.string.verify),
+        onClick = {
+            focusManager.clearFocus()
+            onVerifyClicked()
+        },
+        isLoading = isLoading
+    )
 }

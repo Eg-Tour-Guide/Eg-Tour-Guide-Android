@@ -1,6 +1,7 @@
 package com.egtourguide.core.presentation.components
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -18,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -51,7 +53,8 @@ private fun MainTextFieldPreview() {
                 onValueChanged = {
                     value = it
                 },
-                imeAction = ImeAction.Done
+                imeAction = ImeAction.Done,
+                errorText = "Test"
             )
         }
     }
@@ -106,6 +109,21 @@ fun MainTextField(
                 style = MaterialTheme.typography.titleSmall
             )
         },
+        supportingText = if(errorText != null) {{
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_error),
+                    contentDescription = null
+                )
+                Text(
+                    text = errorText,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.titleSmall
+                )
+            }
+        }} else null,
         colors = OutlinedTextFieldDefaults.colors(
             unfocusedBorderColor = MaterialTheme.colorScheme.primary,
             unfocusedLabelColor = MaterialTheme.colorScheme.primary,

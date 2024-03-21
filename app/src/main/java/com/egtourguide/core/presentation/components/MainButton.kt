@@ -4,8 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,8 +24,11 @@ import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 private fun MainButtonPreview() {
     EGTourGuideTheme {
         MainButton(
-            modifier = Modifier.fillMaxWidth(),
-            text = "Test"
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+            text = "Test",
+            isLoading = true
         )
     }
 }
@@ -33,21 +38,34 @@ private fun MainButtonPreview() {
 fun MainButton(
     modifier: Modifier = Modifier,
     text: String = "",
+    isLoading: Boolean = false,
     onClick: () -> Unit = {},
     textStyle: TextStyle = MaterialTheme.typography.displayMedium
 ) {
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.primary)
-            .clickable { onClick() }
-            .padding(horizontal = 24.dp, vertical = 16.dp),
+            .background(
+                if (isLoading) MaterialTheme.colorScheme.outline
+                else MaterialTheme.colorScheme.primary
+            )
+            .clickable(
+                enabled = !isLoading,
+                onClick = onClick,
+            )
+            .padding(horizontal = 24.dp),
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = text,
-            color = MaterialTheme.colorScheme.onPrimary,
-            style = textStyle
-        )
+        if (isLoading) {
+            CircularProgressIndicator(
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+        } else {
+            Text(
+                text = text,
+                color = MaterialTheme.colorScheme.onPrimary,
+                style = textStyle
+            )
+        }
     }
 }
