@@ -1,7 +1,7 @@
 package com.egtourguide.auth.presentation.signup
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,7 +12,6 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,17 +20,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.egtourguide.R
+import com.egtourguide.auth.presentation.components.AuthHeader
 import com.egtourguide.core.presentation.components.MainButton
 import com.egtourguide.core.presentation.components.MainTextField
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
@@ -61,19 +59,11 @@ fun SignUpScreen(
             .background(MaterialTheme.colorScheme.background)
             .verticalScroll(scrollState)
             .padding(horizontal = 24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.ic_logo),
-            contentDescription = "stringResource(id = R.string.logo)"
-        )
-
-        Text(
-            text = stringResource(id = R.string.hello_let_s_get_started),
-            style = MaterialTheme.typography.displayLarge,
-            color = MaterialTheme.colorScheme.onBackground,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = 16.dp)
+        AuthHeader(
+            title = stringResource(id = R.string.hello_let_s_get_started)
         )
 
         var nameValue by remember {
@@ -97,9 +87,7 @@ fun SignUpScreen(
         }
 
         MainTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp),
+            modifier = Modifier.fillMaxWidth(),
             value = nameValue,
             onValueChanged = {
                 nameValue = it
@@ -109,9 +97,7 @@ fun SignUpScreen(
         )
 
         MainTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp),
+            modifier = Modifier.fillMaxWidth(),
             value = phoneValue,
             onValueChanged = {
                 phoneValue = it
@@ -122,9 +108,7 @@ fun SignUpScreen(
         )
 
         MainTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp),
+            modifier = Modifier.fillMaxWidth(),
             value = emailValue,
             onValueChanged = {
                 emailValue = it
@@ -135,9 +119,7 @@ fun SignUpScreen(
         )
 
         MainTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp),
+            modifier = Modifier.fillMaxWidth(),
             value = passwordValue,
             onValueChanged = {
                 passwordValue = it
@@ -149,9 +131,7 @@ fun SignUpScreen(
         )
 
         MainTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp),
+            modifier = Modifier.fillMaxWidth(),
             value = confirmValue,
             onValueChanged = {
                 confirmValue = it
@@ -171,7 +151,6 @@ fun SignUpScreen(
         MainButton(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 16.dp)
                 .height(56.dp),
             text = stringResource(id = R.string.register),
             onClick = {
@@ -212,7 +191,7 @@ fun SignUpScreen(
                 }
             },
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(top = 16.dp, bottom = 16.dp)
+            modifier = Modifier.padding(bottom = 16.dp)
         )
     }
 }

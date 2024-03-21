@@ -17,11 +17,13 @@
     <string name="already_have_an_account">Already Have An Account?</string>
     <string name="login_now">Login Now</string>
     <string name="verification">Verification</string>
-    <string name="enter_verification_code_we_sent">Enter the verification code we just sent to you on your email address</string>
+    <string name="verification_code">Verification code</string>
+    <string name="enter_verification_code_we_sent">Enter the verification code we just\nsent to you on your email address</string>
     <string name="code">Code</string>
     <string name="enter_verification_code">Enter verification code</string>
     <string name="didn_t_receive_code">Didn’t Receive Code?</string>
     <string name="resend_code">Resend Code</string>
     <string name="verify">Verify</string>
     <string name="logo">Logo</string>
+    <string name="we_sent_new_code">We sent a new code</string>
 </resources>
