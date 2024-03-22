@@ -26,4 +26,6 @@
     <string name="verify">Verify</string>
     <string name="logo">Logo</string>
     <string name="we_sent_new_code">We sent a new code</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="enter_the_email_address_associated">Enter the email address associated with your account</string>
 </resources>

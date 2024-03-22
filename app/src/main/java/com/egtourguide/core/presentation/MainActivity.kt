@@ -8,6 +8,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.navigation.compose.rememberNavController
+import com.egtourguide.auth.presentation.forgot_password.ForgotPasswordScreen
 import com.egtourguide.core.presentation.navigation.AppNavigation
 import com.egtourguide.core.presentation.navigation.AppScreen
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
@@ -30,10 +31,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             EGTourGuideTheme {
                 val navController = rememberNavController()
-                AppNavigation(
+                /*AppNavigation(
                     navController = navController,
                     startDestination = AppScreen.SignUp.route
-                )
+                )*/
+                ForgotPasswordScreen()
             }
         }
     }
