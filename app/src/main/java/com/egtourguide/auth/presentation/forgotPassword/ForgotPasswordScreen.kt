@@ -39,7 +39,7 @@ import com.egtourguide.core.presentation.components.MainTextField
 fun ForgotPasswordScreen(
     viewModel: ForgotPasswordViewModel = hiltViewModel(),
     onNavigateUp: () -> Unit = {},
-    onNavigateToOTP: () -> Unit = {}
+    onNavigateToOTP: (String) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -51,7 +51,7 @@ fun ForgotPasswordScreen(
     )
 
     LaunchedEffect(key1 = uiState.isCodeSentSuccessfully) {
-        if (uiState.isCodeSentSuccessfully) onNavigateToOTP()
+        if (uiState.isCodeSentSuccessfully) onNavigateToOTP(uiState.code)
     }
 }
 

@@ -57,16 +57,27 @@ fun AppNavigation(
                 onNavigateUp = {
                     navController.navigateUp()
                 },
-                onNavigateToOTP = {
-                    navController.navigate(route = AppScreen.OTP.route){
+                onNavigateToOTP = { code ->
+                    //TODO pass this code from otp screen to reset password screen
+                    navController.navigate(route = AppScreen.OTP.route) {
                         popUpTo(route = AppScreen.Login.route)
                     }
                 }
             )
         }
 
-        composable(route = AppScreen.ResetPassword.route) {
-            ResetPasswordScreen()
+        composable(route = AppScreen.ResetPassword.route) { backStackEntry ->
+            val code = backStackEntry.arguments?.getString("code")
+            code?.let {
+                ResetPasswordScreen(
+                    code = it,
+                    onNavigateToLogin = {
+                        navController.navigate(route = AppScreen.Login.route) {
+                            popUpTo(route = AppScreen.Login.route)
+                        }
+                    }
+                )
+            }
         }
     }
 }

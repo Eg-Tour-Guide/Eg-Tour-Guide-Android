@@ -17,6 +17,7 @@ import javax.inject.Inject
 class ForgotPasswordViewModel @Inject constructor(
     private val authRepository: AuthRepository
 ) : ViewModel() {
+
     private val _uiState = MutableStateFlow(ForgotPasswordUIState())
     val uiState = _uiState.asStateFlow()
 

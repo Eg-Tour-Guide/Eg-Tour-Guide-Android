@@ -11,6 +11,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -19,7 +20,6 @@ import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -30,15 +30,22 @@ import com.egtourguide.core.presentation.components.MainTextField
 
 @Composable
 fun ResetPasswordScreen(
-    viewModel: ResetPasswordViewModel = hiltViewModel()
+    code: String = "",
+    viewModel: ResetPasswordViewModel = hiltViewModel(),
+    onNavigateToLogin: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
     ResetPasswordScreenContent(
         uiState = uiState,
         onPasswordChanged = viewModel::onPasswordChanged,
         onConfirmPasswordChanged = viewModel::onConfirmPasswordChanged,
-        onResetPasswordClicked = viewModel::onResetPasswordClicked
+        onResetPasswordClicked = { viewModel.resetPassword(code = code) }
     )
+
+    LaunchedEffect(key1 = uiState.isPasswordResetSuccess) {
+        if (uiState.isPasswordResetSuccess) onNavigateToLogin()
+    }
 }
 
 @Composable
@@ -75,7 +82,7 @@ private fun ResetPasswordScreenContent(
         ResetPasswordFooter(
             focusManager = focusManager,
             onResetPasswordClicked = onResetPasswordClicked,
-            isLoading = true
+            isLoading = uiState.isLoading
         )
     }
 }

@@ -5,5 +5,6 @@ data class ForgotPasswordUIState(
     val isLoading: Boolean = false,
     val error: String? = null,
     val isCodeSentSuccessfully: Boolean = false,
-    val successMessage: String? = null
+    val successMessage: String? = null,
+    val code: String = ""
 )
