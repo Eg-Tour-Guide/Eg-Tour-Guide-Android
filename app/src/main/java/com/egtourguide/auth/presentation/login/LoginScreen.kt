@@ -145,7 +145,6 @@ private fun LoginDataSection(
             .height(56.dp),
         text = stringResource(id = R.string.login),
         onClick = {
-
             onLoginClicked()
         },
         isLoading = isLoading

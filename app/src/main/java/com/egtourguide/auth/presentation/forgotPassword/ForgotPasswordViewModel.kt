@@ -1,21 +1,62 @@
 package com.egtourguide.auth.presentation.forgotPassword
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.egtourguide.auth.data.dto.body.ForgotPasswordRequestBody
+import com.egtourguide.auth.domain.repository.AuthRepository
+import com.egtourguide.core.utils.onResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ForgotPasswordViewModel @Inject constructor(
-
+    private val authRepository: AuthRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ForgotPasswordUIState())
     val uiState = _uiState.asStateFlow()
 
     fun onEmailChanged(email: String) {
         _uiState.update { it.copy(email = email) }
+    }
+
+    fun getForgotPasswordCode() {
+        val requestBody = ForgotPasswordRequestBody(email = uiState.value.email)
+        viewModelScope.launch(Dispatchers.IO) {
+            authRepository.getForgotPasswordCode(
+                requestBody = requestBody
+            ).onResponse(
+                onLoading = {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = true,
+                            error = null
+                        )
+                    }
+                },
+                onFailure = { errorMsg ->
+                    _uiState.update {
+                        it.copy(
+                            error = errorMsg,
+                            isLoading = false
+                        )
+                    }
+                },
+                onSuccess = { response ->
+                    _uiState.update {
+                        it.copy(
+                            successMessage = response.message,
+                            isCodeSentSuccessfully = true,
+                            isLoading = false
+                        )
+                    }
+                }
+            )
+        }
     }
 
 }

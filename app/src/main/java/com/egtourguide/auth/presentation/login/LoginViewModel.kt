@@ -31,7 +31,7 @@ class LoginViewModel @Inject constructor() : ViewModel() {
     fun loginClick() {
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.update { it.copy(isLoading = true) }
-            delay(1000L)
+            delay(5000L)
             _uiState.update { it.copy(isSuccess = true, isLoading = false) }
         }
     }

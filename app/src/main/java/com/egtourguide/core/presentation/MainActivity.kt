@@ -8,6 +8,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.navigation.compose.rememberNavController
+import com.egtourguide.auth.presentation.login.LoginScreen
+import com.egtourguide.auth.presentation.resetPassword.ResetPasswordScreen
 import com.egtourguide.core.presentation.navigation.AppNavigation
 import com.egtourguide.core.presentation.navigation.AppScreen
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme

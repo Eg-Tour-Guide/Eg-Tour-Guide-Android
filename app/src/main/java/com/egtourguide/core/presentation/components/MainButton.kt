@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -29,21 +30,20 @@ private fun MainButtonPreview() {
         MainButton(
             modifier = Modifier.fillMaxWidth(),
             text = "Test",
-            isLoading = false
+            isLoading = true
         )
     }
 }
 
-// TODO: Fix colors!!
 @Composable
 fun MainButton(
     modifier: Modifier = Modifier,
     text: String = "",
     onClick: () -> Unit = {},
     isLoading: Boolean = false,
+    isEnabled: Boolean = true,
     isWightBtn: Boolean = false
 ) {
-    val isEnabled by remember{ mutableStateOf(!isLoading) }
     Button(
         modifier = modifier.height(56.dp),
         onClick = onClick,
@@ -52,12 +52,10 @@ fun MainButton(
         colors = ButtonDefaults.buttonColors(
             containerColor = if (isWightBtn) MaterialTheme.colorScheme.primaryContainer
             else MaterialTheme.colorScheme.primary,
-            disabledContainerColor = if (isWightBtn) MaterialTheme.colorScheme.primaryContainer
-            else MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+            disabledContainerColor = MaterialTheme.colorScheme.primaryContainer,
             contentColor = if (isWightBtn) MaterialTheme.colorScheme.onBackground
             else MaterialTheme.colorScheme.onPrimary,
-            disabledContentColor = if (isWightBtn) MaterialTheme.colorScheme.outline
-            else MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f),
+            disabledContentColor = MaterialTheme.colorScheme.outline
         )
     ) {
         if (isLoading) {

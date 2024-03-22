@@ -35,4 +35,6 @@
     <string name="welcome_description">Explore ancient landmarks, vibrant\nculture, and timeless beauty!</string>
     <string name="forgot_password">Forgot Password?</string>
     <string name="enter_the_email_address_associated">Enter the email address associated with your account</string>
+    <string name="reset_password">Reset Password</string>
+    <string name="next">Next</string>
 </resources>
