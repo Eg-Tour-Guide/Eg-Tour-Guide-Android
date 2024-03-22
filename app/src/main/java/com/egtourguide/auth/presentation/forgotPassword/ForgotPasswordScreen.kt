@@ -1,4 +1,4 @@
-package com.egtourguide.auth.presentation.forgot_password
+package com.egtourguide.auth.presentation.forgotPassword
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

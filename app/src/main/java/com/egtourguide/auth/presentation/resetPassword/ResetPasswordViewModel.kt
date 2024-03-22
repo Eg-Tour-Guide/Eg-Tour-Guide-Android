@@ -1,4 +1,4 @@
-package com.egtourguide.auth.presentation.reset_password
+package com.egtourguide.auth.presentation.resetPassword
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel

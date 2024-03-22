@@ -1,4 +1,4 @@
-package com.egtourguide.auth.presentation.reset_password
+package com.egtourguide.auth.presentation.resetPassword
 
 data class ResetPasswordUIState(
     val password: String = "",

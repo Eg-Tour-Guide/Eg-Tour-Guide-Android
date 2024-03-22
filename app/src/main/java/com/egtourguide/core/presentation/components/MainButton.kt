@@ -34,6 +34,7 @@ private fun MainButtonPreview() {
     }
 }
 
+// TODO: Fix colors!!
 @Composable
 fun MainButton(
     modifier: Modifier = Modifier,

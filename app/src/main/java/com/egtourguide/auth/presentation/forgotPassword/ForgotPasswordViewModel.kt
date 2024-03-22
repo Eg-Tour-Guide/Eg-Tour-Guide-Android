@@ -1,4 +1,4 @@
-package com.egtourguide.auth.presentation.forgot_password
+package com.egtourguide.auth.presentation.forgotPassword
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -34,7 +34,6 @@ import com.egtourguide.core.presentation.components.MainButton
 import com.egtourguide.core.presentation.components.MainTextField
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 
-
 @Composable
 fun LoginScreen(
     onNavigateToSignUp: () -> Unit,
@@ -44,6 +43,7 @@ fun LoginScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+
     LoginContent(
         uiState = uiState,
         onEmailChange = viewModel::changeEmail,
@@ -60,8 +60,6 @@ fun LoginScreen(
             onNavigateToHome()
         }
     }
-
-
 }
 
 @Composable
@@ -86,6 +84,7 @@ fun LoginContent(
         AuthHeader(
             title = stringResource(id = R.string.welcome_Back)
         )
+
         LoginDataSection(
             email = uiState.email,
             password = uiState.password,
@@ -95,9 +94,8 @@ fun LoginContent(
             onLoginClicked = onLoginClicked,
             onNavigateToForgetPassword = onNavigateToForgetPassword
         )
+
         LoginFooter(onNavigateToSignUp)
-
-
     }
 }
 
@@ -110,8 +108,6 @@ private fun LoginDataSection(
     onPasswordChange: (String) -> Unit,
     onLoginClicked: () -> Unit,
     onNavigateToForgetPassword: () -> Unit
-
-
 ) {
     MainTextField(
         modifier = Modifier.fillMaxWidth(),
@@ -121,6 +117,7 @@ private fun LoginDataSection(
         placeholderText = stringResource(id = R.string.enter_your_email),
         keyboardType = KeyboardType.Email
     )
+
     MainTextField(
         modifier = Modifier.fillMaxWidth(),
         value = password,
@@ -131,7 +128,16 @@ private fun LoginDataSection(
         isPassword = true,
         imeAction = ImeAction.Done
     )
-    ForgetPasswordText(onNavigateToForgetPassword)
+
+    ClickableText(
+        text = buildAnnotatedString {
+            append(stringResource(id = R.string.forgot_password))
+        },
+        onClick = { onNavigateToForgetPassword() },
+        style = MaterialTheme.typography.titleMedium.copy(
+            color = MaterialTheme.colorScheme.onBackground
+        )
+    )
 
     MainButton(
         modifier = Modifier
@@ -144,38 +150,6 @@ private fun LoginDataSection(
         },
         isLoading = isLoading
     )
-
-}
-
-@Composable
-private fun ForgetPasswordText(
-    onNavigateToForgetPassword: () -> Unit
-) {
-    val annotatedString = buildAnnotatedString {
-        pushStringAnnotation(tag = "forget_password", annotation = "forget_password")
-        withStyle(
-            style = SpanStyle(color = MaterialTheme.colorScheme.onBackground)
-        ) {
-            append(stringResource(id = R.string.forget_password))
-        }
-
-    }
-
-    ClickableText(
-        text = annotatedString,
-        onClick = { offset ->
-            annotatedString.getStringAnnotations(
-                tag="forget_password",
-                start = offset,
-                end = offset
-            ).firstOrNull()?.let {
-                onNavigateToForgetPassword()
-            }
-        },
-        style = MaterialTheme.typography.titleMedium
-
-    )
-
 
 }
 
@@ -222,8 +196,9 @@ private fun LoginFooter(onNavigateToSignUp: () -> Unit) {
 private fun SignUpScreenPreview() {
     EGTourGuideTheme {
         LoginScreen(
-            onNavigateToSignUp = { },
-            onNavigateToForgetPassword = { },
-            onNavigateToHome = { })
+            onNavigateToSignUp = {},
+            onNavigateToForgetPassword = {},
+            onNavigateToHome = {}
+        )
     }
 }
