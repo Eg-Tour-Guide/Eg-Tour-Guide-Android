@@ -26,4 +26,13 @@
     <string name="verify">Verify</string>
     <string name="logo">Logo</string>
     <string name="we_sent_new_code">We sent a new code</string>
+    <string name="welcome_Back">Welcome Back!</string>
+    <string name="forget_password">Forget Password</string>
+    <string name="login">Login</string>
+    <string name="dont_have_account">Don’t Have An Account?</string>
+    <string name="regster_now">Register Now</string>
+    <string name="welcome">Welcome!</string>
+    <string name="lets_go">Let’s Go!</string>
+    <string name="welcome_description">Explore ancient landmarks, vibrant \nculture, and timeless beauty!</string>
+
 </resources>

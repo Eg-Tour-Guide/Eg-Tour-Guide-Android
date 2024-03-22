@@ -16,7 +16,10 @@ fun AppNavigation(
 ) {
     NavHost(navController = navController, startDestination = startDestination) {
         composable(route = AppScreen.Welcome.route) {
-            WelcomeScreen()
+            WelcomeScreen(
+                onNavigateToLogin = {
+                    navController.navigate(AppScreen.Login.route)
+                })
         }
 
         composable(route = AppScreen.SignUp.route) {
@@ -34,7 +37,16 @@ fun AppNavigation(
         }
 
         composable(route = AppScreen.Login.route) {
-            LoginScreen()
+            LoginScreen(
+                onNavigateToSignUp = {
+                    navController.navigate(route = AppScreen.SignUp.route)
+                },
+                onNavigateToForgetPassword = {
+                    navController.navigate(route = AppScreen.SignUp.route) //TODO(Edit to forget password)
+                },
+                onNavigateToHome = {
+                    navController.navigate(route = AppScreen.Welcome.route) //TODO(Edit to home)
+                })
         }
     }
 }

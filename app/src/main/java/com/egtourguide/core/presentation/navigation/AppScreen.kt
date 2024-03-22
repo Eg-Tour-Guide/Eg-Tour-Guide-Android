@@ -9,4 +9,5 @@ sealed class AppScreen(val route: String) {
     object OTP : AppScreen(route = ScreenRoutes.OTP_SCREEN_ROUTE)
     object ForgetPassword : AppScreen(route = ScreenRoutes.FORGET_PASSWORD_SCREEN_ROUTE)
     object CreatePassword : AppScreen(route = ScreenRoutes.CREATE_PASSWORD_SCREEN_ROUTE)
+    object Home : AppScreen(route = ScreenRoutes.HOME_SCREEN_ROUTE)
 }

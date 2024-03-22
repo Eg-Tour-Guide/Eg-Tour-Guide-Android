@@ -32,7 +32,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 AppNavigation(
                     navController = navController,
-                    startDestination = AppScreen.SignUp.route
+                    startDestination = AppScreen.Welcome.route
                 )
             }
         }
