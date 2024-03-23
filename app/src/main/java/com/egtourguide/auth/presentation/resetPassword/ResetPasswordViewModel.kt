@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.egtourguide.auth.data.dto.body.ResetPasswordRequestBody
 import com.egtourguide.auth.domain.repository.AuthRepository
+import com.egtourguide.auth.domain.use_cases.ResetPasswordUseCase
 import com.egtourguide.auth.presentation.forgotPassword.ForgotPasswordUIState
 import com.egtourguide.core.utils.onResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ResetPasswordViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val resetPasswordUseCase: ResetPasswordUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ResetPasswordUIState())
@@ -35,7 +36,7 @@ class ResetPasswordViewModel @Inject constructor(
     ) {
         val requestBody = ResetPasswordRequestBody(password = uiState.value.password)
         viewModelScope.launch(Dispatchers.IO) {
-            authRepository.resetPassword(
+            resetPasswordUseCase(
                 code = code,
                 requestBody = requestBody
             ).onResponse(

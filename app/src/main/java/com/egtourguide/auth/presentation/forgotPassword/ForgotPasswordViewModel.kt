@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.egtourguide.auth.data.dto.body.ForgotPasswordRequestBody
 import com.egtourguide.auth.domain.repository.AuthRepository
+import com.egtourguide.auth.domain.use_cases.GetForgotPasswordCodeUseCase
 import com.egtourguide.core.utils.onResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ForgotPasswordViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val getForgotPasswordCodeUseCase: GetForgotPasswordCodeUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ForgotPasswordUIState())
@@ -28,7 +29,7 @@ class ForgotPasswordViewModel @Inject constructor(
     fun getForgotPasswordCode() {
         val requestBody = ForgotPasswordRequestBody(email = uiState.value.email)
         viewModelScope.launch(Dispatchers.IO) {
-            authRepository.getForgotPasswordCode(
+            getForgotPasswordCodeUseCase(
                 requestBody = requestBody
             ).onResponse(
                 onLoading = {
