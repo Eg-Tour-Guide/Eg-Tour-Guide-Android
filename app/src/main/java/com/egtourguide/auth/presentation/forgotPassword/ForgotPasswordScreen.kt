@@ -1,4 +1,4 @@
-package com.egtourguide.auth.presentation.forgot_password
+package com.egtourguide.auth.presentation.forgotPassword
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -13,11 +13,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -37,7 +39,7 @@ import com.egtourguide.core.presentation.components.MainTextField
 fun ForgotPasswordScreen(
     viewModel: ForgotPasswordViewModel = hiltViewModel(),
     onNavigateUp: () -> Unit = {},
-    onNavigateToOTP: () -> Unit = {}
+    onNavigateToOTP: (String) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -45,12 +47,16 @@ fun ForgotPasswordScreen(
         uiState = uiState,
         onEmailChanged = viewModel::onEmailChanged,
         onBackToLoginClicked = onNavigateUp,
-        onNextClicked = onNavigateToOTP
+        onNextClicked = viewModel::getForgotPasswordCode
     )
+
+    LaunchedEffect(key1 = uiState.isCodeSentSuccessfully) {
+        if (uiState.isCodeSentSuccessfully) onNavigateToOTP(uiState.code)
+    }
 }
 
 @Composable
-fun ForgotPasswordScreenContent(
+private fun ForgotPasswordScreenContent(
     uiState: ForgotPasswordUIState,
     onEmailChanged: (String) -> Unit,
     onBackToLoginClicked: () -> Unit,
@@ -74,6 +80,7 @@ fun ForgotPasswordScreenContent(
 
         ForgotPasswordDataSection(
             email = uiState.email,
+            error = uiState.error,
             onEmailChanged = onEmailChanged,
             focusManager = focusManager
         )
@@ -82,7 +89,7 @@ fun ForgotPasswordScreenContent(
             focusManager = focusManager,
             onBackToLoginClicked = onBackToLoginClicked,
             onNextClicked = onNextClicked,
-            isLoading = true //TODO
+            isLoading = uiState.isLoading
         )
     }
 }
@@ -90,6 +97,7 @@ fun ForgotPasswordScreenContent(
 @Composable
 private fun ForgotPasswordDataSection(
     email: String,
+    error: String?,
     onEmailChanged: (String) -> Unit,
     focusManager: FocusManager
 ) {
@@ -103,6 +111,7 @@ private fun ForgotPasswordDataSection(
     MainTextField(
         modifier = Modifier.fillMaxWidth(),
         value = email,
+        errorText = error,
         onValueChanged = onEmailChanged,
         labelText = stringResource(id = R.string.email),
         placeholderText = stringResource(id = R.string.email),
@@ -140,17 +149,18 @@ private fun ForgotPasswordFooter(
         modifier = Modifier
             .padding(bottom = 16.dp)
             .fillMaxWidth(),
-        text = stringResource(id = R.string.verify),
+        text = stringResource(R.string.next),
         onClick = {
             focusManager.clearFocus()
             onNextClicked()
         },
-        isLoading = isLoading
+        isLoading = isLoading,
+        isEnabled = !isLoading
     )
 }
 
 @Preview
 @Composable
 private fun ForgotPasswordScreenPreview() {
-
+    ForgotPasswordScreen()
 }
