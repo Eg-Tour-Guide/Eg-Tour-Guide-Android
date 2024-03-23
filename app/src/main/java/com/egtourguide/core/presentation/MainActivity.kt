@@ -33,10 +33,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             EGTourGuideTheme {
                 val navController = rememberNavController()
-                AppNavigation(
+                /*AppNavigation(
                     navController = navController,
                     startDestination = AppScreen.Welcome.route
-                )
+                )*/
+                ResetPasswordScreen()
             }
         }
     }

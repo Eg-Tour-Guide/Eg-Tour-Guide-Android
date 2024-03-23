@@ -19,7 +19,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -47,7 +46,7 @@ fun ForgotPasswordScreen(
         uiState = uiState,
         onEmailChanged = viewModel::onEmailChanged,
         onBackToLoginClicked = onNavigateUp,
-        onNextClicked = viewModel::getForgotPasswordCode
+        onNextClicked = viewModel::onNextClicked
     )
 
     LaunchedEffect(key1 = uiState.isCodeSentSuccessfully) {

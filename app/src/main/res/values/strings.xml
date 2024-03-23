@@ -37,4 +37,6 @@
     <string name="enter_the_email_address_associated">Enter the email address associated with your account</string>
     <string name="reset_password">Reset Password</string>
     <string name="next">Next</string>
+    <string name="confirm_password_error_msg">Password and confirm password doesn\'t match</string>
+    <string name="password_error_msg">Password should be at least 8 characters</string>
 </resources>
