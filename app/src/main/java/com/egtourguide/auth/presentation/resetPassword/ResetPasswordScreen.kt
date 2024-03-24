@@ -17,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -35,12 +36,12 @@ fun ResetPasswordScreen(
     onNavigateToLogin: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
-
+    val context = LocalContext.current
     ResetPasswordScreenContent(
         uiState = uiState,
         onPasswordChanged = viewModel::onPasswordChanged,
         onConfirmPasswordChanged = viewModel::onConfirmPasswordChanged,
-        onResetPasswordClicked = { viewModel.resetPassword(code = code) }
+        onResetPasswordClicked = { viewModel.onResetClicked(context = context, code = code) }
     )
 
     LaunchedEffect(key1 = uiState.isPasswordResetSuccess) {
@@ -74,6 +75,8 @@ private fun ResetPasswordScreenContent(
         ResetPasswordDataSection(
             password = uiState.password,
             confirmPassword = uiState.confirmPassword,
+            passwordError = uiState.passwordError,
+            confirmPasswordError = uiState.confirmPasswordError,
             onPasswordChanged = onPasswordChanged,
             onConfirmPasswordChanged = onConfirmPasswordChanged,
             focusManager = focusManager
@@ -91,6 +94,8 @@ private fun ResetPasswordScreenContent(
 private fun ResetPasswordDataSection(
     password: String,
     confirmPassword: String,
+    passwordError: String?,
+    confirmPasswordError: String?,
     onPasswordChanged: (String) -> Unit,
     onConfirmPasswordChanged: (String) -> Unit,
     focusManager: FocusManager
@@ -103,6 +108,7 @@ private fun ResetPasswordDataSection(
         placeholderText = stringResource(id = R.string.password),
         imeAction = ImeAction.Next,
         isPassword = true,
+        errorText = passwordError,
         keyboardActions = KeyboardActions(
             onDone = {
                 focusManager.clearFocus()
@@ -118,6 +124,7 @@ private fun ResetPasswordDataSection(
         placeholderText = stringResource(id = R.string.confirm_password),
         imeAction = ImeAction.Done,
         isPassword = true,
+        errorText = confirmPasswordError,
         keyboardActions = KeyboardActions(
             onDone = {
                 focusManager.clearFocus()

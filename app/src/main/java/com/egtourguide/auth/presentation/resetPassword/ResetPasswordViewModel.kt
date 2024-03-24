@@ -1,11 +1,12 @@
 package com.egtourguide.auth.presentation.resetPassword
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.egtourguide.R
 import com.egtourguide.auth.data.dto.body.ResetPasswordRequestBody
-import com.egtourguide.auth.domain.repository.AuthRepository
 import com.egtourguide.auth.domain.use_cases.ResetPasswordUseCase
-import com.egtourguide.auth.presentation.forgotPassword.ForgotPasswordUIState
+import com.egtourguide.auth.domain.validation.AuthValidation
 import com.egtourguide.core.utils.onResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -42,12 +43,12 @@ class ResetPasswordViewModel @Inject constructor(
             ).onResponse(
                 onLoading = {
                     _uiState.update {
-                        it.copy(isLoading = true, error = null)
+                        it.copy(isLoading = true, passwordError = null)
                     }
                 },
                 onFailure = { msg ->
                     _uiState.update {
-                        it.copy(isLoading = false, error = msg)
+                        it.copy(isLoading = false, passwordError = msg)
                     }
                 },
                 onSuccess = {
@@ -56,6 +57,33 @@ class ResetPasswordViewModel @Inject constructor(
                     }
                 }
             )
+        }
+    }
+
+    fun onResetClicked(
+        context: Context,
+        code: String
+    ) {
+        _uiState.update { it.copy(passwordError = null, confirmPasswordError = null) }
+        if (AuthValidation.validatePassword(password = uiState.value.password)) {
+            if (AuthValidation
+                    .validateConfirmPassword(
+                        password = uiState.value.password,
+                        confirmPassword = uiState.value.confirmPassword
+                    )
+            ) {
+                resetPassword(code = code)
+            } else {
+                _uiState.update {
+                    it.copy(
+                        confirmPasswordError = context.getString(R.string.confirm_password_error_msg)
+                    )
+                }
+            }
+        } else {
+            _uiState.update {
+                it.copy(passwordError = context.getString(R.string.password_error_msg))
+            }
         }
     }
 
