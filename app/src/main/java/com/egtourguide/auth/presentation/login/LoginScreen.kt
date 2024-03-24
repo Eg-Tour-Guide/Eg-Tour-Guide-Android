@@ -51,7 +51,7 @@ fun LoginScreen(
         uiState = uiState,
         onEmailChange = viewModel::changeEmail,
         onPasswordChange = viewModel::changePassword,
-        onLoginClicked = viewModel::loginClick,
+        onLoginClicked = { viewModel.onLoginClicked(context) },
         onNavigateToSignUp = onNavigateToSignUp,
         onNavigateToForgetPassword = onNavigateToForgetPassword
     )
@@ -97,6 +97,8 @@ fun LoginContent(
             email = uiState.email,
             password = uiState.password,
             isLoading = uiState.isLoading,
+            emailError = uiState.emailError,
+            passwordError = uiState.passwordError,
             onEmailChange = onEmailChange,
             onPasswordChange = onPasswordChange,
             onLoginClicked = onLoginClicked,
@@ -112,6 +114,8 @@ private fun LoginDataSection(
     focusManager: FocusManager,
     email: String,
     password: String,
+    emailError: String?,
+    passwordError: String?,
     isLoading: Boolean,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
@@ -123,6 +127,7 @@ private fun LoginDataSection(
         value = email,
         onValueChanged = onEmailChange,
         labelText = stringResource(id = R.string.email),
+        errorText = emailError,
         placeholderText = stringResource(id = R.string.enter_your_email),
         keyboardType = KeyboardType.Email
     )
@@ -134,6 +139,7 @@ private fun LoginDataSection(
         labelText = stringResource(id = R.string.password),
         placeholderText = stringResource(id = R.string.enter_your_password),
         keyboardType = KeyboardType.Password,
+        errorText = passwordError,
         isPassword = true,
         imeAction = ImeAction.Done,
         keyboardActions = KeyboardActions(
@@ -162,7 +168,8 @@ private fun LoginDataSection(
             focusManager.clearFocus()
             onLoginClicked()
         },
-        isLoading = isLoading
+        isLoading = isLoading,
+        isEnabled = !isLoading
     )
 
 }

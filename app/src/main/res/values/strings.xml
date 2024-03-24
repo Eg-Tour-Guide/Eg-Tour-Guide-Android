@@ -39,4 +39,5 @@
     <string name="next">Next</string>
     <string name="confirm_password_error_msg">Password and confirm password doesn\'t match</string>
     <string name="password_error_msg">Password should be at least 8 characters</string>
+    <string name="email_error_msg">Enter valid email \nexample: user@gmail.com </string>
 </resources>

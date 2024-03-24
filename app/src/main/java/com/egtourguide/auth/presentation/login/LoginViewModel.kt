@@ -1,9 +1,12 @@
 package com.egtourguide.auth.presentation.login
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.egtourguide.R
 import com.egtourguide.auth.data.dto.body.LoginRequestBody
 import com.egtourguide.auth.domain.use_cases.LoginUseCase
+import com.egtourguide.auth.domain.validation.AuthValidation
 import com.egtourguide.core.utils.onResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -32,14 +35,15 @@ class LoginViewModel @Inject constructor(
     fun clearSuccess() {
         _uiState.update { it.copy(isSuccess = false) }
     }
+
     fun clearError() {
         _uiState.update { it.copy(isError = false) }
     }
 
-    fun loginClick() {
+    fun login() {
         viewModelScope.launch(Dispatchers.IO) {
             val requestBody = LoginRequestBody(
-                email = _uiState.value.email.replace(" ",""),
+                email = _uiState.value.email,
                 password = _uiState.value.password
             )
 
@@ -70,6 +74,28 @@ class LoginViewModel @Inject constructor(
                 }
             )
         }
+    }
+
+    fun onLoginClicked(
+        context: Context
+    ) {
+        _uiState.update {
+            it.copy(
+                email = _uiState.value.email.trim(),
+                emailError = null,
+                passwordError = null
+            )
+        }
+        if (AuthValidation.validateEmail(email = _uiState.value.email)) {
+            if (AuthValidation.validatePassword(password = _uiState.value.password)) {
+                login()
+            } else {
+                _uiState.update { it.copy(passwordError = context.getString(R.string.password_error_msg)) }
+            }
+        } else {
+            _uiState.update { it.copy(emailError = context.getString(R.string.email_error_msg)) }
+        }
+
     }
 }
 
