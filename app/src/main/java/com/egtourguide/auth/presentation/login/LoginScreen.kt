@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -18,7 +19,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -53,11 +56,14 @@ fun LoginScreen(
         onNavigateToForgetPassword = onNavigateToForgetPassword
     )
 
-    LaunchedEffect(key1 = uiState.isSuccess) {
+    LaunchedEffect(key1 = uiState.isSuccess, key2 = uiState.isError) {
         if (uiState.isSuccess) {
             Toast.makeText(context, "Logged in successfully", Toast.LENGTH_SHORT).show()
             viewModel.clearSuccess()
             onNavigateToHome()
+        } else if (uiState.isError) {
+            Toast.makeText(context, "wrong email or password", Toast.LENGTH_SHORT).show()
+            viewModel.clearError()
         }
     }
 }
@@ -72,6 +78,7 @@ fun LoginContent(
     onNavigateToForgetPassword: () -> Unit
 ) {
     val scrollState = rememberScrollState()
+    val focusManager = LocalFocusManager.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -86,6 +93,7 @@ fun LoginContent(
         )
 
         LoginDataSection(
+            focusManager = focusManager,
             email = uiState.email,
             password = uiState.password,
             isLoading = uiState.isLoading,
@@ -101,6 +109,7 @@ fun LoginContent(
 
 @Composable
 private fun LoginDataSection(
+    focusManager: FocusManager,
     email: String,
     password: String,
     isLoading: Boolean,
@@ -126,7 +135,12 @@ private fun LoginDataSection(
         placeholderText = stringResource(id = R.string.enter_your_password),
         keyboardType = KeyboardType.Password,
         isPassword = true,
-        imeAction = ImeAction.Done
+        imeAction = ImeAction.Done,
+        keyboardActions = KeyboardActions(
+            onDone = {
+                focusManager.clearFocus()
+            }
+        )
     )
 
     ClickableText(
@@ -145,6 +159,7 @@ private fun LoginDataSection(
             .height(56.dp),
         text = stringResource(id = R.string.login),
         onClick = {
+            focusManager.clearFocus()
             onLoginClicked()
         },
         isLoading = isLoading
