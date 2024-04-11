@@ -1,5 +1,6 @@
 package com.egtourguide.auth.presentation.login
 
+
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -51,10 +52,11 @@ fun LoginScreen(
         uiState = uiState,
         onEmailChange = viewModel::changeEmail,
         onPasswordChange = viewModel::changePassword,
-        onLoginClicked = { viewModel.onLoginClicked(context) },
+        onLoginClicked = viewModel::onLoginClicked,
         onNavigateToSignUp = onNavigateToSignUp,
-        onNavigateToForgetPassword = onNavigateToForgetPassword
-    )
+        onNavigateToForgetPassword = onNavigateToForgetPassword,
+
+        )
 
     LaunchedEffect(key1 = uiState.isSuccess, key2 = uiState.isError) {
         if (uiState.isSuccess) {
@@ -75,7 +77,7 @@ fun LoginContent(
     onPasswordChange: (String) -> Unit,
     onLoginClicked: () -> Unit,
     onNavigateToSignUp: () -> Unit,
-    onNavigateToForgetPassword: () -> Unit
+    onNavigateToForgetPassword: () -> Unit,
 ) {
     val scrollState = rememberScrollState()
     val focusManager = LocalFocusManager.current
@@ -97,8 +99,8 @@ fun LoginContent(
             email = uiState.email,
             password = uiState.password,
             isLoading = uiState.isLoading,
-            emailError = uiState.emailError,
-            passwordError = uiState.passwordError,
+            emailError = if (uiState.emailError) stringResource(id = R.string.email_error_msg) else null,
+            passwordError = if (uiState.passwordError) stringResource(id = R.string.password_error_msg) else null,
             onEmailChange = onEmailChange,
             onPasswordChange = onPasswordChange,
             onLoginClicked = onLoginClicked,
