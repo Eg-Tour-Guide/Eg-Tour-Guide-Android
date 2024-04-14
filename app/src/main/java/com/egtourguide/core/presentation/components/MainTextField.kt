@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -54,7 +55,7 @@ private fun MainTextFieldPreview() {
                     value = it
                 },
                 imeAction = ImeAction.Done,
-                errorText = "Test"
+                errorText = stringResource(id = R.string.password_form_error)
             )
         }
     }
@@ -115,12 +116,14 @@ fun MainTextField(
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_error),
-                    contentDescription = null
+                    contentDescription = null,
+                    modifier = Modifier.size(14.dp)
                 )
                 Text(
                     text = errorText,
                     color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.titleSmall
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.padding(start = 8.dp)
                 )
             }
         }} else null,

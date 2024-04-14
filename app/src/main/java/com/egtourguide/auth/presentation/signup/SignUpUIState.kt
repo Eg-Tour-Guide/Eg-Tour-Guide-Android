@@ -1,5 +1,7 @@
 package com.egtourguide.auth.presentation.signup
 
+import com.egtourguide.auth.domain.validation.ValidationCases
+
 data class SignUpUIState(
     val name: String = "",
     val email: String = "",
@@ -7,6 +9,12 @@ data class SignUpUIState(
     val password: String = "",
     val confirmPassword: String = "",
     val isLoading: Boolean = false,
-    val isError: Boolean = false,
-    val isSuccess: Boolean = false
+    val errorMessage: String? = null,
+    val isSuccess: Boolean = false,
+    val code: String = "",
+    val nameError: ValidationCases = ValidationCases.CORRECT,
+    val emailError: ValidationCases = ValidationCases.CORRECT,
+    val phoneError: ValidationCases = ValidationCases.CORRECT,
+    val passwordError: ValidationCases = ValidationCases.CORRECT,
+    val confirmPasswordError: ValidationCases = ValidationCases.CORRECT
 )

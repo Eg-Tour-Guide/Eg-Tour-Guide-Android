@@ -1,6 +1,5 @@
 package com.egtourguide.auth.domain.model
 
-
-data class LoginResponse(
+data class SignupResponse(
     val token: String
 )

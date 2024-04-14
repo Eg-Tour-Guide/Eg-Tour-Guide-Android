@@ -1,6 +1,5 @@
 package com.egtourguide.auth.presentation.otp
 
-import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -21,7 +20,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -34,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.egtourguide.R
+import com.egtourguide.auth.domain.validation.ValidationCases
 import com.egtourguide.auth.presentation.components.AuthHeader
 import com.egtourguide.core.presentation.components.MainButton
 import com.egtourguide.core.presentation.components.MainTextField
@@ -44,32 +43,55 @@ import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 private fun OtpScreenPreview() {
     EGTourGuideTheme {
         OtpContent(
-            uiState = OtpUIState(),
-            context = LocalContext.current,
-            onCodeChanged = {},
-            onVerifyClicked = {}
+            uiState = OtpUIState()
         )
     }
 }
 
 @Composable
 fun OtpScreen(
-    viewModel: OtpViewModel = hiltViewModel()
+    viewModel: OtpViewModel = hiltViewModel(),
+    code: String,
+    fromSignup: Boolean,
+    name: String,
+    email: String,
+    phone: String,
+    password: String,
+    confirmPassword: String,
+    onNavigateToResetPassword: (String) -> Unit,
+    onNavigateToHome: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
 
     OtpContent(
         uiState = uiState,
-        context = context,
         onCodeChanged = viewModel::changeCode,
-        onVerifyClicked = viewModel::verifyCode
+        onVerifyClicked = { viewModel.onVerifyClicked(sentCode = code) }
     )
 
-    LaunchedEffect(key1 = uiState.isSuccess) {
-        if (uiState.isSuccess) {
-            Toast.makeText(context, "verified", Toast.LENGTH_SHORT).show()
-            viewModel.clearSuccess()
+    LaunchedEffect(key1 = uiState.isVerifiedSuccessfully) {
+        if (uiState.isVerifiedSuccessfully) {
+            viewModel.clearVerifySuccess()
+
+            if (fromSignup) {
+                viewModel.signup(name, email, phone, password, confirmPassword)
+            } else {
+                onNavigateToResetPassword(code)
+            }
+        }
+    }
+
+    LaunchedEffect(key1 = uiState.isSignedSuccessfully) {
+        if (uiState.isSignedSuccessfully) {
+            viewModel.clearSignSuccess()
+            onNavigateToHome()
+        }
+    }
+
+    LaunchedEffect(key1 = uiState.errorMessage) {
+        uiState.errorMessage?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
         }
     }
 }
@@ -77,12 +99,10 @@ fun OtpScreen(
 @Composable
 private fun OtpContent(
     uiState: OtpUIState,
-    context: Context,
-    onCodeChanged: (String) -> Unit,
-    onVerifyClicked: () -> Unit
+    onCodeChanged: (String) -> Unit = {},
+    onVerifyClicked: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
-    val focusManager = LocalFocusManager.current
 
     Column(
         modifier = Modifier
@@ -100,12 +120,11 @@ private fun OtpContent(
         OtpDataSection(
             code = uiState.code,
             onCodeChanged = onCodeChanged,
-            focusManager = focusManager
+            codeError = uiState.codeError,
+            isLoading = uiState.isLoading
         )
 
         OtpFooter(
-            context = context,
-            focusManager = focusManager,
             onVerifyClicked = onVerifyClicked,
             isLoading = uiState.isLoading
         )
@@ -116,8 +135,11 @@ private fun OtpContent(
 private fun OtpDataSection(
     code: String,
     onCodeChanged: (String) -> Unit,
-    focusManager: FocusManager
+    codeError: ValidationCases,
+    isLoading: Boolean
 ) {
+    val focusManager = LocalFocusManager.current
+
     Text(
         text = stringResource(id = R.string.enter_verification_code_we_sent),
         textAlign = TextAlign.Center,
@@ -128,6 +150,7 @@ private fun OtpDataSection(
     MainTextField(
         modifier = Modifier.fillMaxWidth(),
         value = code,
+        isEnabled = !isLoading,
         onValueChanged = onCodeChanged,
         labelText = stringResource(id = R.string.verification_code),
         placeholderText = stringResource(id = R.string.enter_verification_code),
@@ -136,17 +159,23 @@ private fun OtpDataSection(
             onDone = {
                 focusManager.clearFocus()
             }
-        )
+        ),
+        errorText = when (codeError) {
+            ValidationCases.EMPTY -> stringResource(id = R.string.code_empty_error)
+            ValidationCases.NOT_MATCHED -> stringResource(id = R.string.code_not_matched_error)
+            else -> null
+        }
     )
 }
 
 @Composable
 private fun OtpFooter(
-    context: Context,
-    focusManager: FocusManager,
     onVerifyClicked: () -> Unit,
     isLoading: Boolean
 ) {
+    val focusManager = LocalFocusManager.current
+    val context = LocalContext.current
+
     val annotatedString = buildAnnotatedString {
         withStyle(
             style = SpanStyle(color = MaterialTheme.colorScheme.onBackground)
@@ -195,6 +224,7 @@ private fun OtpFooter(
             focusManager.clearFocus()
             onVerifyClicked()
         },
-        isLoading = isLoading
+        isLoading = isLoading,
+        isEnabled = !isLoading
     )
 }

@@ -5,9 +5,11 @@ import retrofit2.http.POST
 import com.egtourguide.auth.data.dto.body.ForgotPasswordRequestBody
 import com.egtourguide.auth.data.dto.body.LoginRequestBody
 import com.egtourguide.auth.data.dto.body.ResetPasswordRequestBody
+import com.egtourguide.auth.data.dto.body.SendCodeRequestBody
+import com.egtourguide.auth.data.dto.body.SignupRequestBody
 import com.egtourguide.auth.data.dto.response.ForgotPasswordResponseDTO
 import com.egtourguide.auth.data.dto.response.LoginResponseDTO
-import com.egtourguide.core.utils.ResultWrapper
+import com.egtourguide.auth.data.dto.response.SignupResponseDTO
 import retrofit2.http.Path
 
 interface AuthApi {
@@ -27,4 +29,15 @@ interface AuthApi {
     suspend fun login(
         @Body requestBody: LoginRequestBody
     ): LoginResponseDTO
+
+    // TODO: Change Response Model!
+    @POST("auth/send-code")
+    suspend fun sendCode(
+        @Body requestBody: SendCodeRequestBody
+    ): String
+
+    @POST("auth/signup")
+    suspend fun signup(
+        @Body requestBody: SignupRequestBody
+    ): SignupResponseDTO
 }

@@ -28,6 +28,7 @@ import com.egtourguide.R
 import com.egtourguide.auth.presentation.components.AuthHeader
 import com.egtourguide.core.presentation.components.MainButton
 import com.egtourguide.core.presentation.components.MainTextField
+import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 
 @Composable
 fun ResetPasswordScreen(
@@ -52,9 +53,9 @@ fun ResetPasswordScreen(
 @Composable
 private fun ResetPasswordScreenContent(
     uiState: ResetPasswordUIState,
-    onPasswordChanged: (String) -> Unit,
-    onConfirmPasswordChanged: (String) -> Unit,
-    onResetPasswordClicked: () -> Unit
+    onPasswordChanged: (String) -> Unit = {},
+    onConfirmPasswordChanged: (String) -> Unit = {},
+    onResetPasswordClicked: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
     val focusManager = LocalFocusManager.current
@@ -156,6 +157,10 @@ private fun ResetPasswordFooter(
 @Preview
 @Composable
 private fun ResetPasswordScreenPreview() {
-    ResetPasswordScreen()
+    EGTourGuideTheme {
+        ResetPasswordScreenContent(
+            uiState = ResetPasswordUIState()
+        )
+    }
 }
 

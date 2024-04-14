@@ -1,5 +1,6 @@
 package com.egtourguide.auth.presentation.signup
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -30,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.egtourguide.R
+import com.egtourguide.auth.domain.validation.ValidationCases
 import com.egtourguide.auth.presentation.components.AuthHeader
 import com.egtourguide.core.presentation.components.MainButton
 import com.egtourguide.core.presentation.components.MainTextField
@@ -40,14 +43,7 @@ import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 private fun SignUpScreenPreview() {
     EGTourGuideTheme {
         SignUpContent(
-            onNavigateToLogin = {},
-            uiState = SignUpUIState(),
-            onNameChanged = {},
-            onPhoneChanged = {},
-            onEmailChanged = {},
-            onPasswordChanged = {},
-            onConfirmPasswordChanged = {},
-            onRegisterClicked = {}
+            uiState = SignUpUIState()
         )
     }
 }
@@ -55,10 +51,11 @@ private fun SignUpScreenPreview() {
 @Composable
 fun SignUpScreen(
     onNavigateToLogin: () -> Unit,
-    onNavigateToOTP: () -> Unit,
+    onNavigateToOTP: (String, String, String, String, String, String) -> Unit,
     viewModel: SignUpViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
 
     SignUpContent(
         uiState = uiState,
@@ -68,13 +65,27 @@ fun SignUpScreen(
         onEmailChanged = viewModel::changeEmail,
         onPasswordChanged = viewModel::changePassword,
         onConfirmPasswordChanged = viewModel::changeConfirmPassword,
-        onRegisterClicked = viewModel::sendCode
+        onRegisterClicked = viewModel::onRegisterClicked
     )
 
     LaunchedEffect(key1 = uiState.isSuccess) {
         if (uiState.isSuccess) {
-            onNavigateToOTP()
+            onNavigateToOTP(
+                uiState.code,
+                uiState.name,
+                uiState.email,
+                uiState.phone,
+                uiState.password,
+                uiState.confirmPassword,
+            )
             viewModel.clearSuccess()
+        }
+    }
+
+    LaunchedEffect(key1 = uiState.errorMessage) {
+        uiState.errorMessage?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            viewModel.clearError()
         }
     }
 }
@@ -82,13 +93,13 @@ fun SignUpScreen(
 @Composable
 private fun SignUpContent(
     uiState: SignUpUIState,
-    onNavigateToLogin: () -> Unit,
-    onNameChanged: (String) -> Unit,
-    onPhoneChanged: (String) -> Unit,
-    onEmailChanged: (String) -> Unit,
-    onPasswordChanged: (String) -> Unit,
-    onConfirmPasswordChanged: (String) -> Unit,
-    onRegisterClicked: () -> Unit
+    onNavigateToLogin: () -> Unit = {},
+    onNameChanged: (String) -> Unit = {},
+    onPhoneChanged: (String) -> Unit = {},
+    onEmailChanged: (String) -> Unit = {},
+    onPasswordChanged: (String) -> Unit = {},
+    onConfirmPasswordChanged: (String) -> Unit = {},
+    onRegisterClicked: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
     val focusManager = LocalFocusManager.current
@@ -119,7 +130,12 @@ private fun SignUpContent(
             onEmailChanged = onEmailChanged,
             onPasswordChanged = onPasswordChanged,
             onConfirmPasswordChanged = onConfirmPasswordChanged,
-            onRegisterClicked = onRegisterClicked
+            onRegisterClicked = onRegisterClicked,
+            nameError = uiState.nameError,
+            emailError = uiState.emailError,
+            phoneError = uiState.phoneError,
+            passwordError = uiState.passwordError,
+            confirmPasswordError = uiState.confirmPasswordError
         )
 
         SignUpFooter(onNavigateToLogin)
@@ -140,14 +156,24 @@ private fun SignUpDataSection(
     onEmailChanged: (String) -> Unit,
     onPasswordChanged: (String) -> Unit,
     onConfirmPasswordChanged: (String) -> Unit,
-    onRegisterClicked: () -> Unit
+    onRegisterClicked: () -> Unit,
+    nameError: ValidationCases,
+    emailError: ValidationCases,
+    phoneError: ValidationCases,
+    passwordError: ValidationCases,
+    confirmPasswordError: ValidationCases
 ) {
     MainTextField(
         modifier = Modifier.fillMaxWidth(),
         value = name,
         onValueChanged = onNameChanged,
         labelText = stringResource(id = R.string.name),
-        placeholderText = stringResource(id = R.string.enter_your_name)
+        placeholderText = stringResource(id = R.string.enter_your_name),
+        errorText = when (nameError) {
+            ValidationCases.EMPTY -> stringResource(R.string.name_empty_error)
+            ValidationCases.ERROR -> stringResource(R.string.name_form_error)
+            else -> null
+        }
     )
 
     MainTextField(
@@ -156,7 +182,12 @@ private fun SignUpDataSection(
         onValueChanged = onPhoneChanged,
         labelText = stringResource(id = R.string.phone),
         placeholderText = stringResource(id = R.string.enter_your_phone),
-        keyboardType = KeyboardType.Phone
+        keyboardType = KeyboardType.Phone,
+        errorText = when (phoneError) {
+            ValidationCases.EMPTY -> stringResource(id = R.string.phone_empty_error)
+            ValidationCases.ERROR -> stringResource(id = R.string.phone_form_error)
+            else -> null
+        }
     )
 
     MainTextField(
@@ -165,7 +196,12 @@ private fun SignUpDataSection(
         onValueChanged = onEmailChanged,
         labelText = stringResource(id = R.string.email),
         placeholderText = stringResource(id = R.string.enter_your_email),
-        keyboardType = KeyboardType.Email
+        keyboardType = KeyboardType.Email,
+        errorText = when (emailError) {
+            ValidationCases.EMPTY -> stringResource(id = R.string.email_empty_error)
+            ValidationCases.ERROR -> stringResource(id = R.string.email_form_error)
+            else -> null
+        }
     )
 
     MainTextField(
@@ -175,7 +211,12 @@ private fun SignUpDataSection(
         labelText = stringResource(id = R.string.password),
         placeholderText = stringResource(id = R.string.enter_your_password),
         isPassword = true,
-        keyboardType = KeyboardType.Password
+        keyboardType = KeyboardType.Password,
+        errorText = when (passwordError) {
+            ValidationCases.EMPTY -> stringResource(id = R.string.password_empty_error)
+            ValidationCases.ERROR -> stringResource(id = R.string.password_form_error)
+            else -> null
+        }
     )
 
     MainTextField(
@@ -191,7 +232,12 @@ private fun SignUpDataSection(
             onDone = {
                 focusManager.clearFocus()
             }
-        )
+        ),
+        errorText = when (confirmPasswordError) {
+            ValidationCases.EMPTY -> stringResource(id = R.string.confirm_password_empty_error)
+            ValidationCases.NOT_MATCHED -> stringResource(id = R.string.confirm_password_not_matched_error)
+            else -> null
+        }
     )
 
     MainButton(
@@ -203,7 +249,8 @@ private fun SignUpDataSection(
             focusManager.clearFocus()
             onRegisterClicked()
         },
-        isLoading = isLoading
+        isLoading = isLoading,
+        isEnabled = !isLoading
     )
 }
 

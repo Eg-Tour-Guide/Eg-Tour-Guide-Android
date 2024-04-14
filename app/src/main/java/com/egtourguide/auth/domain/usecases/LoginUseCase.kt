@@ -1,4 +1,4 @@
-package com.egtourguide.auth.domain.use_cases
+package com.egtourguide.auth.domain.usecases
 
 import com.egtourguide.auth.data.dto.body.LoginRequestBody
 import com.egtourguide.auth.domain.repository.AuthRepository

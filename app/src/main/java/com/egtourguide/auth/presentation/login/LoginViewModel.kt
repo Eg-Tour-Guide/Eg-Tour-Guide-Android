@@ -4,7 +4,7 @@ package com.egtourguide.auth.presentation.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.egtourguide.auth.data.dto.body.LoginRequestBody
-import com.egtourguide.auth.domain.use_cases.LoginUseCase
+import com.egtourguide.auth.domain.usecases.LoginUseCase
 import com.egtourguide.auth.domain.validation.AuthValidation
 import com.egtourguide.core.utils.onResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -63,6 +63,7 @@ class LoginViewModel @Inject constructor(
                     }
                 },
                 onSuccess = {
+                    // TODO: Save token!!
                     _uiState.update {
                         it.copy(
                             isLoading = false,

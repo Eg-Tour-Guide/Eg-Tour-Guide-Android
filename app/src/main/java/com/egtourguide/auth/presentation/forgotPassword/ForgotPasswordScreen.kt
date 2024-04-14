@@ -33,6 +33,7 @@ import com.egtourguide.R
 import com.egtourguide.auth.presentation.components.AuthHeader
 import com.egtourguide.core.presentation.components.MainButton
 import com.egtourguide.core.presentation.components.MainTextField
+import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 
 @Composable
 fun ForgotPasswordScreen(
@@ -57,9 +58,9 @@ fun ForgotPasswordScreen(
 @Composable
 private fun ForgotPasswordScreenContent(
     uiState: ForgotPasswordUIState,
-    onEmailChanged: (String) -> Unit,
-    onBackToLoginClicked: () -> Unit,
-    onNextClicked: () -> Unit
+    onEmailChanged: (String) -> Unit = {},
+    onBackToLoginClicked: () -> Unit = {},
+    onNextClicked: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
     val focusManager = LocalFocusManager.current
@@ -161,5 +162,9 @@ private fun ForgotPasswordFooter(
 @Preview
 @Composable
 private fun ForgotPasswordScreenPreview() {
-    ForgotPasswordScreen()
+    EGTourGuideTheme {
+        ForgotPasswordScreenContent(
+            uiState = ForgotPasswordUIState()
+        )
+    }
 }

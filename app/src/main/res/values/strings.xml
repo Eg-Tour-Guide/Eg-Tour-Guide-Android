@@ -40,4 +40,16 @@
     <string name="confirm_password_error_msg">Password and confirm password doesn\'t match</string>
     <string name="password_error_msg">Password should be at least 8 characters</string>
     <string name="email_error_msg">Enter valid email \nexample: user@gmail.com </string>
+    <string name="name_empty_error">Please enter your name!</string>
+    <string name="name_form_error">Name length must be more than 3 characters!</string>
+    <string name="email_empty_error">Please enter your Email!</string>
+    <string name="email_form_error">Please enter a valid Email, for example: example@gmail.com</string>
+    <string name="phone_empty_error">Please enter your phone!</string>
+    <string name="phone_form_error">Please enter a valid phone number!</string>
+    <string name="password_empty_error">Please enter your password!</string>
+    <string name="password_form_error">Password must be at least 8 characters, contains:\n&#32;&#32;• lower character\n&#32;&#32;• upper character\n&#32;&#32;• number\n&#32;&#32;• symbol of these: !-_&amp;#@*^%?$</string>
+    <string name="confirm_password_empty_error">Please confirm your password!</string>
+    <string name="confirm_password_not_matched_error">Passwords do not match!</string>
+    <string name="code_empty_error">Please enter the code we just sent to your Email!</string>
+    <string name="code_not_matched_error">Codes do not match!</string>
 </resources>

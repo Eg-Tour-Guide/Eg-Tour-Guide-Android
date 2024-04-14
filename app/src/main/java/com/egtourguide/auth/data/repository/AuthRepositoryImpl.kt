@@ -4,14 +4,14 @@ import com.egtourguide.auth.data.AuthApi
 import com.egtourguide.auth.data.dto.body.ForgotPasswordRequestBody
 import com.egtourguide.auth.data.dto.body.LoginRequestBody
 import com.egtourguide.auth.data.dto.body.ResetPasswordRequestBody
-import com.egtourguide.auth.domain.model.LoginResponse
+import com.egtourguide.auth.data.dto.body.SendCodeRequestBody
+import com.egtourguide.auth.data.dto.body.SignupRequestBody
 import com.egtourguide.auth.domain.repository.AuthRepository
-import com.egtourguide.core.utils.ResultWrapper
 import com.egtourguide.core.utils.safeCall
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(private val authApi: AuthApi) : AuthRepository {
+
     override suspend fun getForgotPasswordCode(
         requestBody: ForgotPasswordRequestBody
     ) = safeCall {
@@ -29,5 +29,14 @@ class AuthRepositoryImpl @Inject constructor(private val authApi: AuthApi) : Aut
         requestBody: LoginRequestBody
     ) = safeCall {
         authApi.login(requestBody = requestBody).toLoginResponse()
+    }
+
+    // TODO: Change returned data!!
+    override suspend fun sendCode(requestBody: SendCodeRequestBody) = safeCall {
+        authApi.sendCode(requestBody = requestBody)
+    }
+
+    override suspend fun signup(requestBody: SignupRequestBody) = safeCall {
+        authApi.signup(requestBody = requestBody).toSignupResponse()
     }
 }

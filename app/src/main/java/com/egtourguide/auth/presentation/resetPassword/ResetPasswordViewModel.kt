@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.egtourguide.R
 import com.egtourguide.auth.data.dto.body.ResetPasswordRequestBody
-import com.egtourguide.auth.domain.use_cases.ResetPasswordUseCase
+import com.egtourguide.auth.domain.usecases.ResetPasswordUseCase
 import com.egtourguide.auth.domain.validation.AuthValidation
 import com.egtourguide.core.utils.onResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -41,6 +41,7 @@ class ResetPasswordViewModel @Inject constructor(
                 code = code,
                 requestBody = requestBody
             ).onResponse(
+                // TODO: Handle errors!!
                 onLoading = {
                     _uiState.update {
                         it.copy(isLoading = true, passwordError = null)
