@@ -58,7 +58,7 @@
     <string name="un_save">Un Save</string>
     <string name="save">Save</string>
     <string name="location">Location</string>
-    <string name="reviews_average_total">%.2f (%d Reviews)</string>
+    <string name="reviews_average_total">%.1f (%d Reviews)</string>
     <string name="tourism_types">Tourism Types</string>
     <string name="image_num">%s image %d</string>
     <string name="description">Description</string>

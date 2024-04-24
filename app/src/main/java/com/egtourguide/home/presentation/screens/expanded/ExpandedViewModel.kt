@@ -1,7 +1,7 @@
 package com.egtourguide.home.presentation.screens.expanded
 
-import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.lifecycle.ViewModel
+import com.egtourguide.core.utils.getLoremString
 import com.egtourguide.home.domain.model.Review
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,13 +27,17 @@ class ExpandedViewModel @Inject constructor() : ViewModel() {
                         authorName = "Abdo Sharaf",
                         authorImage = "",
                         rating = 3.5,
-                        description = LoremIpsum(words = 20).values.iterator().asSequence()
-                            .joinToString(" ")
-                    )
+                        description = getLoremString(words = 20)
+                    ),
+                    Review(
+                        authorName = "Abdo Sharaf",
+                        authorImage = "",
+                        rating = 3.5,
+                        description = getLoremString(words = 20)
+                    ),
                 ),
                 tourismTypes = listOf("Adventure", "Historical"),
-                description = LoremIpsum(words = 50).values.iterator().asSequence()
-                    .joinToString(" ")
+                description = getLoremString(words = 50)
             )
         }
     }

@@ -18,6 +18,7 @@ import com.egtourguide.auth.presentation.resetPassword.ResetPasswordScreen
 import com.egtourguide.auth.presentation.signup.SignUpScreen
 import com.egtourguide.auth.presentation.welcome.WelcomeScreen
 import com.egtourguide.home.presentation.screens.expanded.ExpandedScreenRoot
+import com.egtourguide.home.presentation.screens.moreReviews.MoreReviewsScreenRoot
 
 @Composable
 fun AppNavigation(
@@ -162,8 +163,21 @@ fun AppNavigation(
         composable(route = AppScreen.LandmarkExpanded.route) {
             ExpandedScreenRoot(
                 onBackClicked = { navController.navigateUp() },
-                onSeeMoreClicked = { /*TODO*/ },
-                onReviewClicked = {/*TODO*/ }
+                onSeeMoreClicked = {
+                    navController.navigate(route = AppScreen.MoreReviews.route)
+                },
+                onReviewClicked = {
+                    // TODO: Navigate!!
+                }
+            )
+        }
+
+        composable(route = AppScreen.MoreReviews.route) {
+            MoreReviewsScreenRoot(
+                onNavigateBack = { navController.navigateUp() },
+                onNavigateToReview = {
+                    // TODO: Navigate!!
+                }
             )
         }
     }

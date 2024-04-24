@@ -1,7 +1,6 @@
 package com.egtourguide.home.presentation.screens.expanded
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -35,20 +34,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.egtourguide.R
 import com.egtourguide.core.presentation.components.MainButton
+import com.egtourguide.core.presentation.components.MainImage
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
+import com.egtourguide.core.utils.getLoremString
 import com.egtourguide.home.domain.model.Review
+import com.egtourguide.home.presentation.components.ReviewItem
+import com.egtourguide.home.presentation.components.ReviewsHeader
 import com.egtourguide.home.presentation.components.ScreenHeader
 
 @Preview(showBackground = true, heightDp = 1800)
@@ -66,13 +64,11 @@ private fun ExpandedScreenPreview() {
                         authorName = "Abdo Sharaf",
                         authorImage = "",
                         rating = 2.3,
-                        description = LoremIpsum(words = 20).values.iterator().asSequence()
-                            .joinToString(" ")
+                        description = getLoremString(words = 20)
                     )
                 ),
                 tourismTypes = listOf("Adventure", "Historical"),
-                description = LoremIpsum(words = 50).values.iterator().asSequence()
-                    .joinToString(" ")
+                description = getLoremString(words = 50)
             )
         )
     }
@@ -169,7 +165,6 @@ private fun ImagesSection(
     images: List<String>,
     title: String
 ) {
-    val context = LocalContext.current
     val pagerState = rememberPagerState {
         images.size
     }
@@ -181,16 +176,12 @@ private fun ImagesSection(
             state = pagerState,
             modifier = Modifier.fillMaxWidth()
         ) {
-            // TODO: Change The default images!!
-            AsyncImage(
-                model = ImageRequest.Builder(context)
-                    .data(images[it])
-                    .crossfade(true)
-                    .placeholder(R.drawable.welcome)
-                    .error(R.drawable.welcome)
-                    .build(),
+            // TODO: Change default images!!
+            MainImage(
+                data = images[it],
                 contentDescription = stringResource(id = R.string.image_num, title, it + 1),
-                contentScale = ContentScale.Crop,
+                errorImage = R.drawable.welcome,
+                placeHolderImage = R.drawable.welcome,
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
                     .fillMaxWidth()
@@ -407,82 +398,15 @@ private fun ReviewsSection(
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
-        Text(
-            text = stringResource(id = R.string.reviews),
-            style = MaterialTheme.typography.displayMedium,
-            color = MaterialTheme.colorScheme.onBackground
+        ReviewsHeader(
+            reviewsAverage = reviewsAverage,
+            reviewsTotal = reviews.size
         )
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_rating_star),
-                contentDescription = null,
-                tint = Color(0xFFFF8D18),
-                modifier = Modifier.size(20.dp)
-            )
-
-            Text(
-                text = stringResource(
-                    id = R.string.reviews_average_total,
-                    reviewsAverage,
-                    reviews.size
-                ),
-                style = MaterialTheme.typography.displaySmall,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.padding(start = 6.dp)
-            )
-        }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 24.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // TODO: Load user image!!
-            Image(
-                painter = painterResource(id = R.drawable.ic_profile_pic),
-                contentDescription = stringResource(id = R.string.profile_picture),
-                modifier = Modifier.size(24.dp)
-            )
-
-            Text(
-                text = reviews[0].authorName,
-                style = MaterialTheme.typography.displayMedium,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.padding(start = 16.dp)
-            )
-        }
-
-        // TODO: Replace with rating bar!!
-        Row(
-            modifier = Modifier.padding(top = 12.dp),
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            repeat(5) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_rating_star),
-                    contentDescription = "${reviews[0].rating} Rating",
-                    tint = if (it > reviews[0].rating.toInt()) MaterialTheme.colorScheme.primaryContainer else Color(
-                        0xFFFF8D18
-                    ),
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-        }
-
-        SelectionContainer(
-            modifier = Modifier.padding(top = 8.dp)
-        ) {
-            Text(
-                text = reviews[0].description,
-                color = MaterialTheme.colorScheme.onBackground,
-                style = MaterialTheme.typography.titleSmall
+        if (reviews.isNotEmpty()) {
+            ReviewItem(
+                review = reviews[0],
+                modifier = Modifier.padding(top = 24.dp)
             )
         }
 
@@ -534,7 +458,6 @@ private fun IncludedArtifactsSection(
             items(count = 10) {
                 Spacer(
                     modifier = Modifier
-                        .padding(top = 8.dp)
                         .width(140.dp)
                         .height(165.dp)
                         .clip(RoundedCornerShape(12.dp))
@@ -570,7 +493,6 @@ private fun RelatedPlacesSection(
             items(count = 10) {
                 Spacer(
                     modifier = Modifier
-                        .padding(top = 8.dp)
                         .width(140.dp)
                         .height(165.dp)
                         .clip(RoundedCornerShape(12.dp))
