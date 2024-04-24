@@ -17,6 +17,7 @@ import com.egtourguide.auth.presentation.otp.OtpScreen
 import com.egtourguide.auth.presentation.resetPassword.ResetPasswordScreen
 import com.egtourguide.auth.presentation.signup.SignUpScreen
 import com.egtourguide.auth.presentation.welcome.WelcomeScreen
+import com.egtourguide.home.presentation.screens.expanded.ExpandedScreenRoot
 
 @Composable
 fun AppNavigation(
@@ -24,6 +25,9 @@ fun AppNavigation(
     startDestination: String
 ) {
     NavHost(navController = navController, startDestination = startDestination) {
+
+        /** Auth Screens */
+
         composable(route = AppScreen.Welcome.route) {
             WelcomeScreen(
                 onNavigateToLogin = {
@@ -136,6 +140,9 @@ fun AppNavigation(
             }
         }
 
+
+        /** Home Screens */
+
         // TODO: Change to home screen!!
         composable(route = AppScreen.Home.route) {
             Box(
@@ -150,6 +157,14 @@ fun AppNavigation(
                     color = MaterialTheme.colorScheme.onBackground
                 )
             }
+        }
+
+        composable(route = AppScreen.LandmarkExpanded.route) {
+            ExpandedScreenRoot(
+                onBackClicked = { navController.navigateUp() },
+                onSeeMoreClicked = { /*TODO*/ },
+                onReviewClicked = {/*TODO*/ }
+            )
         }
     }
 }

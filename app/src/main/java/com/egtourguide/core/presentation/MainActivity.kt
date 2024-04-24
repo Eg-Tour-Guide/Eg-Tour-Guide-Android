@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 AppNavigation(
                     navController = navController,
-                    startDestination = AppScreen.Welcome.route
+                    startDestination = AppScreen.LandmarkExpanded.route
                 )
 //                ResetPasswordScreen()
             }

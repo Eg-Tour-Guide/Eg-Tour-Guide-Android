@@ -55,6 +55,17 @@
     <string name="back">Back</string>
     <string name="go_to_search">Go To Search</string>
     <string name="go_to_notifications">Go To Notifications</string>
-    <string name="unsave">Unsave</string>
+    <string name="un_save">Un Save</string>
     <string name="save">Save</string>
+    <string name="location">Location</string>
+    <string name="reviews_average_total">%.2f (%d Reviews)</string>
+    <string name="tourism_types">Tourism Types</string>
+    <string name="image_num">%s image %d</string>
+    <string name="description">Description</string>
+    <string name="reviews">Reviews</string>
+    <string name="profile_picture">Profile Picture</string>
+    <string name="see_more">See More</string>
+    <string name="review">Review</string>
+    <string name="included_artifacts">Included Artifacts</string>
+    <string name="related_places">Related Places</string>
 </resources>
