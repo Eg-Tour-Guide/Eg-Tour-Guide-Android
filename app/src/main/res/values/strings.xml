@@ -68,4 +68,7 @@
     <string name="review">Review</string>
     <string name="included_artifacts">Included Artifacts</string>
     <string name="related_places">Related Places</string>
+    <string name="artifact_type">Artifact Type</string>
+    <string name="artifact_materials">Artifact Materials</string>
+    <string name="related_artifacts">Related Artifacts</string>
 </resources>

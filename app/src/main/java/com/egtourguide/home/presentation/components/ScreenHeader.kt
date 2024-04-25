@@ -36,7 +36,7 @@ private fun ScreenHeaderPreview() {
                 showLogo = true,
                 showSearch = true,
                 showNotifications = true,
-                showNotificationsBadge = true,
+                showNotificationsBadge = false,
                 modifier = Modifier.height(61.dp)
             )
 
@@ -114,17 +114,17 @@ fun ScreenHeader(
                 IconButton(
                     onClick = onNotificationsClicked,
                     modifier = Modifier
-                        .height(20.dp)
+                        .height(22.dp)
                         .width(20.dp)
                 ) {
                     Image(
                         painter = painterResource(
-                            id = if (showNotificationsBadge) R.drawable.ic_notifications_badge
+                            id = if (showNotificationsBadge) R.drawable.ic_notifications_with_badge
                             else R.drawable.ic_notifications
                         ),
                         contentDescription = stringResource(id = R.string.go_to_notifications),
                         modifier = Modifier
-                            .height(18.dp)
+                            .height(22.dp)
                             .width(20.dp)
                     )
                 }

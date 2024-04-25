@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -28,18 +29,23 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import com.egtourguide.R
+import com.egtourguide.core.presentation.components.LoadingProgress
 import com.egtourguide.core.presentation.components.MainButton
 import com.egtourguide.core.presentation.components.MainImage
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
@@ -49,7 +55,7 @@ import com.egtourguide.home.presentation.components.ReviewItem
 import com.egtourguide.home.presentation.components.ReviewsHeader
 import com.egtourguide.home.presentation.components.ScreenHeader
 
-@Preview(showBackground = true, heightDp = 1800)
+@Preview(showBackground = true, heightDp = 2000)
 @Composable
 private fun ExpandedScreenPreview() {
     EGTourGuideTheme {
@@ -65,10 +71,21 @@ private fun ExpandedScreenPreview() {
                         authorImage = "",
                         rating = 2.3,
                         description = getLoremString(words = 20)
+                    ),
+                    Review(
+                        authorName = "Abdo Sharaf",
+                        authorImage = "",
+                        rating = 2.3,
+                        description = getLoremString(words = 20)
                     )
                 ),
                 tourismTypes = listOf("Adventure", "Historical"),
-                description = getLoremString(words = 50)
+                description = getLoremString(words = 50),
+                artifactType = "Statues",
+                artifactMaterials = listOf("Stone", "Wood"),
+                includedArtifacts = (1..10).toList(),
+                relatedPlaces = (1..10).toList(),
+                relatedArtifacts = (1..10).toList()
             )
         )
     }
@@ -77,11 +94,27 @@ private fun ExpandedScreenPreview() {
 @Composable
 fun ExpandedScreenRoot(
     viewModel: ExpandedViewModel = hiltViewModel(),
+    id: String,
+    isLandmark: Boolean,
     onBackClicked: () -> Unit,
     onSeeMoreClicked: () -> Unit,
     onReviewClicked: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(key1 = lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_CREATE && !uiState.callIsSent) {
+                viewModel.getData(id = id, isLandmark = isLandmark)
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     ExpandedScreen(
         uiState = uiState,
@@ -109,52 +142,73 @@ private fun ExpandedScreen(
             modifier = Modifier.height(52.dp)
         )
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .verticalScroll(rememberScrollState())
-        ) {
-            ImagesSection(
-                images = uiState.images,
-                title = uiState.title
+        if(uiState.isLoading){
+            LoadingProgress(
+                modifier = Modifier.weight(1f)
             )
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                ImagesSection(
+                    images = uiState.images,
+                    title = uiState.title
+                )
 
-            TitleSection(
-                title = uiState.title,
-                isSaved = uiState.isSaved,
-                onSaveClicked = onSaveClicked,
-                location = uiState.location,
-                reviewsAverage = uiState.reviewsAverage,
-                reviewsTotal = uiState.reviews.size,
-                tourismTypes = uiState.tourismTypes,
-                modifier = Modifier.padding(top = 16.dp)
-            )
+                TitleSection(
+                    title = uiState.title,
+                    isSaved = uiState.isSaved,
+                    onSaveClicked = onSaveClicked,
+                    location = uiState.location,
+                    reviewsAverage = uiState.reviewsAverage,
+                    reviewsTotal = uiState.reviews.size,
+                    tourismTypes = uiState.tourismTypes,
+                    artifactType = uiState.artifactType,
+                    artifactMaterials = uiState.artifactMaterials,
+                    modifier = Modifier.padding(top = 16.dp)
+                )
 
-            DescriptionSection(
-                description = uiState.description,
-                modifier = Modifier.padding(top = 24.dp, start = 16.dp, end = 16.dp)
-            )
+                DescriptionSection(
+                    description = uiState.description,
+                    modifier = Modifier.padding(top = 24.dp, start = 16.dp, end = 16.dp)
+                )
 
-            LocationSection(
-                modifier = Modifier.padding(top = 24.dp, start = 16.dp, end = 16.dp)
-            )
+                LocationSection(
+                    modifier = Modifier.padding(top = 24.dp, start = 16.dp, end = 16.dp)
+                )
 
-            ReviewsSection(
-                reviewsAverage = uiState.reviewsAverage,
-                reviews = uiState.reviews,
-                onSeeMoreClicked = onSeeMoreClicked,
-                onReviewClicked = onReviewClicked,
-                modifier = Modifier.padding(top = 24.dp, start = 16.dp, end = 16.dp)
-            )
+                ReviewsSection(
+                    reviewsAverage = uiState.reviewsAverage,
+                    reviews = uiState.reviews,
+                    onSeeMoreClicked = onSeeMoreClicked,
+                    onReviewClicked = onReviewClicked,
+                    modifier = Modifier.padding(top = 24.dp, start = 16.dp, end = 16.dp)
+                )
 
-            IncludedArtifactsSection(
-                modifier = Modifier.padding(top = 24.dp)
-            )
+                if (uiState.includedArtifacts.isNotEmpty()) {
+                    IncludedArtifactsSection(
+                        artifacts = uiState.includedArtifacts,
+                        modifier = Modifier.padding(top = 24.dp)
+                    )
+                }
 
-            RelatedPlacesSection(
-                modifier = Modifier.padding(top = 24.dp, bottom = 16.dp)
-            )
+                if (uiState.relatedPlaces.isNotEmpty()) {
+                    RelatedPlacesSection(
+                        places = uiState.relatedPlaces,
+                        modifier = Modifier.padding(top = 24.dp, bottom = 16.dp)
+                    )
+                }
+
+                if (uiState.relatedArtifacts.isNotEmpty()) {
+                    RelatedArtifactsSection(
+                        artifacts = uiState.relatedArtifacts,
+                        modifier = Modifier.padding(top = 24.dp, bottom = 16.dp)
+                    )
+                }
+            }
         }
     }
 }
@@ -232,6 +286,8 @@ private fun TitleSection(
     reviewsAverage: Double,
     reviewsTotal: Int,
     tourismTypes: List<String>,
+    artifactType: String,
+    artifactMaterials: List<String>,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -299,25 +355,73 @@ private fun TitleSection(
                     )
                 }
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_landmarks),
-                        contentDescription = stringResource(R.string.tourism_types),
-                        tint = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.size(16.dp)
-                    )
+                if(tourismTypes.isNotEmpty()) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_landmarks),
+                            contentDescription = stringResource(R.string.tourism_types),
+                            tint = MaterialTheme.colorScheme.onBackground,
+                            modifier = Modifier.size(16.dp)
+                        )
 
-                    Text(
-                        text = tourismTypes.joinToString(", "),
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.padding(start = 6.dp)
-                    )
+                        Text(
+                            text = tourismTypes.joinToString(", "),
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            modifier = Modifier.padding(start = 6.dp)
+                        )
+                    }
+                }
+
+                if(artifactType.isNotEmpty()) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_artifacts),
+                            contentDescription = stringResource(R.string.artifact_type),
+                            tint = MaterialTheme.colorScheme.onBackground,
+                            modifier = Modifier.size(16.dp)
+                        )
+
+                        Text(
+                            text = artifactType,
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            modifier = Modifier.padding(start = 6.dp)
+                        )
+                    }
+                }
+
+                if(artifactMaterials.isNotEmpty()) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_materials),
+                            contentDescription = stringResource(R.string.artifact_materials),
+                            tint = MaterialTheme.colorScheme.onBackground,
+                            modifier = Modifier.size(16.dp)
+                        )
+
+                        Text(
+                            text = artifactMaterials.joinToString(", "),
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            modifier = Modifier.padding(start = 6.dp)
+                        )
+                    }
                 }
             }
 
@@ -435,6 +539,7 @@ private fun ReviewsSection(
 
 @Composable
 private fun IncludedArtifactsSection(
+    artifacts: List<Int>,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -455,7 +560,7 @@ private fun IncludedArtifactsSection(
                 .fillMaxWidth()
                 .padding(top = 8.dp)
         ) {
-            items(count = 10) {
+            items(items = artifacts) {
                 Spacer(
                     modifier = Modifier
                         .width(140.dp)
@@ -470,6 +575,7 @@ private fun IncludedArtifactsSection(
 
 @Composable
 private fun RelatedPlacesSection(
+    places: List<Int>,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -490,7 +596,43 @@ private fun RelatedPlacesSection(
                 .fillMaxWidth()
                 .padding(top = 8.dp)
         ) {
-            items(count = 10) {
+            items(items = places) {
+                Spacer(
+                    modifier = Modifier
+                        .width(140.dp)
+                        .height(165.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(MaterialTheme.colorScheme.primaryContainer)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun RelatedArtifactsSection(
+    artifacts: List<Int>,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = stringResource(id = R.string.related_artifacts),
+            style = MaterialTheme.typography.displayMedium,
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.padding(start = 16.dp)
+        )
+
+        // TODO: Replace with the main item!!
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp)
+        ) {
+            items(items = artifacts) {
                 Spacer(
                     modifier = Modifier
                         .width(140.dp)

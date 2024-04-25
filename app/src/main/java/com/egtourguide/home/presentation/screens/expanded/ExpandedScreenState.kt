@@ -11,5 +11,15 @@ data class ExpandedScreenState(
     val tourismTypes: List<String> = emptyList(),
     val isSaved: Boolean = false,
     val description: String = "",
-    val location: String = ""
+    val location: String = "",
+    val artifactType: String = "",
+    val artifactMaterials: List<String> = emptyList(),
+    val includedArtifacts: List<Int> = emptyList(),
+    val relatedPlaces: List<Int> = emptyList(),
+    val relatedArtifacts: List<Int> = emptyList(),
+    val id: String = "",
+    val isLandmark: Boolean = true,
+    val isLoading: Boolean = false,
+    val errorMessage: String? = null,
+    val callIsSent: Boolean = false
 )

@@ -27,7 +27,8 @@ private fun HomePreview() {
 // TODO: Implement Home Screen!!
 @Composable
 fun HomeScreen(
-    onNavigateToExpanded: () -> Unit = {}
+    onNavigateToExpandedLandMark: (String) -> Unit = {},
+    onNavigateToExpandedArtifact: (String) -> Unit = {},
 ) {
     Column(
         modifier = Modifier
@@ -44,9 +45,17 @@ fun HomeScreen(
 
         MainButton(
             text = "Landmark Expanded",
-            onClick = onNavigateToExpanded,
+            onClick = { onNavigateToExpandedLandMark("0") },
             modifier = Modifier
                 .padding(top = 24.dp, start = 16.dp, end = 16.dp)
+                .fillMaxWidth()
+        )
+
+        MainButton(
+            text = "Artifact Expanded",
+            onClick = { onNavigateToExpandedArtifact("0") },
+            modifier = Modifier
+                .padding(top = 16.dp, start = 16.dp, end = 16.dp)
                 .fillMaxWidth()
         )
     }
