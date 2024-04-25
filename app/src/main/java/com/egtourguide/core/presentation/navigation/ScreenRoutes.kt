@@ -12,6 +12,6 @@ object ScreenRoutes {
     const val HOME_SCREEN_ROUTE = "HOME_SCREEN_ROUTE"
 
     // Home Routes
-    const val LANDMARK_EXPANDED_ROUTE = "LANDMARK_EXPANDED_ROUTE"
+    const val EXPANDED_SCREEN_ROUTE = "EXPANDED_SCREEN_ROUTE/{id}/{isLandmark}"
     const val MORE_REVIEWS_ROUTE = "MORE_REVIEWS_ROUTE"
 }

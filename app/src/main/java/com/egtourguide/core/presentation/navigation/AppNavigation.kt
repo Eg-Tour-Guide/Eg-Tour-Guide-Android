@@ -139,14 +139,30 @@ fun AppNavigation(
         // TODO: Change to home screen!!
         composable(route = AppScreen.Home.route) {
             HomeScreen(
-                onNavigateToExpanded = {
-                    navController.navigate(route = AppScreen.LandmarkExpanded.route)
-                }
+                onNavigateToExpandedLandMark = { landmarkId ->
+                    navController.navigate(
+                        route = AppScreen.Expanded.route
+                            .replace("{id}", landmarkId)
+                            .replace("{isLandmark}", "true")
+                    )
+                },
+                onNavigateToExpandedArtifact = { artifactId ->
+                    navController.navigate(
+                        route = AppScreen.Expanded.route
+                            .replace("{id}", artifactId)
+                            .replace("{isLandmark}", "false")
+                    )
+                },
             )
         }
 
-        composable(route = AppScreen.LandmarkExpanded.route) {
+        composable(route = AppScreen.Expanded.route) { entry ->
+            val id = entry.arguments?.getString("id") ?: ""
+            val isLandmark = entry.arguments?.getString("isLandmark").toBoolean()
+
             ExpandedScreenRoot(
+                id = id,
+                isLandmark = isLandmark,
                 onBackClicked = { navController.navigateUp() },
                 onSeeMoreClicked = {
                     navController.navigate(route = AppScreen.MoreReviews.route)
