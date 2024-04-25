@@ -6,21 +6,15 @@ import javax.inject.Inject
 
 class SignupUseCase @Inject constructor(private val repository: AuthRepository) {
 
-    // TODO: Change the function!!
     suspend operator fun invoke(
         name: String,
         email: String,
         phone: String,
-        password: String,
-        confirmPassword: String
+        password: String
     ) = repository.signup(
         requestBody = SignupRequestBody(
-            firstName = "test",
-            lastName = "test",
             password = password,
             email = email,
-            gender = "male",
-            governmentLocation = "damietta",
             username = name,
             phone = phone
         )

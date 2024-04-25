@@ -26,7 +26,7 @@ class ForgotPasswordViewModel @Inject constructor(
         _uiState.update { it.copy(email = email) }
     }
 
-    fun getForgotPasswordCode() {
+    private fun getForgotPasswordCode() {
         val requestBody = ForgotPasswordRequestBody(email = uiState.value.email)
         viewModelScope.launch(Dispatchers.IO) {
             getForgotPasswordCodeUseCase(
@@ -52,6 +52,7 @@ class ForgotPasswordViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             successMessage = response.message,
+                            code = response.code,
                             isCodeSentSuccessfully = true,
                             isLoading = false
                         )

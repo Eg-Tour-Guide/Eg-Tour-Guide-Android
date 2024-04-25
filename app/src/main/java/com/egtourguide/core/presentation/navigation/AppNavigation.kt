@@ -1,13 +1,6 @@
 package com.egtourguide.core.presentation.navigation
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -17,6 +10,9 @@ import com.egtourguide.auth.presentation.otp.OtpScreen
 import com.egtourguide.auth.presentation.resetPassword.ResetPasswordScreen
 import com.egtourguide.auth.presentation.signup.SignUpScreen
 import com.egtourguide.auth.presentation.welcome.WelcomeScreen
+import com.egtourguide.home.presentation.screens.expanded.ExpandedScreenRoot
+import com.egtourguide.home.presentation.screens.home.HomeScreen
+import com.egtourguide.home.presentation.screens.moreReviews.MoreReviewsScreenRoot
 
 @Composable
 fun AppNavigation(
@@ -24,6 +20,9 @@ fun AppNavigation(
     startDestination: String
 ) {
     NavHost(navController = navController, startDestination = startDestination) {
+
+        /** Auth Screens */
+
         composable(route = AppScreen.Welcome.route) {
             WelcomeScreen(
                 onNavigateToLogin = {
@@ -40,7 +39,8 @@ fun AppNavigation(
                             inclusive = true
                         }
                     }
-                }, onNavigateToOTP = { code, name, email, phone, password, confirmPassword ->
+                },
+                onNavigateToOTP = { code, name, email, phone, password ->
                     navController.navigate(
                         route = AppScreen.OTP.route
                             .replace("{code}", code)
@@ -49,7 +49,6 @@ fun AppNavigation(
                             .replace("{email}", email)
                             .replace("{phone}", phone)
                             .replace("{password}", password)
-                            .replace("{confirmPassword}", confirmPassword)
                     )
                 }
             )
@@ -62,7 +61,6 @@ fun AppNavigation(
             val email = entry.arguments?.getString("email") ?: ""
             val phone = entry.arguments?.getString("phone") ?: ""
             val password = entry.arguments?.getString("password") ?: ""
-            val confirmPassword = entry.arguments?.getString("confirmPassword") ?: ""
 
             OtpScreen(
                 code = code,
@@ -71,7 +69,6 @@ fun AppNavigation(
                 email = email,
                 phone = phone,
                 password = password,
-                confirmPassword = confirmPassword,
                 onNavigateToResetPassword = {
                     navController.navigate(
                         route = AppScreen.ResetPassword.route.replace("{code}", code)
@@ -136,20 +133,37 @@ fun AppNavigation(
             }
         }
 
+
+        /** Home Screens */
+
         // TODO: Change to home screen!!
         composable(route = AppScreen.Home.route) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "Home Screen",
-                    style = MaterialTheme.typography.headlineLarge,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
+            HomeScreen(
+                onNavigateToExpanded = {
+                    navController.navigate(route = AppScreen.LandmarkExpanded.route)
+                }
+            )
+        }
+
+        composable(route = AppScreen.LandmarkExpanded.route) {
+            ExpandedScreenRoot(
+                onBackClicked = { navController.navigateUp() },
+                onSeeMoreClicked = {
+                    navController.navigate(route = AppScreen.MoreReviews.route)
+                },
+                onReviewClicked = {
+                    // TODO: Navigate!!
+                }
+            )
+        }
+
+        composable(route = AppScreen.MoreReviews.route) {
+            MoreReviewsScreenRoot(
+                onNavigateBack = { navController.navigateUp() },
+                onNavigateToReview = {
+                    // TODO: Navigate!!
+                }
+            )
         }
     }
 }

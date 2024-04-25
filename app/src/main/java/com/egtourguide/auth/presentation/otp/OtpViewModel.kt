@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.egtourguide.auth.domain.usecases.SignupUseCase
 import com.egtourguide.auth.domain.validation.AuthValidation
 import com.egtourguide.auth.domain.validation.ValidationCases
+import com.egtourguide.core.domain.usecases.SaveInDataStoreUseCase
+import com.egtourguide.core.utils.DataStoreKeys
 import com.egtourguide.core.utils.onResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -16,7 +18,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OtpViewModel @Inject constructor(
-    private val signupUseCase: SignupUseCase
+    private val signupUseCase: SignupUseCase,
+    private val saveInDataStoreUseCase: SaveInDataStoreUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(OtpUIState())
@@ -53,28 +56,33 @@ class OtpViewModel @Inject constructor(
         name: String,
         email: String,
         phone: String,
-        password: String,
-        confirmPassword: String
+        password: String
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             signupUseCase(
                 name = name,
                 email = email,
                 phone = phone,
-                password = password,
-                confirmPassword = confirmPassword
+                password = password
             ).onResponse(
                 onLoading = {
                     _uiState.update { it.copy(isLoading = true, errorMessage = null) }
                 },
                 onSuccess = { response ->
-                    // TODO: Save token!!
+                    saveData(token = response.token)
                     _uiState.update { it.copy(isLoading = false, isSignedSuccessfully = true) }
                 },
                 onFailure = { msg ->
                     _uiState.update { it.copy(isLoading = false, errorMessage = msg) }
                 }
             )
+        }
+    }
+
+    private fun saveData(token: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            saveInDataStoreUseCase(key = DataStoreKeys.TOKEN_KEY, value = token)
+            saveInDataStoreUseCase(key = DataStoreKeys.IS_LOGGED_KEY, value = true)
         }
     }
 }

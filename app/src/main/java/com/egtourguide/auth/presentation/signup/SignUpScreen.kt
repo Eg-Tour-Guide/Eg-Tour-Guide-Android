@@ -51,7 +51,7 @@ private fun SignUpScreenPreview() {
 @Composable
 fun SignUpScreen(
     onNavigateToLogin: () -> Unit,
-    onNavigateToOTP: (String, String, String, String, String, String) -> Unit,
+    onNavigateToOTP: (String, String, String, String, String) -> Unit,
     viewModel: SignUpViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -75,8 +75,7 @@ fun SignUpScreen(
                 uiState.name,
                 uiState.email,
                 uiState.phone,
-                uiState.password,
-                uiState.confirmPassword,
+                uiState.password
             )
             viewModel.clearSuccess()
         }

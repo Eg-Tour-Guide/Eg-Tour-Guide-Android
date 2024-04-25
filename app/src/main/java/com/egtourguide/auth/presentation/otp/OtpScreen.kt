@@ -57,7 +57,6 @@ fun OtpScreen(
     email: String,
     phone: String,
     password: String,
-    confirmPassword: String,
     onNavigateToResetPassword: (String) -> Unit,
     onNavigateToHome: () -> Unit
 ) {
@@ -75,7 +74,7 @@ fun OtpScreen(
             viewModel.clearVerifySuccess()
 
             if (fromSignup) {
-                viewModel.signup(name, email, phone, password, confirmPassword)
+                viewModel.signup(name, email, phone, password)
             } else {
                 onNavigateToResetPassword(code)
             }

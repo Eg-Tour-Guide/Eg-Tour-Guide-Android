@@ -10,6 +10,7 @@ import com.egtourguide.auth.data.dto.body.SignupRequestBody
 import com.egtourguide.auth.data.dto.response.ForgotPasswordResponseDTO
 import com.egtourguide.auth.data.dto.response.LoginResponseDTO
 import com.egtourguide.auth.data.dto.response.SignupResponseDTO
+import retrofit2.http.PATCH
 import retrofit2.http.Path
 
 interface AuthApi {
@@ -19,7 +20,7 @@ interface AuthApi {
         @Body requestBody: ForgotPasswordRequestBody
     ): ForgotPasswordResponseDTO
 
-    @POST("auth/reset-password/{code}")
+    @PATCH("auth/reset-password/{code}")
     suspend fun resetPassword(
         @Body requestBody: ResetPasswordRequestBody,
         @Path("code") code: String
