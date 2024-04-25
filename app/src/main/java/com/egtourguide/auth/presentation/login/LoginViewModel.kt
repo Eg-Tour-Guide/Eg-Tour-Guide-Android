@@ -6,6 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.egtourguide.auth.data.dto.body.LoginRequestBody
 import com.egtourguide.auth.domain.usecases.LoginUseCase
 import com.egtourguide.auth.domain.validation.AuthValidation
+import com.egtourguide.core.domain.usecases.SaveInDataStoreUseCase
+import com.egtourguide.core.utils.DataStoreKeys.IS_LOGGED_KEY
+import com.egtourguide.core.utils.DataStoreKeys.TOKEN_KEY
 import com.egtourguide.core.utils.onResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +20,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val loginUseCase: LoginUseCase
+    private val loginUseCase: LoginUseCase,
+    private val saveInDataStoreUseCase: SaveInDataStoreUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(LoginState())
     val uiState = _uiState.asStateFlow()
@@ -62,8 +66,9 @@ class LoginViewModel @Inject constructor(
                         )
                     }
                 },
-                onSuccess = {
-                    // TODO: Save token!!
+                onSuccess = { response ->
+                    saveData(response.token)
+
                     _uiState.update {
                         it.copy(
                             isLoading = false,
@@ -93,6 +98,13 @@ class LoginViewModel @Inject constructor(
             _uiState.update { it.copy(emailError = true) }
         }
 
+    }
+
+    private fun saveData(token: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            saveInDataStoreUseCase(key = TOKEN_KEY, value = token)
+            saveInDataStoreUseCase(key = IS_LOGGED_KEY, value = true)
+        }
     }
 }
 
