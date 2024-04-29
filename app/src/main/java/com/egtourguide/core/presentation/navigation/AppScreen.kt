@@ -12,6 +12,7 @@ sealed class AppScreen(val route: String) {
     object Home : AppScreen(route = ScreenRoutes.HOME_SCREEN_ROUTE)
 
     // Home Screens
-    object Expanded: AppScreen(route = ScreenRoutes.EXPANDED_SCREEN_ROUTE)
-    object MoreReviews: AppScreen(route = ScreenRoutes.MORE_REVIEWS_ROUTE)
+    object Expanded : AppScreen(route = ScreenRoutes.EXPANDED_SCREEN_ROUTE)
+    object MoreReviews : AppScreen(route = ScreenRoutes.MORE_REVIEWS_ROUTE)
+    object Review : AppScreen(route = ScreenRoutes.REVIEW_SCREEN_ROUTE)
 }
