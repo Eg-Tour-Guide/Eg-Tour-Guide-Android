@@ -13,6 +13,7 @@ import com.egtourguide.auth.presentation.welcome.WelcomeScreen
 import com.egtourguide.home.presentation.screens.expanded.ExpandedScreenRoot
 import com.egtourguide.home.presentation.screens.home.HomeScreen
 import com.egtourguide.home.presentation.screens.moreReviews.MoreReviewsScreenRoot
+import com.egtourguide.home.presentation.screens.review.ReviewScreen
 
 @Composable
 fun AppNavigation(
@@ -168,7 +169,7 @@ fun AppNavigation(
                     navController.navigate(route = AppScreen.MoreReviews.route)
                 },
                 onReviewClicked = {
-                    // TODO: Navigate!!
+                    navController.navigate(route = AppScreen.Review.route)
                 }
             )
         }
@@ -177,8 +178,14 @@ fun AppNavigation(
             MoreReviewsScreenRoot(
                 onNavigateBack = { navController.navigateUp() },
                 onNavigateToReview = {
-                    // TODO: Navigate!!
+                    navController.navigate(route = AppScreen.Review.route)
                 }
+            )
+        }
+
+        composable(route = AppScreen.Review.route) {
+            ReviewScreen(
+                onNavigateBack = { navController.navigateUp() }
             )
         }
     }
