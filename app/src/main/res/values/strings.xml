@@ -71,4 +71,13 @@
     <string name="artifact_type">Artifact Type</string>
     <string name="artifact_materials">Artifact Materials</string>
     <string name="related_artifacts">Related Artifacts</string>
+    <string name="reviews_count">" (%1$s Reviews)"</string>
+    <string name="upcoming_events">Upcoming Events</string>
+    <string name="suggested_for_you">Suggested For You</string>
+    <string name="top_rated_places">Top Rated Places</string>
+    <string name="explore_egypt_s_landmarks">Explore Egypt’s Landmarks</string>
+    <string name="recently_added">Recently Added</string>
+    <string name="you_might_also_like">You Might Also Like</string>
+    <string name="recently_viewed">Recently Viewed</string>
+    <string name="more">More...</string>
 </resources>

@@ -1,12 +1,11 @@
 package com.egtourguide.auth.presentation.resetPassword
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.egtourguide.R
 import com.egtourguide.auth.data.dto.body.ResetPasswordRequestBody
 import com.egtourguide.auth.domain.usecases.ResetPasswordUseCase
 import com.egtourguide.auth.domain.validation.AuthValidation
+import com.egtourguide.auth.domain.validation.ValidationCases
 import com.egtourguide.core.utils.onResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -41,15 +40,14 @@ class ResetPasswordViewModel @Inject constructor(
                 code = code,
                 requestBody = requestBody
             ).onResponse(
-                // TODO: Handle errors!!
                 onLoading = {
                     _uiState.update {
-                        it.copy(isLoading = true, passwordError = null)
+                        it.copy(isLoading = true)
                     }
                 },
                 onFailure = { msg ->
                     _uiState.update {
-                        it.copy(isLoading = false, passwordError = msg)
+                        it.copy(isLoading = false, error = msg)
                     }
                 },
                 onSuccess = {
@@ -62,30 +60,42 @@ class ResetPasswordViewModel @Inject constructor(
     }
 
     fun onResetClicked(
-        context: Context,
         code: String
     ) {
-        _uiState.update { it.copy(passwordError = null, confirmPasswordError = null) }
-        if (AuthValidation.validatePassword(password = uiState.value.password)) {
-            if (AuthValidation
-                    .validateConfirmPassword(
-                        password = uiState.value.password,
-                        confirmPassword = uiState.value.confirmPassword
-                    )
-            ) {
-                resetPassword(code = code)
-            } else {
-                _uiState.update {
-                    it.copy(
-                        confirmPasswordError = context.getString(R.string.confirm_password_error_msg)
-                    )
-                }
-            }
-        } else {
-            _uiState.update {
-                it.copy(passwordError = context.getString(R.string.password_error_msg))
-            }
+        _uiState.update {
+            it.copy(
+                passwordError = ValidationCases.CORRECT,
+                confirmPasswordError = ValidationCases.CORRECT
+            )
         }
+
+        if (checkData()) {
+            resetPassword(code = code)
+        }
+    }
+
+    private fun checkData(): Boolean {
+        val passwordErrorState = AuthValidation.validatePassword2(_uiState.value.password)
+        val confirmPasswordErrorState = AuthValidation.validateConfirmPassword2(
+            _uiState.value.password,
+            _uiState.value.confirmPassword
+        )
+        _uiState.update {
+            it.copy(
+                passwordError = passwordErrorState,
+                confirmPasswordError = confirmPasswordErrorState
+            )
+        }
+
+        return passwordErrorState == ValidationCases.CORRECT && confirmPasswordErrorState == ValidationCases.CORRECT
+    }
+
+    fun clearSuccess() {
+        _uiState.update { it.copy(isPasswordResetSuccess = false) }
+    }
+
+    fun clearError() {
+        _uiState.update { it.copy(error = null) }
     }
 
 }

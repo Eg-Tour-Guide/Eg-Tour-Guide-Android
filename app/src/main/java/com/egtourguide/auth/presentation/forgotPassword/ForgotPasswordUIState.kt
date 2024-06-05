@@ -1,7 +1,10 @@
 package com.egtourguide.auth.presentation.forgotPassword
 
+import com.egtourguide.auth.domain.validation.ValidationCases
+
 data class ForgotPasswordUIState(
     val email: String = "",
+    val emailError: ValidationCases = ValidationCases.CORRECT,
     val isLoading: Boolean = false,
     val error: String? = null,
     val isCodeSentSuccessfully: Boolean = false,

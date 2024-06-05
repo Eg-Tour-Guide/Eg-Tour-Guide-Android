@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.egtourguide.auth.data.dto.body.ForgotPasswordRequestBody
 import com.egtourguide.auth.domain.usecases.GetForgotPasswordCodeUseCase
 import com.egtourguide.auth.domain.validation.AuthValidation
+import com.egtourguide.auth.domain.validation.ValidationCases
 import com.egtourguide.core.utils.onResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -63,11 +64,29 @@ class ForgotPasswordViewModel @Inject constructor(
     }
 
     fun onNextClicked() {
-        if (AuthValidation.validateEmail(email = uiState.value.email)) {
-            getForgotPasswordCode()
-        } else {
-            _uiState.update { it.copy(error = "Invalid Email Address") }
+        _uiState.update {
+            it.copy(emailError = ValidationCases.CORRECT)
         }
+        if(checkData()){
+            getForgotPasswordCode()
+        }
+
+    }
+
+    private fun checkData(): Boolean {
+        val emailErrorState = AuthValidation.validateEmail2(_uiState.value.email)
+        _uiState.update {
+            it.copy(emailError = emailErrorState)
+        }
+        return emailErrorState == ValidationCases.CORRECT
+    }
+
+    fun clearSuccess() {
+        _uiState.update { it.copy(isCodeSentSuccessfully = false) }
+    }
+
+    fun clearError() {
+        _uiState.update { it.copy(error = null) }
     }
 
 }

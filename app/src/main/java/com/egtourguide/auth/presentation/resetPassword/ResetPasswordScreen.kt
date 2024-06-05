@@ -1,5 +1,6 @@
 package com.egtourguide.auth.presentation.resetPassword
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.egtourguide.R
+import com.egtourguide.auth.domain.validation.ValidationCases
 import com.egtourguide.auth.presentation.components.AuthHeader
 import com.egtourguide.core.presentation.components.MainButton
 import com.egtourguide.core.presentation.components.MainTextField
@@ -42,11 +44,21 @@ fun ResetPasswordScreen(
         uiState = uiState,
         onPasswordChanged = viewModel::onPasswordChanged,
         onConfirmPasswordChanged = viewModel::onConfirmPasswordChanged,
-        onResetPasswordClicked = { viewModel.onResetClicked(context = context, code = code) }
+        onResetPasswordClicked = { viewModel.onResetClicked(code = code) }
     )
 
     LaunchedEffect(key1 = uiState.isPasswordResetSuccess) {
-        if (uiState.isPasswordResetSuccess) onNavigateToLogin()
+        if (uiState.isPasswordResetSuccess) {
+            onNavigateToLogin()
+            viewModel.clearSuccess()
+        }
+    }
+
+    LaunchedEffect(key1 = uiState.error) {
+        uiState.error?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            viewModel.clearError()
+        }
     }
 }
 
@@ -75,8 +87,8 @@ private fun ResetPasswordScreenContent(
 
         ResetPasswordDataSection(
             password = uiState.password,
-            confirmPassword = uiState.confirmPassword,
             passwordError = uiState.passwordError,
+            confirmPassword = uiState.confirmPassword,
             confirmPasswordError = uiState.confirmPasswordError,
             onPasswordChanged = onPasswordChanged,
             onConfirmPasswordChanged = onConfirmPasswordChanged,
@@ -94,9 +106,9 @@ private fun ResetPasswordScreenContent(
 @Composable
 private fun ResetPasswordDataSection(
     password: String,
+    passwordError: ValidationCases,
     confirmPassword: String,
-    passwordError: String?,
-    confirmPasswordError: String?,
+    confirmPasswordError: ValidationCases,
     onPasswordChanged: (String) -> Unit,
     onConfirmPasswordChanged: (String) -> Unit,
     focusManager: FocusManager
@@ -109,7 +121,11 @@ private fun ResetPasswordDataSection(
         placeholderText = stringResource(id = R.string.password),
         imeAction = ImeAction.Next,
         isPassword = true,
-        errorText = passwordError,
+        errorText = when (passwordError) {
+            ValidationCases.EMPTY -> stringResource(id = R.string.password_empty_error)
+            ValidationCases.ERROR -> stringResource(id = R.string.password_form_error)
+            else -> null
+        },
         keyboardActions = KeyboardActions(
             onDone = {
                 focusManager.clearFocus()
@@ -125,7 +141,11 @@ private fun ResetPasswordDataSection(
         placeholderText = stringResource(id = R.string.confirm_password),
         imeAction = ImeAction.Done,
         isPassword = true,
-        errorText = confirmPasswordError,
+        errorText = when (confirmPasswordError) {
+            ValidationCases.EMPTY -> stringResource(id = R.string.confirm_password_empty_error)
+            ValidationCases.NOT_MATCHED -> stringResource(id = R.string.confirm_password_not_matched_error)
+            else -> null
+        },
         keyboardActions = KeyboardActions(
             onDone = {
                 focusManager.clearFocus()

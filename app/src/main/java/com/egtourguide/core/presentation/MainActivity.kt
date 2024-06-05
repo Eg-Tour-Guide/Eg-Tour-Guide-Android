@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import com.egtourguide.core.domain.usecases.GetFromDataStoreUseCase
@@ -11,6 +12,9 @@ import com.egtourguide.core.presentation.navigation.AppNavigation
 import com.egtourguide.core.presentation.navigation.AppScreen
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 import com.egtourguide.core.utils.DataStoreKeys.IS_LOGGED_KEY
+import com.egtourguide.home.presentation.screens.home.HomeScreen
+import com.egtourguide.home.presentation.screens.home.HomeViewModel
+import com.egtourguide.home.presentation.screens.landmarks_artifacts.LandmarksArtifactsScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -40,10 +44,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             EGTourGuideTheme {
                 val navController = rememberNavController()
-                AppNavigation(
+                /*AppNavigation(
                     navController = navController,
                     startDestination = getStartDestination()
-                )
+                )*/
+                HomeScreen()
             }
         }
     }

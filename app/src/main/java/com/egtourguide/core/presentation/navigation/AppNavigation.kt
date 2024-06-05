@@ -139,7 +139,7 @@ fun AppNavigation(
         // TODO: Change to home screen!!
         composable(route = AppScreen.Home.route) {
             HomeScreen(
-                onNavigateToExpandedLandMark = { landmarkId ->
+               /* onNavigateToExpandedLandMark = { landmarkId ->
                     navController.navigate(
                         route = AppScreen.Expanded.route
                             .replace("{id}", landmarkId)
@@ -152,7 +152,7 @@ fun AppNavigation(
                             .replace("{id}", artifactId)
                             .replace("{isLandmark}", "false")
                     )
-                },
+                },*/
             )
         }
 

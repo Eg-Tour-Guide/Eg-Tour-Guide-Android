@@ -29,6 +29,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
@@ -111,4 +112,7 @@ dependencies {
 
     // Constraint Layout
     implementation (libs.androidx.constraintlayout.compose)
+
+    //Pager
+    implementation (libs.pager)
 }
