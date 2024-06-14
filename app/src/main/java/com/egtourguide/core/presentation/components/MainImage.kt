@@ -11,6 +11,7 @@ import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.egtourguide.R
+import com.egtourguide.core.utils.Constants.BASE_URL
 import kotlinx.coroutines.Dispatchers
 
 // TODO: Change default images!!
@@ -30,7 +31,7 @@ fun MainImage(
     ) {
         AsyncImage(
             model = ImageRequest.Builder(context)
-                .data(data)
+                .data(BASE_URL + data)
                 .crossfade(enable = true)
                 .memoryCachePolicy(CachePolicy.ENABLED)
                 .networkCachePolicy(CachePolicy.ENABLED)

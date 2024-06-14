@@ -1,6 +1,7 @@
 package com.egtourguide.home.presentation.screens.home
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -27,23 +28,31 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import com.egtourguide.R
 import com.egtourguide.core.presentation.components.MainImage
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
+import com.egtourguide.home.domain.model.Event
 import com.egtourguide.home.domain.model.Place
 import com.egtourguide.home.presentation.components.PlaceItem
 import com.egtourguide.home.presentation.components.ScreenHeader
@@ -57,9 +66,20 @@ fun HomeScreen(
     onNavigateToNotification: () -> Unit = {},
     onNavigateToSinglePlace: (Place) -> Unit = {},
     onNavigateToSingleCategory: (Section) -> Unit = {},
-    onNavigateToEvent: (String) -> Unit = {}
+    onNavigateToEvent: (Event) -> Unit = {}
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val context = LocalContext.current
+
     HomeScreenContent(
+        events = uiState.events,
+        suggestedPlaces = uiState.suggestedPlaces,
+        topRatedPlaces = uiState.topRatedPlaces,
+        explorePlaces = uiState.explorePlaces,
+        recentlyAddedPlaces = uiState.recentlyAddedPlaces,
+        mightLikePlaces = uiState.mightLikePlaces,
+        recentlyViewedPlaces = uiState.recentlyViewedPlaces,
         onSearchClicked = onNavigateToSearch,
         onNotificationClicked = onNavigateToNotification,
         onPlaceClicked = onNavigateToSinglePlace,
@@ -67,64 +87,49 @@ fun HomeScreen(
         onEventClicked = onNavigateToEvent,
         onSaveClicked = viewModel::onSaveClicked
     )
+
+    DisposableEffect(key1 = lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_CREATE) {
+                viewModel.getHome()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
+    LaunchedEffect(key1 = uiState.isSaveSuccess, key2 = uiState.saveError) {
+        val successMsg = if (uiState.isSave) "Place Saved Successfully" else "Place Unsaved Successfully"
+        if (uiState.isSaveSuccess) {
+            Toast.makeText(context, successMsg, Toast.LENGTH_SHORT).show()
+            viewModel.clearSaveSuccess()
+        } else if (uiState.saveError != null) {
+            Toast.makeText(context, "There are a problem in saving the place, try again later", Toast.LENGTH_SHORT).show()
+            viewModel.clearSaveSuccess()
+        }
+    }
+
 }
 
 @Composable
 private fun HomeScreenContent(
+    events: List<Event> = emptyList(),
+    suggestedPlaces: List<Place> = emptyList(),
+    topRatedPlaces: List<Place> = emptyList(),
+    explorePlaces: List<Place> = emptyList(),
+    recentlyAddedPlaces: List<Place> = emptyList(),
+    mightLikePlaces: List<Place> = emptyList(),
+    recentlyViewedPlaces: List<Place> = emptyList(),
     onSearchClicked: () -> Unit = {},
     onNotificationClicked: () -> Unit = {},
-    onEventClicked: (String) -> Unit = {},
+    onEventClicked: (Event) -> Unit = {},
     onPlaceClicked: (Place) -> Unit = {},
     onSaveClicked: (Place) -> Unit = {},
     onMoreClicked: (Section) -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
-
-    //TODO Remove temp data
-    val eventsList = listOf(
-        "https://buffer.com/library/content/images/2023/10/free-images.jpg",
-        "https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg",
-        "https://www.shutterstock.com/image-photo/damietta-city-north-egypt-600nw-693231082.jpg",
-        "https://media.gettyimages.com/id/599332966/photo/fishing-boats-at-damietta.jpg?s=612x612&w=gi&k=20&c=2bcrZaQYQjQt9wH_4iU1IKdprAY81f-FRS9hn-lz5L4="
-    )
-    val places = listOf(
-        Place(
-            id = "",
-            name = "Pyramids",
-            image = "https://www.worldhistory.org/uploads/images/5687.jpg",
-            location = "Giza",
-            isSaved = false,
-            rating = 4.576f,
-            ratingCount = 72
-        ),
-        Place(
-            id = "",
-            name = "Pyramids",
-            image = "https://www.worldhistory.org/uploads/images/5687.jpg",
-            location = "Giza",
-            isSaved = false,
-            rating = 4.576f,
-            ratingCount = 72
-        ),
-        Place(
-            id = "",
-            name = "Pyramids",
-            image = "https://www.worldhistory.org/uploads/images/5687.jpg",
-            location = "Giza",
-            isSaved = false,
-            rating = 4.576f,
-            ratingCount = 72
-        ),
-        Place(
-            id = "",
-            name = "Pyramids",
-            image = "https://www.worldhistory.org/uploads/images/5687.jpg",
-            location = "Giza",
-            isSaved = false,
-            rating = 4.576f,
-            ratingCount = 72
-        )
-    )
 
     Column(
         Modifier
@@ -141,7 +146,7 @@ private fun HomeScreenContent(
             onSearchClicked = onSearchClicked
         )
         UpcomingEventsSection(
-            events = eventsList,
+            events = events,
             onEventClicked = onEventClicked
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -149,7 +154,7 @@ private fun HomeScreenContent(
         //Suggested Places
         HomeSection(
             sectionTitle = stringResource(id = R.string.suggested_for_you),
-            sectionPlaces = places,
+            sectionPlaces = suggestedPlaces,
             onPlaceClicked = onPlaceClicked,
             onSaveClicked = onSaveClicked
         )
@@ -158,7 +163,7 @@ private fun HomeScreenContent(
         //Top Rated Places
         HomeSection(
             sectionTitle = stringResource(id = R.string.top_rated_places),
-            sectionPlaces = places,
+            sectionPlaces = topRatedPlaces,
             onPlaceClicked = onPlaceClicked,
             onSaveClicked = onSaveClicked
         )
@@ -167,7 +172,7 @@ private fun HomeScreenContent(
         //LandMarks
         HomeSection(
             sectionTitle = stringResource(R.string.explore_egypt_s_landmarks),
-            sectionPlaces = places,
+            sectionPlaces = explorePlaces,
             onPlaceClicked = onPlaceClicked,
             isMore = true,
             onMoreClicked = { onMoreClicked(Section.LandMarks) },
@@ -178,7 +183,7 @@ private fun HomeScreenContent(
         //Recently Added
         HomeSection(
             sectionTitle = stringResource(R.string.recently_added),
-            sectionPlaces = places,
+            sectionPlaces = recentlyAddedPlaces,
             onPlaceClicked = onPlaceClicked,
             onSaveClicked = onSaveClicked
         )
@@ -187,7 +192,7 @@ private fun HomeScreenContent(
         //Might Like Places
         HomeSection(
             sectionTitle = stringResource(R.string.you_might_also_like),
-            sectionPlaces = places,
+            sectionPlaces = mightLikePlaces,
             isMore = true,
             onPlaceClicked = onPlaceClicked,
             onMoreClicked = { onMoreClicked(Section.MightLike) },
@@ -198,7 +203,7 @@ private fun HomeScreenContent(
         //Recently Viewed
         HomeSection(
             sectionTitle = stringResource(R.string.recently_viewed),
-            sectionPlaces = places,
+            sectionPlaces = recentlyViewedPlaces,
             onPlaceClicked = onPlaceClicked,
             onSaveClicked = onSaveClicked
         )
@@ -207,12 +212,11 @@ private fun HomeScreenContent(
 }
 
 
-//TODO Replace string with actual event data class
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun UpcomingEventsSection(
-    events: List<String>,
-    onEventClicked: (String) -> Unit
+    events: List<Event>,
+    onEventClicked: (Event) -> Unit
 ) {
     Column(
         Modifier
@@ -221,28 +225,21 @@ private fun UpcomingEventsSection(
     ) {
         val pagerState = rememberPagerState(pageCount = { events.size })
         var currentPage by remember { mutableIntStateOf(0) }
-        var contentPaddingValues by remember { mutableStateOf(PaddingValues(end = 30.dp)) }
 
-
-        LaunchedEffect(key1 = currentPage) {
-            pagerState.animateScrollToPage(currentPage)
-            delay(5000)
-            if (currentPage + 1 > events.size - 1) {
-                currentPage = 0
-            } else {
-                if(currentPage != pagerState.currentPage){
-                    currentPage = pagerState.currentPage+1
-                }else{
-                    currentPage += 1
+        if (events.isNotEmpty()) {
+            LaunchedEffect(key1 = currentPage) {
+                pagerState.animateScrollToPage(currentPage)
+                delay(5000)
+                if (currentPage + 1 > events.size - 1) {
+                    currentPage = 0
+                } else {
+                    if (currentPage != pagerState.currentPage) {
+                        currentPage = pagerState.currentPage
+                    } else {
+                        currentPage += 1
+                    }
                 }
             }
-        }
-
-        Log.d("```TAG```", "cp: $currentPage")
-        contentPaddingValues = when (currentPage) {
-            0 -> PaddingValues(end = 30.dp)
-            events.size - 1 -> PaddingValues(start = 30.dp)
-            else -> PaddingValues(start = 30.dp, end = 30.dp)
         }
 
         Text(
@@ -254,13 +251,7 @@ private fun UpcomingEventsSection(
         Spacer(modifier = Modifier.height(8.dp))
 
         HorizontalPager(
-            state = pagerState,
-            pageSpacing = (-20).dp,
-            /*contentPadding = PaddingValues(
-                start = if (currentPage != 0) 30.dp else 0.dp,
-                end = if (currentPage != events.size - 1) 30.dp else 0.dp
-            )*/
-            contentPadding = contentPaddingValues,
+            state = pagerState
         ) { pos ->
             val imageScale = animateFloatAsState(
                 targetValue = if (pos == pagerState.currentPage) 1f else 0.75f,
@@ -282,7 +273,7 @@ private fun UpcomingEventsSection(
                     ) {
                         onEventClicked(events[pos])
                     },
-                data = events[pos],
+                data = "placeImages/${events[pos].images.firstOrNull()}"
             )
         }
     }
@@ -304,7 +295,8 @@ private fun HomeSection(
     ) {
         Row(
             Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 modifier = Modifier.fillMaxWidth(0.85f),
