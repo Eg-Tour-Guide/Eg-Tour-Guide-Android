@@ -1,5 +1,6 @@
 package com.egtourguide.home.presentation.screens.home
 
+import android.annotation.SuppressLint
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.core.animateFloatAsState
@@ -7,11 +8,8 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsDraggedAsState
-import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,6 +24,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -33,10 +32,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,11 +51,14 @@ import com.egtourguide.core.presentation.components.MainImage
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 import com.egtourguide.home.domain.model.Event
 import com.egtourguide.home.domain.model.Place
+import com.egtourguide.home.presentation.components.BottomBar
+import com.egtourguide.home.presentation.components.BottomBarScreens
 import com.egtourguide.home.presentation.components.PlaceItem
 import com.egtourguide.home.presentation.components.ScreenHeader
 import kotlinx.coroutines.delay
 
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
@@ -66,27 +66,48 @@ fun HomeScreen(
     onNavigateToNotification: () -> Unit = {},
     onNavigateToSinglePlace: (Place) -> Unit = {},
     onNavigateToSingleCategory: (Section) -> Unit = {},
-    onNavigateToEvent: (Event) -> Unit = {}
+    onNavigateToEvent: (Event) -> Unit = {},
+    onNavigateToTours: () -> Unit = {},
+    onNavigateToLandmarks: () -> Unit = {},
+    onNavigateToArtifacts: () -> Unit = {},
+    onNavigateToUser: () -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
 
-    HomeScreenContent(
-        events = uiState.events,
-        suggestedPlaces = uiState.suggestedPlaces,
-        topRatedPlaces = uiState.topRatedPlaces,
-        explorePlaces = uiState.explorePlaces,
-        recentlyAddedPlaces = uiState.recentlyAddedPlaces,
-        mightLikePlaces = uiState.mightLikePlaces,
-        recentlyViewedPlaces = uiState.recentlyViewedPlaces,
-        onSearchClicked = onNavigateToSearch,
-        onNotificationClicked = onNavigateToNotification,
-        onPlaceClicked = onNavigateToSinglePlace,
-        onMoreClicked = onNavigateToSingleCategory,
-        onEventClicked = onNavigateToEvent,
-        onSaveClicked = viewModel::onSaveClicked
-    )
+    Scaffold(
+        bottomBar = {
+            BottomBar(
+                selectedScreen = BottomBarScreens.Home
+            ) { selectedScreen ->
+                Log.d("```TAG```", "HomeScreen: $selectedScreen")
+                when (selectedScreen) {
+                    BottomBarScreens.Home -> {}
+                    BottomBarScreens.Tours -> onNavigateToTours()
+                    BottomBarScreens.Landmarks -> onNavigateToLandmarks()
+                    BottomBarScreens.Artifacts -> onNavigateToArtifacts()
+                    BottomBarScreens.User -> onNavigateToUser()
+                }
+            }
+        }
+    ) {
+        HomeScreenContent(
+            events = uiState.events,
+            suggestedPlaces = uiState.suggestedPlaces,
+            topRatedPlaces = uiState.topRatedPlaces,
+            explorePlaces = uiState.explorePlaces,
+            recentlyAddedPlaces = uiState.recentlyAddedPlaces,
+            mightLikePlaces = uiState.mightLikePlaces,
+            recentlyViewedPlaces = uiState.recentlyViewedPlaces,
+            onSearchClicked = onNavigateToSearch,
+            onNotificationClicked = onNavigateToNotification,
+            onPlaceClicked = onNavigateToSinglePlace,
+            onMoreClicked = onNavigateToSingleCategory,
+            onEventClicked = onNavigateToEvent,
+            onSaveClicked = viewModel::onSaveClicked
+        )
+    }
 
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -101,12 +122,17 @@ fun HomeScreen(
     }
 
     LaunchedEffect(key1 = uiState.isSaveSuccess, key2 = uiState.saveError) {
-        val successMsg = if (uiState.isSave) "Place Saved Successfully" else "Place Unsaved Successfully"
+        val successMsg =
+            if (uiState.isSave) "Place Saved Successfully" else "Place Unsaved Successfully"
         if (uiState.isSaveSuccess) {
             Toast.makeText(context, successMsg, Toast.LENGTH_SHORT).show()
             viewModel.clearSaveSuccess()
         } else if (uiState.saveError != null) {
-            Toast.makeText(context, "There are a problem in saving the place, try again later", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                "There are a problem in saving the place, try again later",
+                Toast.LENGTH_SHORT
+            ).show()
             viewModel.clearSaveSuccess()
         }
     }
@@ -133,6 +159,7 @@ private fun HomeScreenContent(
 
     Column(
         Modifier
+            .padding(bottom = 60.dp)
             .fillMaxSize()
             .background(color = MaterialTheme.colorScheme.background)
             .verticalScroll(state = scrollState)

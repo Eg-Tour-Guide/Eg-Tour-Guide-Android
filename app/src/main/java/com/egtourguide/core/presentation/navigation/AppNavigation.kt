@@ -142,9 +142,9 @@ fun AppNavigation(
         // TODO: Change to home screen!!
         composable(route = AppScreen.Home.route) {
             HomeScreen(
-               onNavigateToSearch = {
+                onNavigateToSearch = {
 
-               },
+                },
                 onNavigateToNotification = {
 
                 },
@@ -155,6 +155,22 @@ fun AppNavigation(
 
                 },
                 onNavigateToSingleCategory = {
+
+                },
+                onNavigateToTours = {
+
+                },
+                onNavigateToLandmarks = {
+                    navController.navigate(route = AppScreen.LandmarksList.route){
+                        popUpTo(route = AppScreen.Home.route)
+                    }
+                },
+                onNavigateToArtifacts = {
+                    navController.navigate(route = AppScreen.ArtifactsList.route){
+                        popUpTo(route = AppScreen.Home.route)
+                    }
+                },
+                onNavigateToUser = {
 
                 }
             )
@@ -177,7 +193,7 @@ fun AppNavigation(
             )
         }
 
-        composable(route = AppScreen.LandmarksList.route){
+        composable(route = AppScreen.LandmarksList.route) {
             LandmarksListScreen(
                 onNavigateToNotification = {
 
@@ -190,11 +206,25 @@ fun AppNavigation(
                 },
                 onNavigateToSinglePlace = {
 
+                },
+                onNavigateToHome = {
+                    navController.navigateUp()
+                },
+                onNavigateToTours = {
+
+                },
+                onNavigateToArtifacts = {
+                    navController.navigate(route = AppScreen.ArtifactsList.route){
+                        popUpTo(route = AppScreen.Home.route)
+                    }
+                },
+                onNavigateToUser = {
+
                 }
             )
         }
 
-        composable(route = AppScreen.ArtifactsList.route){
+        composable(route = AppScreen.ArtifactsList.route) {
             ArtifactsListScreen(
                 onNavigateToNotification = {
 
@@ -206,6 +236,20 @@ fun AppNavigation(
 
                 },
                 onNavigateToSingleArtifact = {
+
+                },
+                onNavigateToHome = {
+                    navController.navigateUp()
+                },
+                onNavigateToTours = {
+
+                },
+                onNavigateToLandmarks = {
+                    navController.navigate(route = AppScreen.LandmarksList.route){
+                        popUpTo(route = AppScreen.Home.route)
+                    }
+                },
+                onNavigateToUser = {
 
                 }
             )

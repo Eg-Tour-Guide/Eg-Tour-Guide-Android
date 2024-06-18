@@ -1,5 +1,6 @@
 package com.egtourguide.home.presentation.screens.landmarks_list
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,6 +18,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -37,29 +39,51 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.egtourguide.R
 import com.egtourguide.home.domain.model.Place
+import com.egtourguide.home.presentation.components.BottomBar
+import com.egtourguide.home.presentation.components.BottomBarScreens
 import com.egtourguide.home.presentation.components.PlaceItem
 import com.egtourguide.home.presentation.components.ScreenHeader
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun LandmarksListScreen(
     viewModel: LandmarksListViewModel = hiltViewModel(),
     onNavigateToSearch: () -> Unit = {},
     onNavigateToNotification: () -> Unit = {},
     onNavigateToFilters: () -> Unit = {},
-    onNavigateToSinglePlace: (Place) -> Unit = {}
+    onNavigateToSinglePlace: (Place) -> Unit = {},
+    onNavigateToTours: () -> Unit = {},
+    onNavigateToHome: () -> Unit = {},
+    onNavigateToArtifacts: () -> Unit = {},
+    onNavigateToUser: () -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
-
-    LandmarksListScreenContent(
-        places = uiState.landmarks,
-        onSearchClicked = onNavigateToSearch,
-        onNotificationClicked = onNavigateToNotification,
-        onFilterClicked = onNavigateToFilters,
-        onPlaceClicked = onNavigateToSinglePlace,
-        onSaveClicked = viewModel::onSaveClicked
-    )
+    Scaffold(
+        bottomBar = {
+            BottomBar(
+                selectedScreen = BottomBarScreens.Landmarks
+            ) { selectedScreen ->
+                when (selectedScreen) {
+                    BottomBarScreens.Home -> onNavigateToHome()
+                    BottomBarScreens.Tours -> onNavigateToTours()
+                    BottomBarScreens.Landmarks -> {}
+                    BottomBarScreens.Artifacts -> onNavigateToArtifacts()
+                    BottomBarScreens.User -> onNavigateToUser()
+                }
+            }
+        }
+    ) {
+        LandmarksListScreenContent(
+            places = uiState.landmarks,
+            onSearchClicked = onNavigateToSearch,
+            onNotificationClicked = onNavigateToNotification,
+            onFilterClicked = onNavigateToFilters,
+            onPlaceClicked = onNavigateToSinglePlace,
+            onSaveClicked = viewModel::onSaveClicked
+        )
+    }
 
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -96,6 +120,7 @@ fun LandmarksListScreenContent(
 ) {
     Column(
         Modifier
+            .padding(bottom = 60.dp)
             .fillMaxSize()
             .background(color = MaterialTheme.colorScheme.background)
     ) {
