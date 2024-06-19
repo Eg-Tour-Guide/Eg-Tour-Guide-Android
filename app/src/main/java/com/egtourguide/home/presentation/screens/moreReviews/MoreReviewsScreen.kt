@@ -36,15 +36,17 @@ private fun MoreReviewsScreenPreview() {
             uiState = MoreReviewsScreenState(
                 reviews = listOf(
                     Review(
+                        id = "",
                         authorName = "Abdo Sharaf",
                         authorImage = "",
-                        rating = 3.5,
+                        rating = 3,
                         description = getLoremString(words = 20)
                     ),
                     Review(
+                        id = "",
                         authorName = "Abdo Sharaf",
                         authorImage = "",
-                        rating = 3.5,
+                        rating = 3,
                         description = getLoremString(words = 20)
                     ),
                 )

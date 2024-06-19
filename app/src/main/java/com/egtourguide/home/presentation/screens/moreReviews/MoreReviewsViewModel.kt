@@ -22,45 +22,52 @@ class MoreReviewsViewModel @Inject constructor() : ViewModel() {
                 reviewsAverage = 4.5,
                 reviews = listOf(
                     Review(
+                        id = "",
                         authorName = "Abdo Sharaf",
                         authorImage = "",
-                        rating = 3.5,
+                        rating = 3,
                         description = getLoremString(words = 20)
                     ),
                     Review(
+                        id = "",
                         authorName = "Abdo Sharaf",
                         authorImage = "",
-                        rating = 3.5,
+                        rating = 3,
                         description = getLoremString(words = 20)
                     ),
                     Review(
+                        id = "",
                         authorName = "Abdo Sharaf",
                         authorImage = "",
-                        rating = 3.5,
+                        rating = 3,
                         description = getLoremString(words = 20)
                     ),
                     Review(
+                        id = "",
                         authorName = "Abdo Sharaf",
                         authorImage = "",
-                        rating = 3.5,
+                        rating = 3,
                         description = getLoremString(words = 20)
                     ),
                     Review(
+                        id = "",
                         authorName = "Abdo Sharaf",
                         authorImage = "",
-                        rating = 3.5,
+                        rating = 3,
                         description = getLoremString(words = 20)
                     ),
                     Review(
+                        id = "",
                         authorName = "Abdo Sharaf",
                         authorImage = "",
-                        rating = 3.5,
+                        rating = 3,
                         description = getLoremString(words = 20)
                     ),
                     Review(
+                        id = "",
                         authorName = "Abdo Sharaf",
                         authorImage = "",
-                        rating = 3.5,
+                        rating = 3,
                         description = getLoremString(words = 20)
                     )
                 )

@@ -3,18 +3,23 @@ package com.egtourguide.home.data
 import com.egtourguide.home.data.dto.response.ArtifactsListDto
 import com.egtourguide.home.data.dto.response.HomeDto
 import com.egtourguide.home.data.dto.response.LandmarksListDto
+import com.egtourguide.home.data.dto.response.SingleArtifactDto
+import com.egtourguide.home.data.dto.response.SingleLandmarkDto
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface HomeApi {
 
-    // TODO: Change these!!
-    @GET("")
-    suspend fun getLandmark(): String
+    @GET("landmark/{landmarkID}")
+    suspend fun getLandmark(
+        @Path("landmarkID") landmarkID: String
+    ): SingleLandmarkDto
 
-    @GET("")
-    suspend fun getArtifact(): String
+    @GET("artifac/{artifactID}")
+    suspend fun getArtifact(
+        @Path("artifactID") artifactID: String
+    ): SingleArtifactDto
 
     @GET("home")
     suspend fun getHome(): HomeDto
