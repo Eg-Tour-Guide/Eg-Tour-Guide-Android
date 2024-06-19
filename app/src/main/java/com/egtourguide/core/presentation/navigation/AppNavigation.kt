@@ -10,8 +10,10 @@ import com.egtourguide.auth.presentation.otp.OtpScreen
 import com.egtourguide.auth.presentation.resetPassword.ResetPasswordScreen
 import com.egtourguide.auth.presentation.signup.SignUpScreen
 import com.egtourguide.auth.presentation.welcome.WelcomeScreen
+import com.egtourguide.home.presentation.screens.artifacts_list.ArtifactsListScreen
 import com.egtourguide.home.presentation.screens.expanded.ExpandedScreenRoot
 import com.egtourguide.home.presentation.screens.home.HomeScreen
+import com.egtourguide.home.presentation.screens.landmarks_list.LandmarksListScreen
 import com.egtourguide.home.presentation.screens.moreReviews.MoreReviewsScreenRoot
 import com.egtourguide.home.presentation.screens.review.ReviewScreen
 
@@ -140,20 +142,37 @@ fun AppNavigation(
         // TODO: Change to home screen!!
         composable(route = AppScreen.Home.route) {
             HomeScreen(
-               /* onNavigateToExpandedLandMark = { landmarkId ->
-                    navController.navigate(
-                        route = AppScreen.Expanded.route
-                            .replace("{id}", landmarkId)
-                            .replace("{isLandmark}", "true")
-                    )
+                onNavigateToSearch = {
+
                 },
-                onNavigateToExpandedArtifact = { artifactId ->
-                    navController.navigate(
-                        route = AppScreen.Expanded.route
-                            .replace("{id}", artifactId)
-                            .replace("{isLandmark}", "false")
-                    )
-                },*/
+                onNavigateToNotification = {
+
+                },
+                onNavigateToSinglePlace = {
+
+                },
+                onNavigateToEvent = {
+
+                },
+                onNavigateToSingleCategory = {
+
+                },
+                onNavigateToTours = {
+
+                },
+                onNavigateToLandmarks = {
+                    navController.navigate(route = AppScreen.LandmarksList.route){
+                        popUpTo(route = AppScreen.Home.route)
+                    }
+                },
+                onNavigateToArtifacts = {
+                    navController.navigate(route = AppScreen.ArtifactsList.route){
+                        popUpTo(route = AppScreen.Home.route)
+                    }
+                },
+                onNavigateToUser = {
+
+                }
             )
         }
 
@@ -170,6 +189,68 @@ fun AppNavigation(
                 },
                 onReviewClicked = {
                     navController.navigate(route = AppScreen.Review.route)
+                }
+            )
+        }
+
+        composable(route = AppScreen.LandmarksList.route) {
+            LandmarksListScreen(
+                onNavigateToNotification = {
+
+                },
+                onNavigateToSearch = {
+
+                },
+                onNavigateToFilters = {
+
+                },
+                onNavigateToSinglePlace = {
+
+                },
+                onNavigateToHome = {
+                    navController.navigateUp()
+                },
+                onNavigateToTours = {
+
+                },
+                onNavigateToArtifacts = {
+                    navController.navigate(route = AppScreen.ArtifactsList.route){
+                        popUpTo(route = AppScreen.Home.route)
+                    }
+                },
+                onNavigateToUser = {
+
+                }
+            )
+        }
+
+        composable(route = AppScreen.ArtifactsList.route) {
+            ArtifactsListScreen(
+                onNavigateToNotification = {
+
+                },
+                onNavigateToSearch = {
+
+                },
+                onNavigateToFilters = {
+
+                },
+                onNavigateToSingleArtifact = {
+
+                },
+                onNavigateToHome = {
+                    navController.navigateUp()
+                },
+                onNavigateToTours = {
+
+                },
+                onNavigateToLandmarks = {
+                    navController.navigate(route = AppScreen.LandmarksList.route){
+                        popUpTo(route = AppScreen.Home.route)
+                    }
+                },
+                onNavigateToUser = {
+
                 }
             )
         }
