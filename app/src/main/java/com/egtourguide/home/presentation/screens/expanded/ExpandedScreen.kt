@@ -48,6 +48,7 @@ import com.egtourguide.R
 import com.egtourguide.core.presentation.components.LoadingProgress
 import com.egtourguide.core.presentation.components.MainButton
 import com.egtourguide.core.presentation.components.MainImage
+import com.egtourguide.core.presentation.components.MapItem
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 import com.egtourguide.core.utils.getLoremString
 import com.egtourguide.home.domain.model.Review
@@ -177,6 +178,9 @@ private fun ExpandedScreen(
                 )
 
                 LocationSection(
+                    title = uiState.title,
+                    latitude = uiState.latitute,
+                    longitude = uiState.longitude,
                     modifier = Modifier.padding(top = 24.dp, start = 16.dp, end = 16.dp)
                 )
 
@@ -467,7 +471,9 @@ private fun DescriptionSection(
 
 @Composable
 private fun LocationSection(
-//    lat lng,
+    title: String,
+    latitude: Double,
+    longitude: Double,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -479,14 +485,15 @@ private fun LocationSection(
             color = MaterialTheme.colorScheme.onBackground
         )
 
-        // TODO: Replace with a static map!!
-        Spacer(
+        MapItem(
+            title = title,
+            latitude = latitude,
+            longitude = longitude,
             modifier = Modifier
                 .padding(top = 8.dp)
                 .fillMaxWidth()
                 .height(125.dp)
                 .clip(RoundedCornerShape(16.dp))
-                .background(MaterialTheme.colorScheme.onBackground)
         )
     }
 }

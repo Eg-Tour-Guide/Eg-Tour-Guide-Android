@@ -21,5 +21,7 @@ data class ExpandedScreenState(
     val isLandmark: Boolean = true,
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
-    val callIsSent: Boolean = false
+    val callIsSent: Boolean = false,
+    val latitute: Double = 0.0,
+    val longitude: Double = 0.0
 )
