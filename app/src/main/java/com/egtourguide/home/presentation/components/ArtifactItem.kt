@@ -1,6 +1,5 @@
 package com.egtourguide.home.presentation.components
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -27,28 +26,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.egtourguide.R
 import com.egtourguide.core.presentation.components.MainImage
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
-import com.egtourguide.core.utils.Constants.BASE_URL
-import com.egtourguide.home.domain.model.Place
+import com.egtourguide.home.domain.model.AbstractedArtifact
 
 @Composable
-fun PlaceItem(
-    place: Place,
-    onPlaceClicked: (Place) -> Unit,
-    onSaveClicked: (Place) -> Unit
+fun ArtifactItem(
+    artifact: AbstractedArtifact,
+    onArtifactClicked: (AbstractedArtifact) -> Unit,
+    onSaveClicked: (AbstractedArtifact) -> Unit
 ) {
-    var isSaved by remember { mutableStateOf(place.isSaved) }
+    var isSaved by remember { mutableStateOf(artifact.isSaved) }
     Column(
         modifier = Modifier
             .width(144.dp)
-            .height(205.dp)
+            .height(190.dp)
             .background(
                 color = MaterialTheme.colorScheme.primaryContainer,
                 shape = RoundedCornerShape(12.dp)
@@ -58,19 +56,20 @@ fun PlaceItem(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null
             ) {
-                onPlaceClicked(place)
+                onArtifactClicked(artifact)
             }
     ) {
         MainImage(
             modifier = Modifier
                 .height(105.dp)
                 .clip(RoundedCornerShape(4.dp)),
-            data = "placeImages/${place.image}"
+            data = "artifacsImages/${artifact.image}",
+            contentScale = ContentScale.FillBounds
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             modifier = Modifier.height(36.dp),
-            text = place.name,
+            text = artifact.name,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.titleMedium,
@@ -92,7 +91,9 @@ fun PlaceItem(
                     contentDescription = "Location Icon"
                 )
                 Text(
-                    text = " ${place.location}",
+                    text = " ${artifact.museumName}",
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onBackground
                 )
@@ -101,7 +102,7 @@ fun PlaceItem(
                 modifier = Modifier.size(24.dp),
                 onClick = {
                     isSaved = !isSaved
-                    onSaveClicked(place)
+                    onSaveClicked(artifact)
                 }
             ) {
                 Icon(
@@ -110,45 +111,22 @@ fun PlaceItem(
                 )
             }
         }
-        Spacer(modifier = Modifier.height(4.dp))
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                modifier = Modifier.padding(end = 2.dp),
-                painter = painterResource(id = R.drawable.ic_rating_star),
-                tint = Color.Unspecified,
-                contentDescription = "Location Icon"
-            )
-            Text(
-                text = "%.2f".format(place.rating),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-            Text(
-                text = stringResource(R.string.reviews_count, place.ratingCount),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-        }
     }
 }
 
 @Preview
 @Composable
-private fun PlaceItemPreview() {
+private fun ArtifactItemPreview() {
     EGTourGuideTheme {
-        PlaceItem(
-            place = Place(
+        ArtifactItem(
+            artifact = AbstractedArtifact(
                 id = "",
                 name = "Pyramids",
                 image = "https://www.worldhistory.org/uploads/images/5687.jpg",
-                location = "Giza",
+                museumName = "Giza",
                 isSaved = false,
-                rating = 4.576f,
-                ratingCount = 72
             ),
-            onPlaceClicked = {},
+            onArtifactClicked = {},
             onSaveClicked = {},
         )
     }

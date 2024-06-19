@@ -1,5 +1,7 @@
-package com.egtourguide.home.presentation.screens.landmarks_artifacts
+package com.egtourguide.home.presentation.screens.landmarks_list
 
+import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -16,82 +18,99 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import com.egtourguide.R
 import com.egtourguide.home.domain.model.Place
+import com.egtourguide.home.presentation.components.BottomBar
+import com.egtourguide.home.presentation.components.BottomBarScreens
 import com.egtourguide.home.presentation.components.PlaceItem
 import com.egtourguide.home.presentation.components.ScreenHeader
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun LandmarksArtifactsScreen(
-    isLandmarks: Boolean = true,
-    viewModel: LandmarksArtifactsViewModel = hiltViewModel(),
+fun LandmarksListScreen(
+    viewModel: LandmarksListViewModel = hiltViewModel(),
     onNavigateToSearch: () -> Unit = {},
     onNavigateToNotification: () -> Unit = {},
     onNavigateToFilters: () -> Unit = {},
-    onNavigateToSinglePlace: (Place) -> Unit = {}
+    onNavigateToSinglePlace: (Place) -> Unit = {},
+    onNavigateToTours: () -> Unit = {},
+    onNavigateToHome: () -> Unit = {},
+    onNavigateToArtifacts: () -> Unit = {},
+    onNavigateToUser: () -> Unit = {},
 ) {
-    val places = listOf(
-        Place(
-            id = "",
-            name = "Pyramids",
-            image = "https://www.worldhistory.org/uploads/images/5687.jpg",
-            location = "Giza",
-            isSaved = false,
-            rating = 4.576f,
-            ratingCount = 72
-        ),
-        Place(
-            id = "",
-            name = "Pyramids",
-            image = "https://www.worldhistory.org/uploads/images/5687.jpg",
-            location = "Giza",
-            isSaved = false,
-            rating = 4.576f,
-            ratingCount = 72
-        ),
-        Place(
-            id = "",
-            name = "Pyramids",
-            image = "https://www.worldhistory.org/uploads/images/5687.jpg",
-            location = "Giza",
-            isSaved = false,
-            rating = 4.576f,
-            ratingCount = 72
-        ),
-        Place(
-            id = "",
-            name = "Pyramids",
-            image = "https://www.worldhistory.org/uploads/images/5687.jpg",
-            location = "Giza",
-            isSaved = false,
-            rating = 4.576f,
-            ratingCount = 72
+    val uiState by viewModel.uiState.collectAsState()
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val context = LocalContext.current
+    Scaffold(
+        bottomBar = {
+            BottomBar(
+                selectedScreen = BottomBarScreens.Landmarks
+            ) { selectedScreen ->
+                when (selectedScreen) {
+                    BottomBarScreens.Home -> onNavigateToHome()
+                    BottomBarScreens.Tours -> onNavigateToTours()
+                    BottomBarScreens.Landmarks -> {}
+                    BottomBarScreens.Artifacts -> onNavigateToArtifacts()
+                    BottomBarScreens.User -> onNavigateToUser()
+                }
+            }
+        }
+    ) {
+        LandmarksListScreenContent(
+            places = uiState.landmarks,
+            onSearchClicked = onNavigateToSearch,
+            onNotificationClicked = onNavigateToNotification,
+            onFilterClicked = onNavigateToFilters,
+            onPlaceClicked = onNavigateToSinglePlace,
+            onSaveClicked = viewModel::onSaveClicked
         )
-    )
-    LandmarksArtifactsScreenContent(
-        isLandMarks = isLandmarks,
-        places = places,
-        onSearchClicked = onNavigateToSearch,
-        onNotificationClicked = onNavigateToNotification,
-        onFilterClicked = onNavigateToFilters,
-        onPlaceClicked = onNavigateToSinglePlace,
-        onSaveClicked = viewModel::onSaveClicked
-    )
+    }
+
+    DisposableEffect(key1 = lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_CREATE) {
+                viewModel.getLandmarksList()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
+    LaunchedEffect(key1 = uiState.isSaveSuccess, key2 = uiState.saveError) {
+        val successMsg = if (uiState.isSave) "Place Saved Successfully" else "Place Unsaved Successfully"
+        if (uiState.isSaveSuccess) {
+            Toast.makeText(context, successMsg, Toast.LENGTH_SHORT).show()
+            viewModel.clearSaveSuccess()
+        } else if (uiState.saveError != null) {
+            Toast.makeText(context, "There are a problem in saving the place, try again later", Toast.LENGTH_SHORT).show()
+            viewModel.clearSaveError()
+        }
+    }
 }
 
 @Composable
-fun LandmarksArtifactsScreenContent(
-    isLandMarks: Boolean,
+fun LandmarksListScreenContent(
     places: List<Place>,
     onSearchClicked: () -> Unit,
     onNotificationClicked: () -> Unit,
@@ -101,6 +120,7 @@ fun LandmarksArtifactsScreenContent(
 ) {
     Column(
         Modifier
+            .padding(bottom = 60.dp)
             .fillMaxSize()
             .background(color = MaterialTheme.colorScheme.background)
     ) {
@@ -114,7 +134,6 @@ fun LandmarksArtifactsScreenContent(
         )
         Spacer(modifier = Modifier.height(18.dp))
         PlacesHeader(
-            isLandMarks = isLandMarks,
             placesCount = places.size,
             onFilterClicked = onFilterClicked
         )
@@ -129,7 +148,6 @@ fun LandmarksArtifactsScreenContent(
 
 @Composable
 private fun PlacesHeader(
-    isLandMarks: Boolean,
     placesCount: Int,
     onFilterClicked: () -> Unit
 ) {
@@ -141,7 +159,7 @@ private fun PlacesHeader(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "$placesCount ${if (isLandMarks) " Landmarks" else " Artifacts"}",
+            text = "$placesCount Landmarks",
             style = MaterialTheme.typography.displaySmall,
             color = MaterialTheme.colorScheme.onBackground
         )
@@ -185,6 +203,6 @@ private fun PlacesSection(
 
 @Preview
 @Composable
-private fun LandmarksArtifactsScreenPreview() {
-    LandmarksArtifactsScreen()
+private fun LandmarksScreenPreview() {
+    LandmarksListScreen()
 }

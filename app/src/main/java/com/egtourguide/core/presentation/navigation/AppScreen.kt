@@ -10,6 +10,8 @@ sealed class AppScreen(val route: String) {
     object ForgetPassword : AppScreen(route = ScreenRoutes.FORGET_PASSWORD_SCREEN_ROUTE)
     object ResetPassword : AppScreen(route = ScreenRoutes.RESET_PASSWORD_SCREEN_ROUTE)
     object Home : AppScreen(route = ScreenRoutes.HOME_SCREEN_ROUTE)
+    object LandmarksList:AppScreen(route = ScreenRoutes.LANDMARKS_LIST_SCREEN_ROUTE)
+    object ArtifactsList:AppScreen(route = ScreenRoutes.ARTIFACTS_LIST_SCREEN_ROUTE)
 
     // Home Screens
     object Expanded : AppScreen(route = ScreenRoutes.EXPANDED_SCREEN_ROUTE)
