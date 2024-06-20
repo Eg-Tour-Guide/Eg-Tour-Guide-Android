@@ -60,7 +60,9 @@ class ExpandedViewModel @Inject constructor(
                     tourismTypes = listOf("Adventure", "Historical"),
                     description = getLoremString(words = 50),
                     includedArtifacts = (1..10).toList(),
-                    relatedPlaces = (1..10).toList()
+                    relatedPlaces = (1..10).toList(),
+                    latitute = 29.9772961,
+                    longitude = 31.1276246
                 )
             }
         }

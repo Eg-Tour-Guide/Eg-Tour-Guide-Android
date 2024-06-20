@@ -115,4 +115,7 @@ dependencies {
 
     //Pager
     implementation (libs.pager)
+
+    // Google Maps
+    implementation(libs.maps.compose)
 }
