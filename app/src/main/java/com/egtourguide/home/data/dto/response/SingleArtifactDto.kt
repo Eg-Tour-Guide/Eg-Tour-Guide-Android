@@ -1,7 +1,7 @@
 package com.egtourguide.home.data.dto.response
 
+import com.egtourguide.home.domain.model.AbstractedArtifact
 import com.egtourguide.home.domain.model.Artifact
-import com.egtourguide.home.domain.model.Place
 
 data class SingleArtifactDto(
     val status: String,
@@ -14,8 +14,10 @@ data class SingleArtifactDto(
         images = artifac.images,
         description = artifac.description,
         museum = artifac.museum.name,
+        type = artifac.type,
+        material = artifac.material,
         saved = artifac.saved,
-        relatedArtifacts = relatedArtifacs.map { it.toPlace() },
+        relatedArtifacts = relatedArtifacs.map { it.toAbstractedArtifact() },
     )
 }
 
@@ -25,6 +27,8 @@ data class ArtifactDto(
     val museum: MuseumDto,
     val images: List<String>,
     val description: String,
+    val type: String,
+    val material: String,
     val saved: Boolean
 )
 
@@ -40,13 +44,11 @@ data class RelatedArtifact(
     val image: String,
     val saved: Boolean
 ) {
-    fun toPlace() = Place(
+    fun toAbstractedArtifact() = AbstractedArtifact(
         id = _id,
         name = name,
         image = image,
-        location = "Test",
         isSaved = saved,
-        rating = 4.5f,
-        ratingCount = 45
+        museumName = "" // TODO: Change this!!
     )
 }

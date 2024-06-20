@@ -55,7 +55,7 @@
     <string name="back">Back</string>
     <string name="go_to_search">Go To Search</string>
     <string name="go_to_notifications">Go To Notifications</string>
-    <string name="un_save">Un Save</string>
+    <string name="unsave">Unsave</string>
     <string name="save">Save</string>
     <string name="location">Location</string>
     <string name="reviews_average_total">%.1f (%d Reviews)</string>
@@ -83,4 +83,7 @@
     <string name="rating">Rating</string>
     <string name="write_review">Write your review (optional)</string>
     <string name="submit">Submit</string>
+    <string name="add_to_tour">Add to Tour</string>
+    <string name="saved_successfully">Saved Successfully</string>
+    <string name="unsaved_successfully">Unsaved Successfully</string>
 </resources>

@@ -4,6 +4,7 @@ import com.egtourguide.home.domain.model.Landmark
 import com.egtourguide.home.domain.model.Place
 import com.egtourguide.home.domain.model.Review
 
+// TODO: Add included artifacts!!
 data class SingleLandmarkDto(
     val status: String,
     val place: LandmarkDto,
@@ -19,6 +20,8 @@ data class SingleLandmarkDto(
         longitude = place.location.coordinates[1],
         type = place.type,
         saved = place.saved,
+        reviewsAverage = place.ratingAverage,
+        reviewsCount = place.ratingQuantity,
         reviews = place.reviews.map { it.toReview() },
         relatedPlaces = relatedPlaces.map { it.toPlace() }
 
@@ -34,6 +37,8 @@ data class LandmarkDto(
     val location: LocationDto,
     val type: String,
     val saved: Boolean,
+    val ratingAverage: Double,
+    val ratingQuantity: Int,
     val reviews: List<ReviewDto>
 )
 

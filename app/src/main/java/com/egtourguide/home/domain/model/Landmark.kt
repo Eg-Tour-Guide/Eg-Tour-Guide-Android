@@ -10,6 +10,8 @@ data class Landmark(
     val longitude: Double,
     val type: String,
     val saved: Boolean,
+    val reviewsAverage: Double,
+    val reviewsCount: Int,
     val reviews: List<Review>,
     val relatedPlaces: List<Place>
 )
