@@ -11,9 +11,6 @@ import com.egtourguide.core.presentation.navigation.AppNavigation
 import com.egtourguide.core.presentation.navigation.AppScreen
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 import com.egtourguide.core.utils.DataStoreKeys.IS_LOGGED_KEY
-import com.egtourguide.home.presentation.screens.artifacts_list.ArtifactsListScreen
-import com.egtourguide.home.presentation.screens.home.HomeScreen
-import com.egtourguide.home.presentation.screens.landmarks_list.LandmarksListScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -45,7 +42,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 AppNavigation(
                     navController = navController,
-                    startDestination = AppScreen.Home.route
+                    startDestination = getStartDestination()
                 )
             }
         }
