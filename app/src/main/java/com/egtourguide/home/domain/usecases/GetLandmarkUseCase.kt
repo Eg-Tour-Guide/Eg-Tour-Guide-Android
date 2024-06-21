@@ -5,8 +5,5 @@ import javax.inject.Inject
 
 class GetLandmarkUseCase @Inject constructor(private val repository: HomeRepository) {
 
-    suspend operator fun invoke(id: String) {
-        // TODO: Implement This!!
-        repository.getLandmark(id = id)
-    }
+    suspend operator fun invoke(id: String) = repository.getLandmark(id = id)
 }

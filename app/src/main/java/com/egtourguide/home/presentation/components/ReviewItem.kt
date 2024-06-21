@@ -33,9 +33,10 @@ private fun ReviewItemPreview() {
     EGTourGuideTheme {
         ReviewItem(
             review = Review(
+                id = "",
                 authorName = "Abdo Sharaf",
                 authorImage = "https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png",
-                rating = 4.5,
+                rating = 4,
                 description = getLoremString(words = 20)
             )
         )
