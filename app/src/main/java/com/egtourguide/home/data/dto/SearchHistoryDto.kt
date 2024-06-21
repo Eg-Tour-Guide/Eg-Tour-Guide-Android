@@ -1,4 +1,4 @@
-package com.egtourguide.home.data.dto.response
+package com.egtourguide.home.data.dto
 
 data class SearchHistoryDto(
     val search: List<Search>,

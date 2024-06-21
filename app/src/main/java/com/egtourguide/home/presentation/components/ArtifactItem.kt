@@ -18,22 +18,21 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.egtourguide.R
 import com.egtourguide.core.presentation.components.MainImage
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
+import com.egtourguide.core.utils.Constants.ARTIFACT_IMAGE_LINK_PREFIX
 import com.egtourguide.home.domain.model.AbstractedArtifact
 
 @Composable
@@ -42,7 +41,6 @@ fun ArtifactItem(
     onArtifactClicked: (AbstractedArtifact) -> Unit,
     onSaveClicked: (AbstractedArtifact) -> Unit
 ) {
-    var isSaved by remember { mutableStateOf(artifact.isSaved) }
     Column(
         modifier = Modifier
             .width(144.dp)
@@ -63,7 +61,7 @@ fun ArtifactItem(
             modifier = Modifier
                 .height(105.dp)
                 .clip(RoundedCornerShape(4.dp)),
-            data = "artifacsImages/${artifact.image}",
+            data = "$ARTIFACT_IMAGE_LINK_PREFIX${artifact.image}",
             contentScale = ContentScale.FillBounds
         )
         Spacer(modifier = Modifier.height(4.dp))
@@ -101,13 +99,13 @@ fun ArtifactItem(
             IconButton(
                 modifier = Modifier.size(24.dp),
                 onClick = {
-                    isSaved = !isSaved
                     onSaveClicked(artifact)
                 }
             ) {
                 Icon(
-                    painter = painterResource(id = if (isSaved) R.drawable.ic_saved else R.drawable.ic_save),
-                    contentDescription = "Save Icon"
+                    painter = painterResource(id = if (artifact.isSaved) R.drawable.ic_saved else R.drawable.ic_save),
+                    contentDescription = stringResource(id = if (artifact.isSaved) R.string.unsave else R.string.save),
+                    tint = MaterialTheme.colorScheme.onBackground
                 )
             }
         }
@@ -125,6 +123,8 @@ private fun ArtifactItemPreview() {
                 image = "https://www.worldhistory.org/uploads/images/5687.jpg",
                 museumName = "Giza",
                 isSaved = false,
+                type = "Statues",
+                material = "Stone, Wood"
             ),
             onArtifactClicked = {},
             onSaveClicked = {},

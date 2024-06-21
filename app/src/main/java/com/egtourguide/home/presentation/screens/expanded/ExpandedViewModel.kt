@@ -3,6 +3,10 @@ package com.egtourguide.home.presentation.screens.expanded
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.egtourguide.core.utils.onResponse
+import com.egtourguide.home.domain.model.AbstractedArtifact
+import com.egtourguide.home.domain.model.Place
+import com.egtourguide.home.domain.usecases.ChangeArtifactSavedStateUseCase
+import com.egtourguide.home.domain.usecases.ChangePlaceSavedStateUseCase
 import com.egtourguide.home.domain.usecases.GetArtifactUseCase
 import com.egtourguide.home.domain.usecases.GetLandmarkUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +20,9 @@ import javax.inject.Inject
 @HiltViewModel
 class ExpandedViewModel @Inject constructor(
     private val getLandmarkUseCase: GetLandmarkUseCase,
-    private val getArtifactUseCase: GetArtifactUseCase
+    private val getArtifactUseCase: GetArtifactUseCase,
+    private val changePlaceSavedStateUseCase: ChangePlaceSavedStateUseCase,
+    private val changeArtifactSavedStateUseCase: ChangeArtifactSavedStateUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ExpandedScreenState())
@@ -40,15 +46,18 @@ class ExpandedViewModel @Inject constructor(
                             callIsSent = true,
                             images = response.images,
                             title = response.title,
+                            isSaved = response.saved,
                             location = response.location,
-                            reviewsAverage = 4.5,
+                            reviewsAverage = response.reviewsAverage,
+                            reviewsCount = response.reviewsCount,
                             reviews = response.reviews,
                             tourismTypes = response.type,
                             description = response.description,
-                            includedArtifacts = emptyList(),
+                            includedArtifacts = response.includedArtifacts,
                             relatedPlaces = response.relatedPlaces,
                             latitute = response.latitude,
-                            longitude = response.longitude
+                            longitude = response.longitude,
+                            vrModel = response.model
                         )
                     }
                 },
@@ -72,12 +81,13 @@ class ExpandedViewModel @Inject constructor(
                             callIsSent = true,
                             images = response.images,
                             title = response.title,
-                            reviewsAverage = 4.5,
-                            reviews = emptyList(),
+                            isSaved = response.saved,
+                            location = response.museum,
                             description = response.description,
-                            artifactType = "",
-                            artifactMaterials = emptyList(),
-                            relatedArtifacts = response.relatedArtifacts
+                            artifactType = response.type,
+                            artifactMaterials = response.material,
+                            relatedArtifacts = response.relatedArtifacts,
+                            arModel = response.arModel
                         )
                     }
                 },
@@ -89,7 +99,60 @@ class ExpandedViewModel @Inject constructor(
     }
 
     fun changeSavedState() {
-        // TODO: Implement this!!
-        _uiState.update { it.copy(isSaved = !it.isSaved) }
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update { it.copy(isSaved = !it.isSaved, isSaveCall = !it.isSaved) }
+
+            changePlaceSavedStateUseCase(placeId = _uiState.value.id).onResponse(
+                onLoading = {},
+                onSuccess = {
+                    _uiState.update { it.copy(isSaveSuccess = true) }
+                },
+                onFailure = { message ->
+                    _uiState.update { it.copy(errorMessage = message) }
+                }
+            )
+        }
+    }
+
+    fun changePlaceSavedState(place: Place) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update { it.copy(isSaveCall = !place.isSaved) }
+            place.isSaved = !place.isSaved
+
+            changePlaceSavedStateUseCase(placeId = place.id).onResponse(
+                onLoading = {},
+                onSuccess = {
+                    _uiState.update { it.copy(isSaveSuccess = true) }
+                },
+                onFailure = { message ->
+                    _uiState.update { it.copy(errorMessage = message) }
+                }
+            )
+        }
+    }
+
+    fun changeArtifactSavedState(artifact: AbstractedArtifact) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update { it.copy(isSaveCall = !artifact.isSaved) }
+            artifact.isSaved = !artifact.isSaved
+
+            changeArtifactSavedStateUseCase(artifactId = artifact.id).onResponse(
+                onLoading = {},
+                onSuccess = {
+                    _uiState.update { it.copy(isSaveSuccess = true) }
+                },
+                onFailure = { message ->
+                    _uiState.update { it.copy(errorMessage = message) }
+                }
+            )
+        }
+    }
+
+    fun clearError() {
+        _uiState.update { it.copy(errorMessage = null) }
+    }
+
+    fun clearSaveSuccess() {
+        _uiState.update { it.copy(isSaveSuccess = false) }
     }
 }

@@ -24,10 +24,12 @@ class ArtifactsListViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
     fun onSaveClicked(artifact: AbstractedArtifact) {
         viewModelScope.launch(Dispatchers.IO) {
+            artifact.isSaved = !artifact.isSaved
+
             changeArtifactSavedStateUseCase(artifactId = artifact.id).onResponse(
                 onLoading = {},
                 onSuccess = {
-                    _uiState.update { it.copy(isSaveSuccess = true, isSave = !artifact.isSaved) }
+                    _uiState.update { it.copy(isSaveSuccess = true, isSave = artifact.isSaved) }
                 },
                 onFailure = { error ->
                     _uiState.update { it.copy(saveError = error) }

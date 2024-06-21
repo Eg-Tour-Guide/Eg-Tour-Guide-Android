@@ -1,13 +1,13 @@
 package com.egtourguide.home.data
 
-import com.egtourguide.home.data.dto.response.ArtifactsListDto
-import com.egtourguide.home.data.dto.response.HomeDto
-import com.egtourguide.home.data.dto.response.LandmarksListDto
-import com.egtourguide.home.data.dto.response.SearchHistoryDto
-import com.egtourguide.home.data.dto.response.SearchResultsDto
-import com.egtourguide.home.data.dto.response.ToursListDto
-import com.egtourguide.home.data.dto.response.SingleArtifactDto
-import com.egtourguide.home.data.dto.response.SingleLandmarkDto
+import com.egtourguide.home.data.dto.ArtifactsListDto
+import com.egtourguide.home.data.dto.HomeDto
+import com.egtourguide.home.data.dto.LandmarksListDto
+import com.egtourguide.home.data.dto.SearchHistoryDto
+import com.egtourguide.home.data.dto.SearchResultsDto
+import com.egtourguide.home.data.dto.ToursListDto
+import com.egtourguide.home.data.dto.SingleArtifactDto
+import com.egtourguide.home.data.dto.SingleLandmarkDto
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path

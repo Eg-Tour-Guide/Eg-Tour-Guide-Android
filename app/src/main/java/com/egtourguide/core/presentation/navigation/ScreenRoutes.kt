@@ -20,4 +20,5 @@ object ScreenRoutes {
     const val REVIEW_SCREEN_ROUTE = "REVIEW_SCREEN_ROUTE"
     const val TOURS_SCREEN_ROUTE = "TOURS_SCREEN_ROUTE"
     const val SEARCH_SCREEN_ROUTE = "SEARCH_SCREEN_ROUTE"
+    const val WEB_VIEW_SCREEN_ROUTE = "WEB_VIEW_SCREEN_ROUTE/{modelUrl}"
 }

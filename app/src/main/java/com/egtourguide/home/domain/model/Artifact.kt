@@ -6,6 +6,9 @@ data class Artifact(
     val images: List<String>,
     val description: String,
     val museum: String,
+    val type: String,
+    val material: String,
     val saved: Boolean,
-    val relatedArtifacts: List<Place>
+    val relatedArtifacts: List<AbstractedArtifact>,
+    val arModel: String
 )
