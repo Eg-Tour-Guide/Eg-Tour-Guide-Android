@@ -8,13 +8,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
@@ -51,7 +49,9 @@ import com.egtourguide.core.presentation.components.MainImage
 import com.egtourguide.core.presentation.components.MapItem
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 import com.egtourguide.core.utils.getLoremString
+import com.egtourguide.home.domain.model.Place
 import com.egtourguide.home.domain.model.Review
+import com.egtourguide.home.presentation.components.PlaceItem
 import com.egtourguide.home.presentation.components.ReviewItem
 import com.egtourguide.home.presentation.components.ReviewsHeader
 import com.egtourguide.home.presentation.components.ScreenHeader
@@ -68,25 +68,24 @@ private fun ExpandedScreenPreview() {
                 reviewsAverage = 4.5,
                 reviews = listOf(
                     Review(
+                        id = "",
                         authorName = "Abdo Sharaf",
                         authorImage = "",
-                        rating = 2.3,
+                        rating = 2,
                         description = getLoremString(words = 20)
                     ),
                     Review(
+                        id = "",
                         authorName = "Abdo Sharaf",
                         authorImage = "",
-                        rating = 2.3,
+                        rating = 2,
                         description = getLoremString(words = 20)
                     )
                 ),
-                tourismTypes = listOf("Adventure", "Historical"),
+                tourismTypes = "Adventure, Historical",
                 description = getLoremString(words = 50),
                 artifactType = "Statues",
-                artifactMaterials = listOf("Stone", "Wood"),
-                includedArtifacts = (1..10).toList(),
-                relatedPlaces = (1..10).toList(),
-                relatedArtifacts = (1..10).toList()
+                artifactMaterials = listOf("Stone", "Wood")
             )
         )
     }
@@ -143,7 +142,7 @@ private fun ExpandedScreen(
             modifier = Modifier.height(52.dp)
         )
 
-        if(uiState.isLoading){
+        if (uiState.isLoading) {
             LoadingProgress(
                 modifier = Modifier.weight(1f)
             )
@@ -289,7 +288,7 @@ private fun TitleSection(
     location: String,
     reviewsAverage: Double,
     reviewsTotal: Int,
-    tourismTypes: List<String>,
+    tourismTypes: String,
     artifactType: String,
     artifactMaterials: List<String>,
     modifier: Modifier = Modifier
@@ -359,7 +358,7 @@ private fun TitleSection(
                     )
                 }
 
-                if(tourismTypes.isNotEmpty()) {
+                if (tourismTypes.isNotEmpty()) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -374,7 +373,7 @@ private fun TitleSection(
                         )
 
                         Text(
-                            text = tourismTypes.joinToString(", "),
+                            text = tourismTypes,
                             style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.onBackground,
                             modifier = Modifier.padding(start = 6.dp)
@@ -382,7 +381,7 @@ private fun TitleSection(
                     }
                 }
 
-                if(artifactType.isNotEmpty()) {
+                if (artifactType.isNotEmpty()) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -405,7 +404,7 @@ private fun TitleSection(
                     }
                 }
 
-                if(artifactMaterials.isNotEmpty()) {
+                if (artifactMaterials.isNotEmpty()) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -546,7 +545,7 @@ private fun ReviewsSection(
 
 @Composable
 private fun IncludedArtifactsSection(
-    artifacts: List<Int>,
+    artifacts: List<Place>,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -559,7 +558,7 @@ private fun IncludedArtifactsSection(
             modifier = Modifier.padding(start = 16.dp)
         )
 
-        // TODO: Replace with the main item!!
+        // TODO: Implement clicks!!
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -567,13 +566,11 @@ private fun IncludedArtifactsSection(
                 .fillMaxWidth()
                 .padding(top = 8.dp)
         ) {
-            items(items = artifacts) {
-                Spacer(
-                    modifier = Modifier
-                        .width(140.dp)
-                        .height(165.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(MaterialTheme.colorScheme.primaryContainer)
+            items(items = artifacts, key = { it.id }) {
+                PlaceItem(
+                    place = it,
+                    onPlaceClicked = {},
+                    onSaveClicked = {}
                 )
             }
         }
@@ -582,7 +579,7 @@ private fun IncludedArtifactsSection(
 
 @Composable
 private fun RelatedPlacesSection(
-    places: List<Int>,
+    places: List<Place>,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -595,7 +592,7 @@ private fun RelatedPlacesSection(
             modifier = Modifier.padding(start = 16.dp)
         )
 
-        // TODO: Replace with the main item!!
+        // TODO: Implement clicks!!
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -603,13 +600,11 @@ private fun RelatedPlacesSection(
                 .fillMaxWidth()
                 .padding(top = 8.dp)
         ) {
-            items(items = places) {
-                Spacer(
-                    modifier = Modifier
-                        .width(140.dp)
-                        .height(165.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(MaterialTheme.colorScheme.primaryContainer)
+            items(items = places, key = { it.id }) {
+                PlaceItem(
+                    place = it,
+                    onPlaceClicked = {},
+                    onSaveClicked = {}
                 )
             }
         }
@@ -618,7 +613,7 @@ private fun RelatedPlacesSection(
 
 @Composable
 private fun RelatedArtifactsSection(
-    artifacts: List<Int>,
+    artifacts: List<Place>,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -631,7 +626,7 @@ private fun RelatedArtifactsSection(
             modifier = Modifier.padding(start = 16.dp)
         )
 
-        // TODO: Replace with the main item!!
+        // TODO: Implement clicks!!
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -639,13 +634,11 @@ private fun RelatedArtifactsSection(
                 .fillMaxWidth()
                 .padding(top = 8.dp)
         ) {
-            items(items = artifacts) {
-                Spacer(
-                    modifier = Modifier
-                        .width(140.dp)
-                        .height(165.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(MaterialTheme.colorScheme.primaryContainer)
+            items(items = artifacts, key = { it.id }) {
+                PlaceItem(
+                    place = it,
+                    onPlaceClicked = {},
+                    onSaveClicked = {}
                 )
             }
         }

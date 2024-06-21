@@ -1,6 +1,7 @@
 package com.egtourguide.home.presentation.screens.review
 
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -65,7 +66,6 @@ private fun ReviewContent(
     Column(
         modifier = modifier
             .fillMaxSize(),
-        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
@@ -78,6 +78,7 @@ private fun ReviewContent(
         Column(
             modifier = modifier
                 .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
                 .padding(16.dp),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -87,14 +88,15 @@ private fun ReviewContent(
                 style = MaterialTheme.typography.displayLarge,
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = modifier
-                    .padding(top = 16.dp)
                     .align(Alignment.Start)
             )
             RatingBar(
                 modifier = modifier
-                    .padding(8.dp),
+                    .height(40.dp)
+                    .fillMaxWidth(),
                 initialRating = uiState.rating,
-                updateRating = onChangeRating
+                starSize = 28.dp,
+                onRatingChanged = onChangeRating
             )
 
             Text(
@@ -152,7 +154,7 @@ private fun ReviewFooter(
 
 @Preview(showBackground = true)
 @Composable
-fun ReviewScreenReview() {
+private fun ReviewScreenReview() {
     EGTourGuideTheme {
         ReviewScreen(
             onNavigateBack = { }

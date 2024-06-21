@@ -6,6 +6,8 @@ import com.egtourguide.home.data.dto.response.LandmarksListDto
 import com.egtourguide.home.data.dto.response.SearchHistoryDto
 import com.egtourguide.home.data.dto.response.SearchResultsDto
 import com.egtourguide.home.data.dto.response.ToursListDto
+import com.egtourguide.home.data.dto.response.SingleArtifactDto
+import com.egtourguide.home.data.dto.response.SingleLandmarkDto
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -13,12 +15,15 @@ import retrofit2.http.Query
 
 interface HomeApi {
 
-    // TODO: Change these!!
-    @GET("")
-    suspend fun getLandmark(): String
+    @GET("landmark/{landmarkID}")
+    suspend fun getLandmark(
+        @Path("landmarkID") landmarkID: String
+    ): SingleLandmarkDto
 
-    @GET("")
-    suspend fun getArtifact(): String
+    @GET("artifac/{artifactID}")
+    suspend fun getArtifact(
+        @Path("artifactID") artifactID: String
+    ): SingleArtifactDto
 
     @GET("home")
     suspend fun getHome(): HomeDto

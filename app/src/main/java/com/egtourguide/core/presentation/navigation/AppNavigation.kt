@@ -210,7 +210,11 @@ fun AppNavigation(
 
                 },
                 onNavigateToSinglePlace = {
-
+                    navController.navigate(
+                        route = AppScreen.Expanded.route
+                            .replace("{id}", it.id)
+                            .replace("{isLandmark}", "true")
+                    )
                 },
                 onNavigateToHome = {
                     navController.navigateUp()
@@ -243,7 +247,11 @@ fun AppNavigation(
 
                 },
                 onNavigateToSingleArtifact = {
-
+                    navController.navigate(
+                        route = AppScreen.Expanded.route
+                            .replace("{id}", it.id)
+                            .replace("{isLandmark}", "false")
+                    )
                 },
                 onNavigateToHome = {
                     navController.navigateUp()
