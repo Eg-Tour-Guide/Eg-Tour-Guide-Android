@@ -83,6 +83,9 @@
     <string name="rating">Rating</string>
     <string name="write_review">Write your review (optional)</string>
     <string name="submit">Submit</string>
+    <string name="recent_searches">Recent Searches</string>
+    <string name="clear">Clear</string>
+    <string name="search">Search</string>
     <string name="catogry">Category</string>
     <string name="star">star</string>
     <string name="sortby">Sort By</string>

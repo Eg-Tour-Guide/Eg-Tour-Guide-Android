@@ -10,12 +10,15 @@ import com.egtourguide.auth.presentation.otp.OtpScreen
 import com.egtourguide.auth.presentation.resetPassword.ResetPasswordScreen
 import com.egtourguide.auth.presentation.signup.SignUpScreen
 import com.egtourguide.auth.presentation.welcome.WelcomeScreen
+import com.egtourguide.home.presentation.components.BottomBarScreens
 import com.egtourguide.home.presentation.screens.artifacts_list.ArtifactsListScreen
 import com.egtourguide.home.presentation.screens.expanded.ExpandedScreenRoot
 import com.egtourguide.home.presentation.screens.home.HomeScreen
 import com.egtourguide.home.presentation.screens.landmarks_list.LandmarksListScreen
 import com.egtourguide.home.presentation.screens.moreReviews.MoreReviewsScreenRoot
 import com.egtourguide.home.presentation.screens.review.ReviewScreen
+import com.egtourguide.home.presentation.screens.search.SearchScreen
+import com.egtourguide.home.presentation.screens.tours_list.ToursListScreen
 
 @Composable
 fun AppNavigation(
@@ -143,7 +146,7 @@ fun AppNavigation(
         composable(route = AppScreen.Home.route) {
             HomeScreen(
                 onNavigateToSearch = {
-
+                    navController.navigate(route = AppScreen.Search.route)
                 },
                 onNavigateToNotification = {
 
@@ -158,15 +161,17 @@ fun AppNavigation(
 
                 },
                 onNavigateToTours = {
-
+                    navController.navigate(route = AppScreen.ToursList.route) {
+                        popUpTo(route = AppScreen.Home.route)
+                    }
                 },
                 onNavigateToLandmarks = {
-                    navController.navigate(route = AppScreen.LandmarksList.route){
+                    navController.navigate(route = AppScreen.LandmarksList.route) {
                         popUpTo(route = AppScreen.Home.route)
                     }
                 },
                 onNavigateToArtifacts = {
-                    navController.navigate(route = AppScreen.ArtifactsList.route){
+                    navController.navigate(route = AppScreen.ArtifactsList.route) {
                         popUpTo(route = AppScreen.Home.route)
                     }
                 },
@@ -215,10 +220,12 @@ fun AppNavigation(
                     navController.navigateUp()
                 },
                 onNavigateToTours = {
-
+                    navController.navigate(route = AppScreen.ToursList.route) {
+                        popUpTo(route = AppScreen.Home.route)
+                    }
                 },
                 onNavigateToArtifacts = {
-                    navController.navigate(route = AppScreen.ArtifactsList.route){
+                    navController.navigate(route = AppScreen.ArtifactsList.route) {
                         popUpTo(route = AppScreen.Home.route)
                     }
                 },
@@ -250,10 +257,45 @@ fun AppNavigation(
                     navController.navigateUp()
                 },
                 onNavigateToTours = {
-
+                    navController.navigate(route = AppScreen.ToursList.route) {
+                        popUpTo(route = AppScreen.Home.route)
+                    }
                 },
                 onNavigateToLandmarks = {
-                    navController.navigate(route = AppScreen.LandmarksList.route){
+                    navController.navigate(route = AppScreen.LandmarksList.route) {
+                        popUpTo(route = AppScreen.Home.route)
+                    }
+                },
+                onNavigateToUser = {
+
+                }
+            )
+        }
+
+        composable(route = AppScreen.ToursList.route) {
+            ToursListScreen(
+                onNavigateToNotification = {
+
+                },
+                onNavigateToSearch = {
+
+                },
+                onNavigateToFilters = {
+
+                },
+                onNavigateToSingleTour = {
+
+                },
+                onNavigateToHome = {
+                    navController.navigateUp()
+                },
+                onNavigateToArtifacts = {
+                    navController.navigate(route = AppScreen.ArtifactsList.route) {
+                        popUpTo(route = AppScreen.Home.route)
+                    }
+                },
+                onNavigateToLandmarks = {
+                    navController.navigate(route = AppScreen.LandmarksList.route) {
                         popUpTo(route = AppScreen.Home.route)
                     }
                 },
@@ -275,6 +317,30 @@ fun AppNavigation(
         composable(route = AppScreen.Review.route) {
             ReviewScreen(
                 onNavigateBack = { navController.navigateUp() }
+            )
+        }
+
+        composable(route = AppScreen.Search.route) {
+            SearchScreen(
+                bottomBarSelectedScreen = BottomBarScreens.Home,
+                onNavigateToHome = {
+
+                },
+                onNavigateToTours = {
+
+                },
+                onNavigateToLandmarks = {
+
+                },
+                onNavigateToArtifacts = {
+
+                },
+                onNavigateToUser = {
+
+                },
+                onNavigateToSearchResults = {
+
+                }
             )
         }
     }
