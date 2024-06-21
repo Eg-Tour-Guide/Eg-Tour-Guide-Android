@@ -109,7 +109,7 @@ private fun MoreReviewsScreen(
             item {
                 MainButton(
                     modifier = Modifier
-                        .padding(start = 8.dp, end = 8.dp)
+                        .padding(start = 8.dp, end = 8.dp, top = 8.dp)
                         .fillMaxWidth()
                         .height(40.dp),
                     text = stringResource(id = R.string.review),
