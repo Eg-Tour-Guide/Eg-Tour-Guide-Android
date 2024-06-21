@@ -5,6 +5,7 @@ data class AbstractedArtifact(
     val name: String,
     val image: String,
     var isSaved: Boolean,
-    val museumName: String
-
+    val museumName: String,
+    val type: String,
+    val material: String
 )

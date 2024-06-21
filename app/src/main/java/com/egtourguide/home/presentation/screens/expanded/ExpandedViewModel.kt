@@ -53,10 +53,11 @@ class ExpandedViewModel @Inject constructor(
                             reviews = response.reviews,
                             tourismTypes = response.type,
                             description = response.description,
-                            includedArtifacts = emptyList(),
+                            includedArtifacts = response.includedArtifacts,
                             relatedPlaces = response.relatedPlaces,
                             latitute = response.latitude,
-                            longitude = response.longitude
+                            longitude = response.longitude,
+                            vrModel = response.model
                         )
                     }
                 },
@@ -85,7 +86,8 @@ class ExpandedViewModel @Inject constructor(
                             description = response.description,
                             artifactType = response.type,
                             artifactMaterials = response.material,
-                            relatedArtifacts = response.relatedArtifacts
+                            relatedArtifacts = response.relatedArtifacts,
+                            arModel = response.arModel
                         )
                     }
                 },

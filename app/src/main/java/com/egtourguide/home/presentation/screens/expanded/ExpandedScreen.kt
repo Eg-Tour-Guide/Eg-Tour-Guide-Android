@@ -1,5 +1,7 @@
 package com.egtourguide.home.presentation.screens.expanded
 
+import android.content.Intent
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -52,6 +54,7 @@ import com.egtourguide.core.presentation.components.MainImage
 import com.egtourguide.core.presentation.components.MapItem
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 import com.egtourguide.core.utils.Constants.ARTIFACT_IMAGE_LINK_PREFIX
+import com.egtourguide.core.utils.Constants.AR_MODEL_LINK_PREFIX
 import com.egtourguide.core.utils.Constants.LANDMARK_IMAGE_LINK_PREFIX
 import com.egtourguide.core.utils.getLoremString
 import com.egtourguide.home.domain.model.AbstractedArtifact
@@ -92,7 +95,8 @@ private fun ExpandedScreenPreview() {
                 tourismTypes = "Adventure, Historical",
                 description = getLoremString(words = 50),
                 artifactType = "Statues",
-                artifactMaterials = "Stone, Wood"
+                artifactMaterials = "Stone, Wood",
+                vrModel = "test"
             )
         )
     }
@@ -105,7 +109,8 @@ fun ExpandedScreenRoot(
     isLandmark: Boolean,
     onBackClicked: () -> Unit,
     onSeeMoreClicked: () -> Unit,
-    onReviewClicked: () -> Unit
+    onReviewClicked: () -> Unit,
+    navigateToWebScreen: (String) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -146,6 +151,25 @@ fun ExpandedScreenRoot(
         isLandmark = isLandmark,
         uiState = uiState,
         onBackClicked = onBackClicked,
+        onVrViewClicked = {
+            navigateToWebScreen(uiState.vrModel)
+        },
+        onArViewClicked = {
+            val uri = Uri.parse("https://arvr.google.com/scene-viewer/1.0").buildUpon()
+                .appendQueryParameter(
+                    "file",
+                    "$AR_MODEL_LINK_PREFIX${uiState.arModel}"
+                )
+                .appendQueryParameter("mode", "ar_preferred")
+                .appendQueryParameter("title", uiState.title)
+                .build()
+
+            Intent(Intent.ACTION_VIEW).also { sceneViewerIntent ->
+                sceneViewerIntent.setData(uri)
+                sceneViewerIntent.setPackage("com.google.android.googlequicksearchbox")
+                context.startActivity(sceneViewerIntent)
+            }
+        },
         onSaveClicked = viewModel::changeSavedState,
         onSavePlace = viewModel::changePlaceSavedState,
         onSaveArtifact = viewModel::changeArtifactSavedState,
@@ -162,6 +186,8 @@ private fun ExpandedScreen(
     isLandmark: Boolean = true,
     uiState: ExpandedScreenState,
     onBackClicked: () -> Unit = {},
+    onArViewClicked: () -> Unit = {},
+    onVrViewClicked: () -> Unit = {},
     onSaveClicked: () -> Unit = {},
     onSavePlace: (Place) -> Unit = {},
     onSaveArtifact: (AbstractedArtifact) -> Unit = {},
@@ -174,6 +200,10 @@ private fun ExpandedScreen(
     ) {
         ScreenHeader(
             showBack = true,
+            showArView = (!isLandmark && uiState.arModel.isNotEmpty()),
+            showVrView = (isLandmark && uiState.vrModel.isNotEmpty()),
+            onArViewClicked = onArViewClicked,
+            onVrViewClicked = onVrViewClicked,
             onBackClicked = onBackClicked,
             modifier = Modifier.height(52.dp)
         )
@@ -211,17 +241,21 @@ private fun ExpandedScreen(
                     modifier = Modifier.padding(top = 16.dp)
                 )
 
-                DescriptionSection(
-                    description = uiState.description,
-                    modifier = Modifier.padding(top = 24.dp, start = 16.dp, end = 16.dp)
-                )
+                if (uiState.description.isNotEmpty()) {
+                    DescriptionSection(
+                        description = uiState.description,
+                        modifier = Modifier.padding(top = 24.dp, start = 16.dp, end = 16.dp)
+                    )
+                }
 
-                LocationSection(
-                    title = uiState.title,
-                    latitude = uiState.latitute,
-                    longitude = uiState.longitude,
-                    modifier = Modifier.padding(top = 24.dp, start = 16.dp, end = 16.dp)
-                )
+                if (isLandmark && uiState.latitute != 0.0 && uiState.longitude != 0.0) {
+                    LocationSection(
+                        title = uiState.title,
+                        latitude = uiState.latitute,
+                        longitude = uiState.longitude,
+                        modifier = Modifier.padding(top = 24.dp, start = 16.dp, end = 16.dp)
+                    )
+                }
 
                 if (isLandmark) {
                     ReviewsSection(
@@ -339,6 +373,7 @@ private fun TitleSection(
     artifactMaterials: String,
     modifier: Modifier = Modifier
 ) {
+    // TODO: Empty items!!
     Column(
         modifier = modifier.fillMaxWidth()
     ) {

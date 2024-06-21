@@ -86,4 +86,8 @@
     <string name="add_to_tour">Add to Tour</string>
     <string name="saved_successfully">Saved Successfully</string>
     <string name="unsaved_successfully">Unsaved Successfully</string>
+    <string name="got_to_active_tour">Go to Active Tour</string>
+    <string name="capture_object">Capture Object</string>
+    <string name="show_vr_view">Show VR View</string>
+    <string name="show_ar_view">Show AR View</string>
 </resources>

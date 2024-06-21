@@ -27,5 +27,7 @@ data class ExpandedScreenState(
     val longitude: Double = 0.0,
     val includedArtifacts: List<AbstractedArtifact> = emptyList(),
     val relatedPlaces: List<Place> = emptyList(),
-    val relatedArtifacts: List<AbstractedArtifact> = emptyList()
+    val relatedArtifacts: List<AbstractedArtifact> = emptyList(),
+    val vrModel: String = "",
+    val arModel: String = ""
 )

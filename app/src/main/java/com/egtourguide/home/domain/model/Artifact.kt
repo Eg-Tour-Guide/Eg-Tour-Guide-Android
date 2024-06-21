@@ -9,5 +9,6 @@ data class Artifact(
     val type: String,
     val material: String,
     val saved: Boolean,
-    val relatedArtifacts: List<AbstractedArtifact>
+    val relatedArtifacts: List<AbstractedArtifact>,
+    val arModel: String
 )

@@ -123,6 +123,8 @@ private fun ArtifactItemPreview() {
                 image = "https://www.worldhistory.org/uploads/images/5687.jpg",
                 museumName = "Giza",
                 isSaved = false,
+                type = "Statues",
+                material = "Stone, Wood"
             ),
             onArtifactClicked = {},
             onSaveClicked = {},

@@ -1,4 +1,4 @@
-package com.egtourguide.home.data.dto.response
+package com.egtourguide.home.data.dto
 
 import com.egtourguide.home.domain.model.Event
 import com.egtourguide.home.domain.model.Home

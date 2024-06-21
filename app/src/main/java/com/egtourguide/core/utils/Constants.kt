@@ -8,4 +8,5 @@ object Constants {
     const val DATA_STORE_NAME = "EG_Tour_Guide_Data_Store"
     const val LANDMARK_IMAGE_LINK_PREFIX = "placeImages/"
     const val ARTIFACT_IMAGE_LINK_PREFIX = "artifacsImages/"
+    const val AR_MODEL_LINK_PREFIX = "https://eg-tour-guide.onrender.com/ar/"
 }

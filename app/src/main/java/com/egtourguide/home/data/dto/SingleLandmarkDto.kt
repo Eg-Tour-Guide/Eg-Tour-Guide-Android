@@ -1,4 +1,4 @@
-package com.egtourguide.home.data.dto.response
+package com.egtourguide.home.data.dto
 
 import com.egtourguide.home.domain.model.Landmark
 import com.egtourguide.home.domain.model.Place
@@ -8,7 +8,8 @@ import com.egtourguide.home.domain.model.Review
 data class SingleLandmarkDto(
     val status: String,
     val place: LandmarkDto,
-    val relatedPlaces: List<RelatedPlaceDto>
+    val relatedPlaces: List<RelatedPlaceDto>?,
+    val relatedArtifacs: List<RelatedArtifact>?
 ) {
     fun toLandmark() = Landmark(
         id = place._id,
@@ -23,8 +24,9 @@ data class SingleLandmarkDto(
         reviewsAverage = place.ratingAverage,
         reviewsCount = place.ratingQuantity,
         reviews = place.reviews.map { it.toReview() },
-        relatedPlaces = relatedPlaces.map { it.toPlace() }
-
+        relatedPlaces = relatedPlaces?.map { it.toPlace() } ?: emptyList(),
+        includedArtifacts = relatedArtifacs?.map { it.toAbstractedArtifact() } ?: emptyList(),
+        model = place.model ?: ""
     )
 }
 
@@ -39,7 +41,8 @@ data class LandmarkDto(
     val saved: Boolean,
     val ratingAverage: Double,
     val ratingQuantity: Int,
-    val reviews: List<ReviewDto>
+    val reviews: List<ReviewDto>,
+    val model: String?
 )
 
 data class LocationDto(

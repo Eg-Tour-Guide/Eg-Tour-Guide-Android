@@ -12,6 +12,7 @@ import com.egtourguide.auth.presentation.signup.SignUpScreen
 import com.egtourguide.auth.presentation.welcome.WelcomeScreen
 import com.egtourguide.home.presentation.screens.artifacts_list.ArtifactsListScreen
 import com.egtourguide.home.presentation.screens.expanded.ExpandedScreenRoot
+import com.egtourguide.home.presentation.screens.expanded.WebViewScreen
 import com.egtourguide.home.presentation.screens.home.HomeScreen
 import com.egtourguide.home.presentation.screens.landmarks_list.LandmarksListScreen
 import com.egtourguide.home.presentation.screens.moreReviews.MoreReviewsScreenRoot
@@ -161,12 +162,12 @@ fun AppNavigation(
 
                 },
                 onNavigateToLandmarks = {
-                    navController.navigate(route = AppScreen.LandmarksList.route){
+                    navController.navigate(route = AppScreen.LandmarksList.route) {
                         popUpTo(route = AppScreen.Home.route)
                     }
                 },
                 onNavigateToArtifacts = {
-                    navController.navigate(route = AppScreen.ArtifactsList.route){
+                    navController.navigate(route = AppScreen.ArtifactsList.route) {
                         popUpTo(route = AppScreen.Home.route)
                     }
                 },
@@ -189,7 +190,27 @@ fun AppNavigation(
                 },
                 onReviewClicked = {
                     navController.navigate(route = AppScreen.Review.route)
+                },
+                navigateToWebScreen = { modelUrl ->
+                    navController.navigate(
+                        route = AppScreen.WebView.route.replace(
+                            "{modelUrl}",
+                            modelUrl
+                                .replace("/", "...")
+                                .replace("?", "~~~")
+                        )
+                    )
                 }
+            )
+        }
+
+        composable(route = AppScreen.WebView.route) { entry ->
+            val modelUrl = entry.arguments?.getString("modelUrl") ?: ""
+
+            WebViewScreen(
+                modelUrl = modelUrl
+                    .replace("...", "/")
+                    .replace("~~~", "?")
             )
         }
 
@@ -218,7 +239,7 @@ fun AppNavigation(
 
                 },
                 onNavigateToArtifacts = {
-                    navController.navigate(route = AppScreen.ArtifactsList.route){
+                    navController.navigate(route = AppScreen.ArtifactsList.route) {
                         popUpTo(route = AppScreen.Home.route)
                     }
                 },
@@ -253,7 +274,7 @@ fun AppNavigation(
 
                 },
                 onNavigateToLandmarks = {
-                    navController.navigate(route = AppScreen.LandmarksList.route){
+                    navController.navigate(route = AppScreen.LandmarksList.route) {
                         popUpTo(route = AppScreen.Home.route)
                     }
                 },

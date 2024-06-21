@@ -1,7 +1,6 @@
-package com.egtourguide.home.data.dto.response
+package com.egtourguide.home.data.dto
 
 import com.egtourguide.home.domain.model.AbstractedArtifact
-import com.egtourguide.home.domain.model.Artifact
 
 data class ArtifactsListDto(
     val artifacs: List<ArtifactDto>,
@@ -12,7 +11,9 @@ data class ArtifactsListDto(
         val image: String,
         val name: String,
         val saved: Boolean,
-        val museumName: String
+        val museumName: String,
+        val type: String?,
+        val material: String?
     ) {
         fun toDomainAbstractedArtifact(): AbstractedArtifact {
             return AbstractedArtifact(
@@ -20,7 +21,9 @@ data class ArtifactsListDto(
                 name = name,
                 image = image,
                 isSaved = saved,
-                museumName = museumName
+                museumName = museumName,
+                type = type ?: "",
+                material = material ?: ""
             )
         }
     }

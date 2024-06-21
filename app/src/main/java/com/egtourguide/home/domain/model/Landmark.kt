@@ -13,5 +13,7 @@ data class Landmark(
     val reviewsAverage: Double,
     val reviewsCount: Int,
     val reviews: List<Review>,
-    val relatedPlaces: List<Place>
+    val relatedPlaces: List<Place>,
+    val includedArtifacts: List<AbstractedArtifact>,
+    val model: String
 )

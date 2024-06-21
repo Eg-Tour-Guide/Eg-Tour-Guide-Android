@@ -169,8 +169,16 @@ private fun HomeScreenContent(
             showLogo = true,
             showNotifications = true,
             showSearch = true,
+            showActiveTour = true,
+            showCaptureObject = true,
             onNotificationsClicked = onNotificationClicked,
-            onSearchClicked = onSearchClicked
+            onSearchClicked = onSearchClicked,
+            onActiveTourClicked = {
+                // TODO: Implement this!!
+            },
+            onCaptureObjectClicked = {
+                // TODO: Implement this!!
+            }
         )
         UpcomingEventsSection(
             events = events,

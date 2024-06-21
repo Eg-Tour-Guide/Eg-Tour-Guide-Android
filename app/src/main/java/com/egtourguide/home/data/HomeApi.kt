@@ -1,10 +1,10 @@
 package com.egtourguide.home.data
 
-import com.egtourguide.home.data.dto.response.ArtifactsListDto
-import com.egtourguide.home.data.dto.response.HomeDto
-import com.egtourguide.home.data.dto.response.LandmarksListDto
-import com.egtourguide.home.data.dto.response.SingleArtifactDto
-import com.egtourguide.home.data.dto.response.SingleLandmarkDto
+import com.egtourguide.home.data.dto.ArtifactsListDto
+import com.egtourguide.home.data.dto.HomeDto
+import com.egtourguide.home.data.dto.LandmarksListDto
+import com.egtourguide.home.data.dto.SingleArtifactDto
+import com.egtourguide.home.data.dto.SingleLandmarkDto
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -30,10 +30,10 @@ interface HomeApi {
     )
 
     @GET("landmarks")
-    suspend fun getLandmarksList():LandmarksListDto
+    suspend fun getLandmarksList(): LandmarksListDto
 
     @GET("artifacs")
-    suspend fun getArtifactsList():ArtifactsListDto
+    suspend fun getArtifactsList(): ArtifactsListDto
 
     @POST("api/v1/favorite/add-fav-artifacs/{artifact_id}")
     suspend fun changeArtifactSavedState(
