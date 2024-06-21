@@ -79,9 +79,13 @@
     <string name="recently_added">Recently Added</string>
     <string name="you_might_also_like">You Might Also Like</string>
     <string name="recently_viewed">Recently Viewed</string>
-    <string name="more">More...</string>
+    <string name="more">More…</string>
     <string name="rating">Rating</string>
     <string name="write_review">Write your review (optional)</string>
     <string name="submit">Submit</string>
     <string name="catogry">Category</string>
+    <string name="star">star</string>
+    <string name="sortby">Sort By</string>
+    <string name="tourism_type">Tourism Type</string>
+    <string name="material">Material</string>
 </resources>
