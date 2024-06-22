@@ -99,4 +99,7 @@
     <string name="tourism_type">Tourism Type</string>
     <string name="material">Material</string>
     <string name="duration">Duration</string>
+    <string name="reset">Reset</string>
+    <string name="apply">Apply</string>
+    <string name="tour_type">Tour Type</string>
 </resources>
