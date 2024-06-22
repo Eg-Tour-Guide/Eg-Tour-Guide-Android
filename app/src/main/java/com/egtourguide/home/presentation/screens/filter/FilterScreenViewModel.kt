@@ -15,13 +15,18 @@ class FilterScreenViewModel @Inject constructor() : ViewModel() {
     fun changeDuration(days:Int){
         _uiState.update { it.copy(duration = days) }
     }
-    fun addSelectedFilters(label:String,filter:String){
-        selectedMap.put(label,filter)
-        _uiState.update { it.copy(selected =selectedList ) }
-    }
-    fun removeSelectedFilter(filter: String){
-        selectedList.remove(filter)
-        _uiState.update { it.copy(selected =selectedList ) }
-    }
+
+    // TODO: Remove these!!
+    fun addSelectedFilters(label:String){}
+    fun removeSelectedFilter(filter: String){}
+
+//    fun addSelectedFilters(label:String,filter:String){
+//        selectedMap.put(label,filter)
+//        _uiState.update { it.copy(selected =selectedList ) }
+//    }
+//    fun removeSelectedFilter(filter: String){
+//        selectedList.remove(filter)
+//        _uiState.update { it.copy(selected =selectedList ) }
+//    }
 
 }
