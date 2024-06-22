@@ -1,6 +1,5 @@
 package com.egtourguide.home.presentation.components
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -19,10 +18,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.egtourguide.R
 import com.egtourguide.core.presentation.components.MainImage
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
-import com.egtourguide.core.utils.Constants.BASE_URL
+import com.egtourguide.core.utils.Constants.LANDMARK_IMAGE_LINK_PREFIX
 import com.egtourguide.home.domain.model.Place
 
 @Composable
@@ -44,7 +40,6 @@ fun PlaceItem(
     onPlaceClicked: (Place) -> Unit,
     onSaveClicked: (Place) -> Unit
 ) {
-    var isSaved by remember { mutableStateOf(place.isSaved) }
     Column(
         modifier = Modifier
             .width(144.dp)
@@ -65,7 +60,7 @@ fun PlaceItem(
             modifier = Modifier
                 .height(105.dp)
                 .clip(RoundedCornerShape(4.dp)),
-            data = "placeImages/${place.image}"
+            data = "$LANDMARK_IMAGE_LINK_PREFIX${place.image}"
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
@@ -100,13 +95,13 @@ fun PlaceItem(
             IconButton(
                 modifier = Modifier.size(24.dp),
                 onClick = {
-                    isSaved = !isSaved
                     onSaveClicked(place)
                 }
             ) {
                 Icon(
-                    painter = painterResource(id = if (isSaved) R.drawable.ic_saved else R.drawable.ic_save),
-                    contentDescription = "Save Icon"
+                    painter = painterResource(id = if (place.isSaved) R.drawable.ic_saved else R.drawable.ic_save),
+                    contentDescription = stringResource(id = if (place.isSaved) R.string.unsave else R.string.save),
+                    tint = MaterialTheme.colorScheme.onBackground
                 )
             }
         }

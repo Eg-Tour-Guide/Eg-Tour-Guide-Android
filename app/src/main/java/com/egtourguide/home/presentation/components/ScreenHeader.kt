@@ -2,12 +2,14 @@ package com.egtourguide.home.presentation.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -36,12 +38,23 @@ private fun ScreenHeaderPreview() {
                 showLogo = true,
                 showSearch = true,
                 showNotifications = true,
-                showNotificationsBadge = false,
+                showNotificationsBadge = true,
+                showActiveTour = true,
+                showCaptureObject = true,
                 modifier = Modifier.height(61.dp)
             )
 
             ScreenHeader(
                 showBack = true,
+                showArView = true,
+                modifier = Modifier
+                    .padding(top = 16.dp)
+                    .height(52.dp)
+            )
+
+            ScreenHeader(
+                showBack = true,
+                showVrView = true,
                 modifier = Modifier
                     .padding(top = 16.dp)
                     .height(52.dp)
@@ -57,10 +70,18 @@ fun ScreenHeader(
     showSearch: Boolean = false,
     showNotifications: Boolean = false,
     showNotificationsBadge: Boolean = false,
+    showActiveTour: Boolean = false,
+    showCaptureObject: Boolean = false,
+    showVrView: Boolean = false,
+    showArView: Boolean = false,
     showBack: Boolean = false,
     onBackClicked: () -> Unit = {},
     onSearchClicked: () -> Unit = {},
-    onNotificationsClicked: () -> Unit = {}
+    onNotificationsClicked: () -> Unit = {},
+    onActiveTourClicked: () -> Unit = {},
+    onCaptureObjectClicked: () -> Unit = {},
+    onVrViewClicked: () -> Unit = {},
+    onArViewClicked: () -> Unit = {}
 ) {
     Row(
         modifier = modifier
@@ -69,6 +90,7 @@ fun ScreenHeader(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
+        // TODO: Change logo!!
         if (showLogo) {
             Image(
                 painter = painterResource(id = R.drawable.ic_logo),
@@ -89,45 +111,76 @@ fun ScreenHeader(
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier.padding(end = 16.dp)
         ) {
             if (showSearch) {
-                IconButton(
-                    onClick = onSearchClicked,
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_search),
+                    contentDescription = stringResource(id = R.string.go_to_search),
+                    tint = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
-                        .height(20.dp)
-                        .width(20.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_search),
-                        contentDescription = stringResource(id = R.string.go_to_search),
-                        tint = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier
-                            .height(20.dp)
-                            .width(20.dp)
-                    )
-                }
+                        .size(20.dp)
+                        .clickable { onSearchClicked() }
+                )
             }
 
             if (showNotifications) {
-                IconButton(
-                    onClick = onNotificationsClicked,
+                Image(
+                    painter = painterResource(
+                        id = if (showNotificationsBadge) R.drawable.ic_notifications_with_badge
+                        else R.drawable.ic_notifications
+                    ),
+                    contentDescription = stringResource(id = R.string.go_to_notifications),
                     modifier = Modifier
-                        .height(22.dp)
-                        .width(20.dp)
-                ) {
-                    Image(
-                        painter = painterResource(
-                            id = if (showNotificationsBadge) R.drawable.ic_notifications_with_badge
-                            else R.drawable.ic_notifications
-                        ),
-                        contentDescription = stringResource(id = R.string.go_to_notifications),
-                        modifier = Modifier
-                            .height(22.dp)
-                            .width(20.dp)
-                    )
-                }
+                        .height(24.dp)
+                        .width(22.dp)
+                        .clickable { onNotificationsClicked() }
+                )
+            }
+
+            if (showActiveTour) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_active_tour),
+                    contentDescription = stringResource(id = R.string.got_to_active_tour),
+                    tint = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier
+                        .size(20.dp)
+                        .clickable { onActiveTourClicked() }
+                )
+            }
+
+            if (showCaptureObject) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_capture_object),
+                    contentDescription = stringResource(id = R.string.capture_object),
+                    tint = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier
+                        .size(20.dp)
+                        .clickable { onCaptureObjectClicked() }
+                )
+            }
+
+            if (showVrView) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_vr_view),
+                    contentDescription = stringResource(id = R.string.show_vr_view),
+                    tint = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier
+                        .size(20.dp)
+                        .clickable { onVrViewClicked() }
+                )
+            }
+
+            if (showArView) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_ar_view),
+                    contentDescription = stringResource(id = R.string.show_ar_view),
+                    tint = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier
+                        .size(20.dp)
+                        .clickable { onArViewClicked() }
+                )
             }
         }
     }
