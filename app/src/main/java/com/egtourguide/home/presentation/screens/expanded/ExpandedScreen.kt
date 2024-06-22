@@ -38,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
@@ -61,6 +62,7 @@ import com.egtourguide.home.domain.model.AbstractedArtifact
 import com.egtourguide.home.domain.model.Place
 import com.egtourguide.home.domain.model.Review
 import com.egtourguide.home.presentation.components.ArtifactItem
+import com.egtourguide.home.presentation.components.DataRow
 import com.egtourguide.home.presentation.components.PlaceItem
 import com.egtourguide.home.presentation.components.ReviewItem
 import com.egtourguide.home.presentation.components.ReviewsHeader
@@ -321,7 +323,8 @@ private fun ImagesSection(
                     .padding(horizontal = 16.dp)
                     .fillMaxWidth()
                     .height(246.dp)
-                    .clip(RoundedCornerShape(16.dp))
+                    .clip(RoundedCornerShape(16.dp)),
+                contentScale = ContentScale.FillBounds
             )
         }
 
@@ -393,119 +396,60 @@ private fun TitleSection(
                     .weight(1f)
                     .padding(start = 16.dp, top = 8.dp)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_location),
-                        contentDescription = stringResource(R.string.location),
-                        tint = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.size(16.dp)
-                    )
-
-                    Text(
-                        text = location,
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.padding(start = 6.dp)
-                    )
-                }
+                DataRow(
+                    icon = R.drawable.ic_location,
+                    iconDescription = stringResource(R.string.location),
+                    text = location,
+                    modifier = Modifier.fillMaxWidth()
+                )
 
                 if (isLandmark) {
-                    Row(
+                    DataRow(
+                        icon = R.drawable.ic_rating_star,
+                        iconDescription = null,
+                        text = stringResource(
+                            id = R.string.reviews_average_total,
+                            reviewsAverage,
+                            reviewsCount
+                        ),
+                        iconTint = Color(0xFFFF8D18),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_rating_star),
-                            contentDescription = null,
-                            tint = Color(0xFFFF8D18),
-                            modifier = Modifier.size(16.dp)
-                        )
-
-                        Text(
-                            text = stringResource(
-                                id = R.string.reviews_average_total,
-                                reviewsAverage,
-                                reviewsCount
-                            ),
-                            style = MaterialTheme.typography.titleLarge,
-                            color = MaterialTheme.colorScheme.onBackground,
-                            modifier = Modifier.padding(start = 6.dp)
-                        )
-                    }
+                            .padding(top = 8.dp)
+                    )
                 }
 
                 if (tourismTypes.isNotEmpty()) {
-                    Row(
+                    DataRow(
+                        icon = R.drawable.ic_landmarks,
+                        iconDescription = stringResource(R.string.tourism_types),
+                        text = tourismTypes,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_landmarks),
-                            contentDescription = stringResource(R.string.tourism_types),
-                            tint = MaterialTheme.colorScheme.onBackground,
-                            modifier = Modifier.size(16.dp)
-                        )
-
-                        Text(
-                            text = tourismTypes,
-                            style = MaterialTheme.typography.titleLarge,
-                            color = MaterialTheme.colorScheme.onBackground,
-                            modifier = Modifier.padding(start = 6.dp)
-                        )
-                    }
+                            .padding(top = 8.dp)
+                    )
                 }
 
                 if (artifactType.isNotEmpty()) {
-                    Row(
+                    DataRow(
+                        icon = R.drawable.ic_artifacts,
+                        iconDescription = stringResource(R.string.artifact_type),
+                        text = artifactType,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_artifacts),
-                            contentDescription = stringResource(R.string.artifact_type),
-                            tint = MaterialTheme.colorScheme.onBackground,
-                            modifier = Modifier.size(16.dp)
-                        )
-
-                        Text(
-                            text = artifactType,
-                            style = MaterialTheme.typography.titleLarge,
-                            color = MaterialTheme.colorScheme.onBackground,
-                            modifier = Modifier.padding(start = 6.dp)
-                        )
-                    }
+                            .padding(top = 8.dp)
+                    )
                 }
 
                 if (artifactMaterials.isNotEmpty()) {
-                    Row(
+                    DataRow(
+                        icon = R.drawable.ic_materials,
+                        iconDescription = stringResource(R.string.artifact_materials),
+                        text = artifactMaterials,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_materials),
-                            contentDescription = stringResource(R.string.artifact_materials),
-                            tint = MaterialTheme.colorScheme.onBackground,
-                            modifier = Modifier.size(16.dp)
-                        )
-
-                        Text(
-                            text = artifactMaterials,
-                            style = MaterialTheme.typography.titleLarge,
-                            color = MaterialTheme.colorScheme.onBackground,
-                            modifier = Modifier.padding(start = 6.dp)
-                        )
-                    }
+                            .padding(top = 8.dp)
+                    )
                 }
             }
 
