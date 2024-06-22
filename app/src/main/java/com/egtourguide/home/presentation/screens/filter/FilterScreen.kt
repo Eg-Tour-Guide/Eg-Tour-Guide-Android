@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
@@ -31,6 +32,7 @@ import com.egtourguide.R
 import com.egtourguide.core.presentation.components.MainButton
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 import com.egtourguide.home.presentation.components.ChipFilter
+import com.egtourguide.home.presentation.components.DurationSlider
 import com.egtourguide.home.presentation.components.ScreenHeader
 
 
@@ -49,6 +51,7 @@ fun FilterScreen(
 
         ScreenContent(
             uiState = uiState,
+            durationUpdate = viewModel::changeDuration,
             addToSelectedList = viewModel::addSelectedFilters,
             removeFromSelectedList = viewModel::removeSelectedFilter,
             onNavigateBack = onNavigateBack
@@ -62,83 +65,106 @@ fun FilterScreen(
 private fun ScreenContent(
     modifier: Modifier = Modifier,
     uiState: FilterScreenState,
-    isSearch: Boolean = false,
-    isTours: Boolean = false,
-    isLandmarks: Boolean = false,
-    isArtifacts: Boolean = false,
+    isSearch: Boolean = true,
+    isTours: Boolean = true,
+    isLandmarks: Boolean = true,
+    isArtifacts: Boolean = true,
+    durationUpdate: (Int) -> Unit,
     addToSelectedList: (String) -> Unit,
     removeFromSelectedList: (String) -> Unit,
     onNavigateBack: () -> Unit
 ) {
-    Column(
+    LazyColumn(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .padding(start = 16.dp)
     ) {
         if (isSearch) {
-            FlowFilterSection(
-                text = stringResource(id = R.string.catogry),
-                list = uiState.categoryFilters!!,
-                addToSelectedList = addToSelectedList,
-                removeFromSelectedList = removeFromSelectedList
-            )
+            item {
+                FlowFilterSection(
+                    text = stringResource(id = R.string.catogry),
+                    list = uiState.categoryFilters!!,
+                    addToSelectedList = addToSelectedList,
+                    removeFromSelectedList = removeFromSelectedList
+                )
+            }
+
         }
         if (isLandmarks) {
-            FlowFilterSection(
-                text = stringResource(id = R.string.tourism_type),
-                list = uiState.tourismTypeFilters!!,
-                addToSelectedList = addToSelectedList,
-                removeFromSelectedList = removeFromSelectedList
-            )
-        }
-        if(isArtifacts){
-            FlowFilterSection(
-                text = stringResource(id = R.string.material),
-                list = uiState.materialList!!,
-                addToSelectedList = addToSelectedList,
-                removeFromSelectedList = removeFromSelectedList
-            )
-            FlowFilterSection(
-                text = stringResource(id = R.string.artifact_type),
-                list = uiState.artifactTypeList!!,
-                addToSelectedList = addToSelectedList,
-                removeFromSelectedList = removeFromSelectedList
-            )
-        }
-        if(isTours){
-            FlowFilterSection(
-                text = stringResource(id = R.string.material),
-                list = uiState.materialList!!,
-                addToSelectedList = addToSelectedList,
-                removeFromSelectedList = removeFromSelectedList
-            )
-        }
-        FlowFilterSection(
-            text = stringResource(id = R.string.location),
-            list = uiState.locationFilters!!,
-            addToSelectedList = addToSelectedList,
-            removeFromSelectedList = removeFromSelectedList
-        )
+            item {
+                FlowFilterSection(
+                    text = stringResource(id = R.string.tourism_type),
+                    list = uiState.tourismTypeFilters!!,
+                    addToSelectedList = addToSelectedList,
+                    removeFromSelectedList = removeFromSelectedList
+                )
+            }
 
-        FlowFilterSection(
-            text = stringResource(id = R.string.rating),
-            list = uiState.ratingFilters!!,
-            isRating = true,
-            addToSelectedList = addToSelectedList,
-            removeFromSelectedList = removeFromSelectedList
-        )
+        }
+        if (!isArtifacts) {
+            item {
+                FlowFilterSection(
+                    text = stringResource(id = R.string.material),
+                    list = uiState.materialList!!,
+                    addToSelectedList = addToSelectedList,
+                    removeFromSelectedList = removeFromSelectedList
+                )
 
-        FlowFilterSection(
-            text = stringResource(id = R.string.sortby),
-            list = uiState.sortList!!,
-            addToSelectedList = addToSelectedList,
-            removeFromSelectedList = removeFromSelectedList
-        )
+                FlowFilterSection(
+                    text = stringResource(id = R.string.artifact_type),
+                    list = uiState.artifactTypeList!!,
+                    addToSelectedList = addToSelectedList,
+                    removeFromSelectedList = removeFromSelectedList
+                )
+            }
+        }
+        if (isTours) {
+            item {
+                FlowFilterSection(
+                    text = stringResource(id = R.string.material),
+                    list = uiState.materialList!!,
+                    addToSelectedList = addToSelectedList,
+                    removeFromSelectedList = removeFromSelectedList
+                )
+                Text(
+                    text = stringResource(id = R.string.duration),
+                    style = MaterialTheme.typography.displayMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = modifier
+                        .padding(top = 16.dp)
+                )
+                DurationSlider(onValueChange = durationUpdate)
+            }
+        }
+        item {
+            FlowFilterSection(
+                text = stringResource(id = R.string.location),
+                list = uiState.locationFilters!!,
+                addToSelectedList = addToSelectedList,
+                removeFromSelectedList = removeFromSelectedList
+            )
+
+            FlowFilterSection(
+                text = stringResource(id = R.string.rating),
+                list = uiState.ratingFilters!!,
+                isRating = true,
+                addToSelectedList = addToSelectedList,
+                removeFromSelectedList = removeFromSelectedList
+            )
+
+            FlowFilterSection(
+                text = stringResource(id = R.string.sortby),
+                list = uiState.sortList!!,
+                addToSelectedList = addToSelectedList,
+                removeFromSelectedList = removeFromSelectedList
+            )
+        }
 
 
     }
 }
+
 //TODO(Handle isCategory)
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -146,7 +172,7 @@ private fun FlowFilterSection(
     modifier: Modifier = Modifier,
     text: String,
     list: List<Filter>,
-    isCategory:Boolean=false,
+    isCategory: Boolean = false,
     isRating: Boolean = false,
     addToSelectedList: (String) -> Unit,
     removeFromSelectedList: (String) -> Unit
@@ -156,40 +182,24 @@ private fun FlowFilterSection(
         color = MaterialTheme.colorScheme.onBackground,
         style = MaterialTheme.typography.displayMedium,
         modifier = Modifier
-            .padding(top = 16.dp, end = 16.dp)
+            .padding(top = 16.dp, end = 16.dp, bottom = 16.dp)
     )
-    val context= LocalContext.current
-    FlowRow {
-        for (item in list) {
+
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+        list.forEach { item ->
             ChipFilter(
                 text = item.label,
                 isRating = isRating,
                 selected = item.isSelected,
-                onClick = {
-                    if (!item.isSelected) {
-                        item.isSelected = true
-                        addToSelectedList(item.label)
-                        Toast.makeText(context,item.label,Toast.LENGTH_SHORT).show()
-                    } else {
-                        removeFromSelectedList(item.label)
-                        item.isSelected = false
-                    }
-                },
+                addSelectedFilter = addToSelectedList,
+                removeSelectedFilter = removeFromSelectedList,
                 modifier = modifier
-                    .padding(end = 16.dp, top = 16.dp, bottom = 16.dp)
             )
         }
     }
 }
 
 
-@Composable
-private fun DurationSlider(modifier: Modifier = Modifier) {
-    var value by remember {
-        mutableFloatStateOf(1f)
-    }
-//    Slider(value = value, onValueChange = )
-}
 @Preview(showBackground = true)
 @Composable
 private fun FilterScreenReview() {

@@ -2,7 +2,6 @@ package com.egtourguide.home.presentation.components
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FilterChip
@@ -11,6 +10,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -26,16 +29,27 @@ fun ChipFilter(
     text: String,
     isRating: Boolean = false,
     selected: Boolean = false,
-    onClick: () -> Unit = {}
+    addSelectedFilter:(String)->Unit,
+    removeSelectedFilter:(String)->Unit
 ) {
+    var isSelected by remember {
+        mutableStateOf(selected)
+    }
     //TODO(Edit Here colors, shape)
     FilterChip(
-        selected = selected,
-        onClick = onClick,
+        selected = isSelected,
+        onClick = {
+            if(isSelected){
+                addSelectedFilter(text)
+            }else{
+                removeSelectedFilter(text)
+            }
+            isSelected = !isSelected
+        },
         colors = FilterChipDefaults.filterChipColors(
-            containerColor = if (!selected) MaterialTheme.colorScheme.primaryContainer
+            containerColor = if (!isSelected) MaterialTheme.colorScheme.primaryContainer
             else MaterialTheme.colorScheme.onPrimaryContainer,
-            labelColor = if (!selected) MaterialTheme.colorScheme.onBackground
+            labelColor = if (!isSelected) MaterialTheme.colorScheme.onBackground
             else MaterialTheme.colorScheme.onPrimary,
             selectedContainerColor = MaterialTheme.colorScheme.onPrimaryContainer,
             selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
@@ -77,6 +91,6 @@ fun ChipFilter(
 @Composable
 private fun ChipFilterReview() {
     EGTourGuideTheme {
-        ChipFilter(text = "Hi", selected = true, isRating = true)
+        ChipFilter(text = "Hi", selected = false, isRating = false, addSelectedFilter = {}, removeSelectedFilter = {})
     }
 }

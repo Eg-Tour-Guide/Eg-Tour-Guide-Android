@@ -6,7 +6,7 @@ data class FilterScreenState(
     var locationFilters: List<Filter>?= listOf(Filter("Test1",false),Filter("Test2",true)),
     var ratingFilters: List<Filter>?= listOf(Filter("Test1",false),Filter("Test2",true)),
     var tourismTypeFilters: List<Filter>?= listOf(Filter("Test1",false),Filter("Test2",true)),
-    var artifactTypeList: List<Filter>?= listOf(Filter("Test1",false),Filter("Test2",true)),
+    var artifactTypeList: List<Filter>?= listOf(Filter("Test1",false),Filter("Test2",true),Filter("Test2",true),Filter("Test2",true),Filter("Test2",true),Filter("Test2",true),Filter("Test2",true),Filter("Test2",true),Filter("Test2",true),Filter("Test2",true),Filter("Test2",true)),
     var materialList: List<Filter>?= listOf(Filter("Test1",false),Filter("Test2",true)),
     var sortList: List<Filter>?= listOf(Filter("Test1",false),Filter("Test2",true)),
     val duration: Int=0
