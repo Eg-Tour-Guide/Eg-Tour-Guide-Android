@@ -88,4 +88,5 @@
     <string name="sortby">Sort By</string>
     <string name="tourism_type">Tourism Type</string>
     <string name="material">Material</string>
+    <string name="duration">Duration</string>
 </resources>
