@@ -15,18 +15,18 @@ import retrofit2.http.Path
 
 interface AuthApi {
 
-    @POST("auth/forget-password")
+    @POST("api/v1/auth/forget-password")
     suspend fun getForgotPasswordCode(
         @Body requestBody: ForgotPasswordRequestBody
     ): ForgotPasswordResponseDTO
 
-    @PATCH("auth/reset-password/{code}")
+    @PATCH("api/v1/auth/reset-password/{code}")
     suspend fun resetPassword(
         @Body requestBody: ResetPasswordRequestBody,
         @Path("code") code: String
     )
 
-    @POST("auth/login")
+    @POST("api/v1/auth/login")
     suspend fun login(
         @Body requestBody: LoginRequestBody
     ): LoginResponseDTO

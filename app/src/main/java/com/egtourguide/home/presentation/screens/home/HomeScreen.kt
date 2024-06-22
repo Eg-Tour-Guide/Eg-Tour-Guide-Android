@@ -3,7 +3,10 @@ package com.egtourguide.home.presentation.screens.home
 import android.annotation.SuppressLint
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -53,6 +56,7 @@ import com.egtourguide.home.domain.model.Event
 import com.egtourguide.home.domain.model.Place
 import com.egtourguide.home.presentation.components.BottomBar
 import com.egtourguide.home.presentation.components.BottomBarScreens
+import com.egtourguide.home.presentation.components.LoadingState
 import com.egtourguide.home.presentation.components.PlaceItem
 import com.egtourguide.home.presentation.components.ScreenHeader
 import kotlinx.coroutines.delay
@@ -81,7 +85,6 @@ fun HomeScreen(
             BottomBar(
                 selectedScreen = BottomBarScreens.Home
             ) { selectedScreen ->
-                Log.d("```TAG```", "HomeScreen: $selectedScreen")
                 when (selectedScreen) {
                     BottomBarScreens.Home -> {}
                     BottomBarScreens.Tours -> onNavigateToTours()
@@ -92,21 +95,49 @@ fun HomeScreen(
             }
         }
     ) {
-        HomeScreenContent(
-            events = uiState.events,
-            suggestedPlaces = uiState.suggestedPlaces,
-            topRatedPlaces = uiState.topRatedPlaces,
-            explorePlaces = uiState.explorePlaces,
-            recentlyAddedPlaces = uiState.recentlyAddedPlaces,
-            mightLikePlaces = uiState.mightLikePlaces,
-            recentlyViewedPlaces = uiState.recentlyViewedPlaces,
-            onSearchClicked = onNavigateToSearch,
-            onNotificationClicked = onNavigateToNotification,
-            onPlaceClicked = onNavigateToSinglePlace,
-            onMoreClicked = onNavigateToSingleCategory,
-            onEventClicked = onNavigateToEvent,
-            onSaveClicked = viewModel::onSaveClicked
-        )
+        Column(
+            Modifier
+                .padding(bottom = 60.dp)
+                .fillMaxSize()
+                .background(color = MaterialTheme.colorScheme.background)
+        ) {
+            ScreenHeader(
+                modifier = Modifier.height(62.dp),
+                showLogo = true,
+                showNotifications = true,
+                showSearch = true,
+                onNotificationsClicked = onNavigateToNotification,
+                onSearchClicked = onNavigateToSearch
+            )
+
+            AnimatedVisibility(
+                visible = uiState.isLoading,
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
+                LoadingState(modifier = Modifier.fillMaxSize())
+            }
+
+            AnimatedVisibility(
+                visible = !uiState.isLoading,
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
+                HomeScreenContent(
+                    events = uiState.events,
+                    suggestedPlaces = uiState.suggestedPlaces,
+                    topRatedPlaces = uiState.topRatedPlaces,
+                    explorePlaces = uiState.explorePlaces,
+                    recentlyAddedPlaces = uiState.recentlyAddedPlaces,
+                    mightLikePlaces = uiState.mightLikePlaces,
+                    recentlyViewedPlaces = uiState.recentlyViewedPlaces,
+                    onPlaceClicked = onNavigateToSinglePlace,
+                    onMoreClicked = onNavigateToSingleCategory,
+                    onEventClicked = onNavigateToEvent,
+                    onSaveClicked = viewModel::onSaveClicked
+                )
+            }
+        }
     }
 
     DisposableEffect(key1 = lifecycleOwner) {
@@ -136,7 +167,6 @@ fun HomeScreen(
             viewModel.clearSaveSuccess()
         }
     }
-
 }
 
 @Composable
@@ -148,30 +178,15 @@ private fun HomeScreenContent(
     recentlyAddedPlaces: List<Place> = emptyList(),
     mightLikePlaces: List<Place> = emptyList(),
     recentlyViewedPlaces: List<Place> = emptyList(),
-    onSearchClicked: () -> Unit = {},
-    onNotificationClicked: () -> Unit = {},
     onEventClicked: (Event) -> Unit = {},
     onPlaceClicked: (Place) -> Unit = {},
     onSaveClicked: (Place) -> Unit = {},
     onMoreClicked: (Section) -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
-
     Column(
-        Modifier
-            .padding(bottom = 60.dp)
-            .fillMaxSize()
-            .background(color = MaterialTheme.colorScheme.background)
-            .verticalScroll(state = scrollState)
+        Modifier.verticalScroll(state = scrollState)
     ) {
-        ScreenHeader(
-            modifier = Modifier.height(62.dp),
-            showLogo = true,
-            showNotifications = true,
-            showSearch = true,
-            onNotificationsClicked = onNotificationClicked,
-            onSearchClicked = onSearchClicked
-        )
         UpcomingEventsSection(
             events = events,
             onEventClicked = onEventClicked
@@ -234,7 +249,6 @@ private fun HomeScreenContent(
             onPlaceClicked = onPlaceClicked,
             onSaveClicked = onSaveClicked
         )
-        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 

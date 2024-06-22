@@ -56,4 +56,8 @@ class HomeRepositoryImpl @Inject constructor(private val homeApi: HomeApi) : Hom
     override suspend fun getSearchHistory() = safeCall {
         homeApi.getSearchHistory().search.map { it.search }
     }
+
+    override suspend fun deleteSearchHistory() = safeCall {
+        homeApi.deleteSearchHistory()
+    }
 }

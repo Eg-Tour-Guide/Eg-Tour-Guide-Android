@@ -6,7 +6,10 @@ data class SearchResult(
     val name: String,
     val location: String,
     val isSaved: Boolean,
-    val isLandmark: Boolean,
+    val isArtifact: Boolean,
+    val category: String? = null,
+    val material: String? = null,
+    val artifactType: String? = null,
     val rating: Float? = null,
     val ratingCount: Int? = null
 )

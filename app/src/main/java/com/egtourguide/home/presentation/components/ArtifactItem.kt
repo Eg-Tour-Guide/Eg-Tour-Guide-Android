@@ -46,7 +46,7 @@ fun ArtifactItem(
     Column(
         modifier = Modifier
             .width(144.dp)
-            .height(190.dp)
+            .height(205.dp)
             .background(
                 color = MaterialTheme.colorScheme.primaryContainer,
                 shape = RoundedCornerShape(12.dp)
@@ -91,6 +91,7 @@ fun ArtifactItem(
                     contentDescription = "Location Icon"
                 )
                 Text(
+                    modifier = Modifier.fillMaxWidth(.90f),
                     text = " ${artifact.museumName}",
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -111,6 +112,22 @@ fun ArtifactItem(
                 )
             }
         }
+        Spacer(modifier = Modifier.height(4.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                modifier = Modifier.padding(end = 2.dp),
+                painter = painterResource(id = R.drawable.ic_artifacts_selected),
+                tint = Color.Unspecified,
+                contentDescription = "Location Icon"
+            )
+            Text(
+                text = artifact.type,
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+        }
     }
 }
 
@@ -124,6 +141,8 @@ private fun ArtifactItemPreview() {
                 name = "Pyramids",
                 image = "https://www.worldhistory.org/uploads/images/5687.jpg",
                 museumName = "Giza",
+                material = "Stone",
+                type = "Statues",
                 isSaved = false,
             ),
             onArtifactClicked = {},

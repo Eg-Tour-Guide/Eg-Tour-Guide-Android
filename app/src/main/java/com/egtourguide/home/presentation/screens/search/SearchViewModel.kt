@@ -3,6 +3,7 @@ package com.egtourguide.home.presentation.screens.search
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.egtourguide.core.utils.onResponse
+import com.egtourguide.home.domain.usecases.DeleteSearchHistoryUseCase
 import com.egtourguide.home.domain.usecases.GetSearchHistoryUseCase
 import com.egtourguide.home.domain.usecases.SearchUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,6 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val getSearchHistoryUseCase: GetSearchHistoryUseCase,
+    private val deleteSearchHistoryUseCase: DeleteSearchHistoryUseCase,
     private val getSearchSuggestionsUseCase: SearchUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(SearchUIState())
@@ -25,45 +27,80 @@ class SearchViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             getSearchHistoryUseCase().onResponse(
                 onLoading = {
-                    _uiState.update { it.copy(isLoading = true) }
+                    _uiState.update { it.copy(isRecentSearchesLoading = true) }
                 },
                 onSuccess = { response ->
-                    _uiState.update { it.copy(isLoading = false, searchHistory = response) }
+                    _uiState.update {
+                        it.copy(
+                            isRecentSearchesLoading = false,
+                            searchHistory = response.reversed().take(5)
+                        )
+                    }
                 },
                 onFailure = { error ->
-                    _uiState.update { it.copy(isLoading = false, error = error) }
+                    _uiState.update { it.copy(isRecentSearchesLoading = false, error = error) }
                 }
             )
         }
     }
 
     fun getSearchSuggestions() {
-        viewModelScope.launch(Dispatchers.IO) {
-            getSearchSuggestionsUseCase(query = uiState.value.searchQuery).onResponse(
-                onLoading = {
-                    _uiState.update { it.copy(isLoading = true) }
-                },
-                onSuccess = { response ->
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            searchSuggestions = response.map { result -> result.name }
-                        )
+        if (uiState.value.searchQuery.isNotEmpty()) {
+            viewModelScope.launch(Dispatchers.IO) {
+                getSearchSuggestionsUseCase(query = uiState.value.searchQuery).onResponse(
+                    onLoading = {
+                        _uiState.update { it.copy(isSearchLoading = true) }
+                    },
+                    onSuccess = { response ->
+                        _uiState.update {
+                            it.copy(
+                                isSearchLoading = false,
+                                searchSuggestions = response.map { result -> result.name }
+                            )
+                        }
+                    },
+                    onFailure = { error ->
+                        _uiState.update { it.copy(isSearchLoading = false, error = error) }
                     }
-                },
-                onFailure = { error ->
-                    _uiState.update { it.copy(isLoading = false, error = error) }
-                }
-            )
+                )
+            }
         }
     }
 
     fun updateSearchQuery(newQuery: String) {
+        if (newQuery.isEmpty()) {
+            _uiState.update {
+                it.copy(searchSuggestions = emptyList())
+            }
+            getSearchHistory()
+        }
         _uiState.update { it.copy(searchQuery = newQuery) }
     }
 
     fun clearHistory() {
-
+        viewModelScope.launch(Dispatchers.IO) {
+            deleteSearchHistoryUseCase().onResponse(
+                onLoading = {
+                    _uiState.update { it.copy(isClearHistoryLoading = true) }
+                },
+                onSuccess = {
+                    _uiState.update {
+                        it.copy(
+                            searchHistory = emptyList(),
+                            isClearHistoryLoading = false
+                        )
+                    }
+                },
+                onFailure = { error ->
+                    _uiState.update {
+                        it.copy(
+                            error = error,
+                            isClearHistoryLoading = false
+                        )
+                    }
+                }
+            )
+        }
     }
 
     fun clearError() {

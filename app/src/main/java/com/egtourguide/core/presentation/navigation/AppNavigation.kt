@@ -1,9 +1,12 @@
 package com.egtourguide.core.presentation.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.egtourguide.auth.presentation.forgotPassword.ForgotPasswordScreen
 import com.egtourguide.auth.presentation.login.LoginScreen
 import com.egtourguide.auth.presentation.otp.OtpScreen
@@ -18,7 +21,9 @@ import com.egtourguide.home.presentation.screens.landmarks_list.LandmarksListScr
 import com.egtourguide.home.presentation.screens.moreReviews.MoreReviewsScreenRoot
 import com.egtourguide.home.presentation.screens.review.ReviewScreen
 import com.egtourguide.home.presentation.screens.search.SearchScreen
+import com.egtourguide.home.presentation.screens.search_results.SearchResultsScreen
 import com.egtourguide.home.presentation.screens.tours_list.ToursListScreen
+import com.google.gson.Gson
 
 @Composable
 fun AppNavigation(
@@ -141,12 +146,32 @@ fun AppNavigation(
 
 
         /** Home Screens */
+        composable(route = AppScreen.Expanded.route) { entry ->
+            val id = entry.arguments?.getString("id") ?: ""
+            val isLandmark = entry.arguments?.getString("isLandmark").toBoolean()
 
-        // TODO: Change to home screen!!
+            ExpandedScreenRoot(
+                id = id,
+                isLandmark = isLandmark,
+                onBackClicked = { navController.navigateUp() },
+                onSeeMoreClicked = {
+                    navController.navigate(route = AppScreen.MoreReviews.route)
+                },
+                onReviewClicked = {
+                    navController.navigate(route = AppScreen.Review.route)
+                }
+            )
+        }
+
         composable(route = AppScreen.Home.route) {
             HomeScreen(
                 onNavigateToSearch = {
-                    navController.navigate(route = AppScreen.Search.route)
+                    navController.navigate(
+                        route = AppScreen.Search.route.replace(
+                            "{selected_bottom_bar_item}",
+                            BottomBarScreens.Home.name
+                        )
+                    )
                 },
                 onNavigateToNotification = {
 
@@ -166,7 +191,11 @@ fun AppNavigation(
                     }
                 },
                 onNavigateToLandmarks = {
-                    navController.navigate(route = AppScreen.LandmarksList.route) {
+                    val hasMap = hashMapOf("Sort By" to listOf("1"))
+                    val hasMapJson = Gson().toJson(hasMap)
+                    navController.navigate(
+                        route = AppScreen.LandmarksList.route + "/$hasMapJson"
+                    ) {
                         popUpTo(route = AppScreen.Home.route)
                     }
                 },
@@ -181,30 +210,34 @@ fun AppNavigation(
             )
         }
 
-        composable(route = AppScreen.Expanded.route) { entry ->
-            val id = entry.arguments?.getString("id") ?: ""
-            val isLandmark = entry.arguments?.getString("isLandmark").toBoolean()
-
-            ExpandedScreenRoot(
-                id = id,
-                isLandmark = isLandmark,
-                onBackClicked = { navController.navigateUp() },
-                onSeeMoreClicked = {
-                    navController.navigate(route = AppScreen.MoreReviews.route)
-                },
-                onReviewClicked = {
-                    navController.navigate(route = AppScreen.Review.route)
+        composable(
+            route = AppScreen.LandmarksList.route,
+            arguments = listOf(
+                navArgument("filters") {
+                    type = NavType.StringType
+                    nullable = true
                 }
             )
-        }
+        ) { backStackEntry ->
+            val filtersJson = backStackEntry.arguments?.getString("filters")
+            var filters: HashMap<*, *>? = null
+            filtersJson?.let {
+                Log.d("```TAG```", "AppNavigation: ${filtersJson.substringAfter('/')}")
+                filters = Gson().fromJson(filtersJson.substringAfter('/'), HashMap::class.java)
+            }
 
-        composable(route = AppScreen.LandmarksList.route) {
             LandmarksListScreen(
+                filters = filters,
                 onNavigateToNotification = {
 
                 },
                 onNavigateToSearch = {
-
+                    navController.navigate(
+                        route = AppScreen.Search.route.replace(
+                            "{selected_bottom_bar_item}",
+                            BottomBarScreens.Landmarks.name
+                        )
+                    )
                 },
                 onNavigateToFilters = {
 
@@ -231,12 +264,24 @@ fun AppNavigation(
             )
         }
 
-        composable(route = AppScreen.ArtifactsList.route) {
-            ArtifactsListScreen(
-                onNavigateToNotification = {
+        composable(route = AppScreen.ArtifactsList.route) { backStackEntry ->
+            val filtersJson = backStackEntry.arguments?.getString("filters")
+            var filters: HashMap<*, *>? = null
+            filtersJson?.let {
+                filters = Gson().fromJson(filtersJson, HashMap::class.java)
+            }
 
-                },
+            ArtifactsListScreen(
+                filters = filters,
                 onNavigateToSearch = {
+                    navController.navigate(
+                        route = AppScreen.Search.route.replace(
+                            "{selected_bottom_bar_item}",
+                            BottomBarScreens.Artifacts.name
+                        )
+                    )
+                },
+                onNavigateToNotification = {
 
                 },
                 onNavigateToFilters = {
@@ -270,7 +315,12 @@ fun AppNavigation(
 
                 },
                 onNavigateToSearch = {
-
+                    navController.navigate(
+                        route = AppScreen.Search.route.replace(
+                            "{selected_bottom_bar_item}",
+                            BottomBarScreens.Tours.name
+                        )
+                    )
                 },
                 onNavigateToFilters = {
 
@@ -312,28 +362,72 @@ fun AppNavigation(
             )
         }
 
-        composable(route = AppScreen.Search.route) {
-            SearchScreen(
-                bottomBarSelectedScreen = BottomBarScreens.Home,
-                onNavigateToHome = {
-
-                },
-                onNavigateToTours = {
-
-                },
-                onNavigateToLandmarks = {
-
-                },
-                onNavigateToArtifacts = {
-
-                },
-                onNavigateToUser = {
-
-                },
-                onNavigateToSearchResults = {
-
-                }
+        composable(route = AppScreen.Search.route) { navBackStackEntry ->
+            val selectedBottomBarItemString = navBackStackEntry.arguments?.getString(
+                "selected_bottom_bar_item"
             )
+            selectedBottomBarItemString?.let { item ->
+                val selectedBottomBarItem = when (item) {
+                    "Home" -> BottomBarScreens.Home
+                    "Landmarks" -> BottomBarScreens.Landmarks
+                    "Artifacts" -> BottomBarScreens.Artifacts
+                    "Tours" -> BottomBarScreens.Tours
+                    "User" -> BottomBarScreens.User
+                    else -> BottomBarScreens.Home
+                }
+                SearchScreen(
+                    bottomBarSelectedScreen = selectedBottomBarItem,
+                    onNavigateToHome = {
+                        navController.navigate(route = AppScreen.Home.route) {
+                            popUpTo(route = AppScreen.Home.route) {
+                                inclusive = true
+                            }
+                        }
+                    },
+                    onNavigateToTours = {
+                        navController.navigate(route = AppScreen.ToursList.route) {
+                            popUpTo(route = AppScreen.Home.route)
+                        }
+                    },
+                    onNavigateToLandmarks = {
+                        navController.navigate(route = AppScreen.LandmarksList.route) {
+                            popUpTo(route = AppScreen.Home.route)
+                        }
+                    },
+                    onNavigateToArtifacts = {
+                        navController.navigate(route = AppScreen.ArtifactsList.route) {
+                            popUpTo(route = AppScreen.Home.route)
+                        }
+                    },
+                    onNavigateToUser = {
+
+                    },
+                    onNavigateToSearchResults = { query ->
+                        navController.navigate(
+                            route = AppScreen.SearchResults.route.replace(
+                                "{query}",
+                                query
+                            )
+                        )
+                    }
+                )
+            }
         }
+
+        composable(route = AppScreen.SearchResults.route) { navBackStackEntry ->
+            val query = navBackStackEntry.arguments?.getString("query")
+            val selectedBottomBarItem =
+                navBackStackEntry.arguments?.getString("selected_bottom_bar_item")
+            query?.let {
+                SearchResultsScreen(
+                    query = it,
+                )
+            }
+        }
+
     }
 }
+
+
+
+

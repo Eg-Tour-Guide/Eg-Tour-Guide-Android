@@ -1,5 +1,6 @@
 package com.egtourguide.home.presentation.screens.landmarks_list
 
+import android.media.Rating
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.egtourguide.core.utils.onResponse
@@ -22,6 +23,8 @@ class LandmarksListViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(LandmarksListUIState())
     val uiState = _uiState.asStateFlow()
+    var filters: HashMap<*, *>? = null
+
     fun onSaveClicked(place: Place) {
         viewModelScope.launch(Dispatchers.IO) {
             changePlaceSavedStateUseCase(placeId = place.id).onResponse(
@@ -46,7 +49,8 @@ class LandmarksListViewModel @Inject constructor(
                     _uiState.update { it.copy(isLoading = false, error = error) }
                 },
                 onSuccess = { response ->
-                    _uiState.update { it.copy(isLoading = false, landmarks = response) }
+                    val landmarks = filterLandmarks(landMarks = response, filters = filters)
+                    _uiState.update { it.copy(isLoading = false, landmarks = landmarks) }
                 }
             )
         }
@@ -60,4 +64,44 @@ class LandmarksListViewModel @Inject constructor(
         _uiState.update { it.copy(saveError = null) }
     }
 
+    private fun filterLandmarks(
+        landMarks: List<Place>,
+        filters: HashMap<*, *>?
+    ): List<Place> {
+        var resultedList = landMarks
+        filters?.forEach { (filterKey, filterValue) ->
+            filterKey as String
+            filterValue as List<String>
+            when (filterKey) {
+                "Tourism Type" -> {
+                    resultedList = resultedList.filter { item ->
+                        filterValue.contains(item.category)
+                    }
+                }
+
+                "Location" -> {
+                    resultedList = resultedList.filter { item ->
+                        filterValue.contains(item.location)
+                    }
+                }
+
+                "Rating" -> {
+                    val ratingValue = filterValue.first().toInt()
+                    resultedList = resultedList.filter { item ->
+                        item.rating >= ratingValue
+                    }
+                }
+
+                "Sort By" -> {
+                    val sortType = filterValue.first().toInt()
+                    resultedList = if (sortType == 0) {
+                        resultedList.sortedBy { item -> item.rating }
+                    } else {
+                        resultedList.sortedByDescending { item -> item.rating }
+                    }
+                }
+            }
+        }
+        return resultedList
+    }
 }

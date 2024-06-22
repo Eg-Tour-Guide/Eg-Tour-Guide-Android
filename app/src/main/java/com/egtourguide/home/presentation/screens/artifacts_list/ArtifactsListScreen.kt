@@ -2,6 +2,9 @@ package com.egtourguide.home.presentation.screens.artifacts_list
 
 import android.annotation.SuppressLint
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -42,12 +45,15 @@ import com.egtourguide.home.domain.model.AbstractedArtifact
 import com.egtourguide.home.presentation.components.ArtifactItem
 import com.egtourguide.home.presentation.components.BottomBar
 import com.egtourguide.home.presentation.components.BottomBarScreens
+import com.egtourguide.home.presentation.components.LoadingState
 import com.egtourguide.home.presentation.components.ScreenHeader
+import java.util.HashMap
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ArtifactsListScreen(
     viewModel: ArtifactsListViewModel = hiltViewModel(),
+    filters: HashMap<*, *>? = null,
     onNavigateToSearch: () -> Unit = {},
     onNavigateToNotification: () -> Unit = {},
     onNavigateToFilters: () -> Unit = {},
@@ -60,7 +66,7 @@ fun ArtifactsListScreen(
     val uiState by viewModel.uiState.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
-
+    viewModel.filters=filters
     Scaffold(
         bottomBar = {
             BottomBar(
@@ -77,7 +83,7 @@ fun ArtifactsListScreen(
         }
     ) {
         ArtifactsListScreenContent(
-            artifacts = uiState.artifacts,
+            uiState = uiState,
             onSearchClicked = onNavigateToSearch,
             onNotificationClicked = onNavigateToNotification,
             onFilterClicked = onNavigateToFilters,
@@ -117,7 +123,7 @@ fun ArtifactsListScreen(
 
 @Composable
 fun ArtifactsListScreenContent(
-    artifacts: List<AbstractedArtifact>,
+    uiState: ArtifactsListUIState,
     onSearchClicked: () -> Unit,
     onNotificationClicked: () -> Unit,
     onFilterClicked: () -> Unit,
@@ -140,15 +146,28 @@ fun ArtifactsListScreenContent(
         )
         Spacer(modifier = Modifier.height(18.dp))
         ArtifactsHeader(
-            artifactsCount = artifacts.size,
+            artifactsCount = uiState.artifacts.size,
             onFilterClicked = onFilterClicked
         )
         Spacer(modifier = Modifier.height(16.dp))
-        ArtifactsSection(
-            artifacts = artifacts,
-            onArtifactClicked = onArtifactClicked,
-            onSaveClicked = onSaveClicked
-        )
+        AnimatedVisibility(
+            visible = uiState.isLoading,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            LoadingState(modifier = Modifier.fillMaxSize())
+        }
+        AnimatedVisibility(
+            visible = !uiState.isLoading,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            ArtifactsSection(
+                artifacts = uiState.artifacts,
+                onArtifactClicked = onArtifactClicked,
+                onSaveClicked = onSaveClicked
+            )
+        }
     }
 }
 

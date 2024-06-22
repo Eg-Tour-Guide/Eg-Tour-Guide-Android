@@ -14,10 +14,11 @@ object ScreenRoutes {
 
     // Home Routes
     const val EXPANDED_SCREEN_ROUTE = "EXPANDED_SCREEN_ROUTE/{id}/{isLandmark}"
-    const val LANDMARKS_LIST_SCREEN_ROUTE = "LANDMARKS_LIST_SCREEN_ROUTE"
+    const val LANDMARKS_LIST_SCREEN_ROUTE = "LANDMARKS_LIST_SCREEN_ROUTE?filters={filters}"
     const val ARTIFACTS_LIST_SCREEN_ROUTE = "ARTIFACTS_LIST_SCREEN_ROUTE"
     const val MORE_REVIEWS_ROUTE = "MORE_REVIEWS_ROUTE"
     const val REVIEW_SCREEN_ROUTE = "REVIEW_SCREEN_ROUTE"
     const val TOURS_SCREEN_ROUTE = "TOURS_SCREEN_ROUTE"
-    const val SEARCH_SCREEN_ROUTE = "SEARCH_SCREEN_ROUTE"
+    const val SEARCH_SCREEN_ROUTE = "SEARCH_SCREEN_ROUTE/{selected_bottom_bar_item}"
+    const val SEARCH_RESULTS_SCREEN_ROUTE = "SEARCH_RESULTS_SCREEN_ROUTE/{query}/{selected_bottom_bar_item}"
 }

@@ -35,6 +35,7 @@ class HomeViewModel @Inject constructor(
                 onSuccess = { response ->
                     _uiState.update {
                         it.copy(
+                            isLoading = false,
                             events = response.event,
                             suggestedPlaces = response.suggestedForYou,
                             topRatedPlaces = response.topRated,
@@ -51,7 +52,6 @@ class HomeViewModel @Inject constructor(
 
     fun onSaveClicked(place: Place) {
         viewModelScope.launch(Dispatchers.IO) {
-            Log.d("```TAG```", "onSaveClicked: ")
             changePlaceSavedStateUseCase(placeId = place.id).onResponse(
                 onLoading = {},
                 onSuccess = {

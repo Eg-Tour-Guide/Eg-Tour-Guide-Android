@@ -22,4 +22,5 @@ interface HomeRepository {
     suspend fun changeTourSavedState(tourId: String): Flow<ResultWrapper<Unit>>
     suspend fun search(query: String): Flow<ResultWrapper<List<SearchResult>>>
     suspend fun getSearchHistory(): Flow<ResultWrapper<List<String>>>
+    suspend fun deleteSearchHistory(): Flow<ResultWrapper<Unit>>
 }

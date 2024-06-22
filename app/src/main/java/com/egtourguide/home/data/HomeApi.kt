@@ -6,6 +6,7 @@ import com.egtourguide.home.data.dto.response.LandmarksListDto
 import com.egtourguide.home.data.dto.response.SearchHistoryDto
 import com.egtourguide.home.data.dto.response.SearchResultsDto
 import com.egtourguide.home.data.dto.response.ToursListDto
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -54,4 +55,7 @@ interface HomeApi {
 
     @GET("search-history")
     suspend fun getSearchHistory(): SearchHistoryDto
+
+    @DELETE("delete-search-history")
+    suspend fun deleteSearchHistory()
 }

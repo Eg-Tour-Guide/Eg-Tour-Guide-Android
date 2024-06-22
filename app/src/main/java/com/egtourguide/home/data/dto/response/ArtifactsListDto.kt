@@ -12,6 +12,8 @@ data class ArtifactsListDto(
         val image: String,
         val name: String,
         val saved: Boolean,
+        val type: String,
+        val material: String,
         val museumName: String
     ) {
         fun toDomainAbstractedArtifact(): AbstractedArtifact {
@@ -20,6 +22,8 @@ data class ArtifactsListDto(
                 name = name,
                 image = image,
                 isSaved = saved,
+                type = type,
+                material = material,
                 museumName = museumName
             )
         }
