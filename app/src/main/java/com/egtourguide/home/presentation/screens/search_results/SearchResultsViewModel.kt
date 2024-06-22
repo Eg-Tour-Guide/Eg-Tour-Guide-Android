@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.egtourguide.core.utils.onResponse
 import com.egtourguide.home.domain.model.SearchResult
+import com.egtourguide.home.domain.usecases.ChangeArtifactSavedStateUseCase
+import com.egtourguide.home.domain.usecases.ChangePlaceSavedStateUseCase
 import com.egtourguide.home.domain.usecases.SearchUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +17,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchResultsViewModel @Inject constructor(
-    private val searchUseCase: SearchUseCase
+    private val searchUseCase: SearchUseCase,
+    private val changePlaceSavedStateUseCase: ChangePlaceSavedStateUseCase,
+    private val changeArtifactSavedStateUseCase: ChangeArtifactSavedStateUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(SearchResultsUIState())
     val uiState = _uiState.asStateFlow()
@@ -37,6 +41,34 @@ class SearchResultsViewModel @Inject constructor(
     }
 
     fun onSaveClicked(item: SearchResult) {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (item.isArtifact) {
+                changeArtifactSavedStateUseCase(
+                    artifactId = item.id
+                ).onResponse(
+                    onLoading = {
 
+                    },
+                    onSuccess = {
+
+                    },
+                    onFailure = {
+
+                    }
+                )
+            }else{
+                changePlaceSavedStateUseCase(item.id).onResponse(
+                    onLoading = {
+
+                    },
+                    onSuccess = {
+
+                    },
+                    onFailure = {
+
+                    }
+                )
+            }
+        }
     }
 }

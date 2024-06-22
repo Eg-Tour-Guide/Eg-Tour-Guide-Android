@@ -1,9 +1,12 @@
 package com.egtourguide.core.presentation.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.egtourguide.auth.presentation.forgotPassword.ForgotPasswordScreen
 import com.egtourguide.auth.presentation.login.LoginScreen
 import com.egtourguide.auth.presentation.otp.OtpScreen
@@ -19,7 +22,9 @@ import com.egtourguide.home.presentation.screens.landmarks_list.LandmarksListScr
 import com.egtourguide.home.presentation.screens.moreReviews.MoreReviewsScreenRoot
 import com.egtourguide.home.presentation.screens.review.ReviewScreen
 import com.egtourguide.home.presentation.screens.search.SearchScreen
+import com.egtourguide.home.presentation.screens.search_results.SearchResultsScreen
 import com.egtourguide.home.presentation.screens.tours_list.ToursListScreen
+import com.google.gson.Gson
 
 @Composable
 fun AppNavigation(
@@ -152,8 +157,19 @@ fun AppNavigation(
                 onNavigateToNotification = {
 
                 },
-                onNavigateToSinglePlace = {
-
+                onNavigateToSinglePlace = { place ->
+                    navController.navigate(
+                        route = AppScreen.Expanded.route
+                            .replace("{id}", place.id)
+                            .replace("{isLandmark}", "true")
+                    )
+                },
+                onNavigateToDetectedArtifact = { artifact ->
+                    navController.navigate(
+                        route = AppScreen.Expanded.route
+                            .replace("{id}", artifact.id)
+                            .replace("{isLandmark}", "false")
+                    )
                 },
                 onNavigateToEvent = {
 
@@ -205,6 +221,40 @@ fun AppNavigation(
                                 .replace("?", "~~~")
                         )
                     )
+                    /*composable(
+                        route = AppScreen.LandmarksList.route,
+                        arguments = listOf(
+                            navArgument("filters") {
+                                type = NavType.StringType
+                                nullable = true
+                            }
+                        )
+                    ) { backStackEntry ->
+                        val filtersJson = backStackEntry.arguments?.getString("filters")
+                        var filters: HashMap<*, *>? = null
+                        filtersJson?.let {
+                            Log.d("```TAG```", "AppNavigation: ${filtersJson.substringAfter('/')}")
+                            filters = Gson().fromJson(
+                                filtersJson.substringAfter('/'),
+                                HashMap::class.java
+                            )
+                        }
+                    }*/
+
+
+                }
+            )
+        }
+        composable(route = AppScreen.WebView.route) { entry ->
+            val modelUrl = entry.arguments?.getString("modelUrl") ?: ""
+
+            WebViewScreen(
+                modelUrl = modelUrl
+                    .replace("...", "/")
+                    .replace("~~~", "?")
+            )
+        }
+
         composable(
             route = AppScreen.LandmarksList.route,
             arguments = listOf(
@@ -218,21 +268,11 @@ fun AppNavigation(
             var filters: HashMap<*, *>? = null
             filtersJson?.let {
                 Log.d("```TAG```", "AppNavigation: ${filtersJson.substringAfter('/')}")
-                filters = Gson().fromJson(filtersJson.substringAfter('/'), HashMap::class.java)
+                filters = Gson().fromJson(
+                    filtersJson.substringAfter('/'),
+                    HashMap::class.java
+                )
             }
-        }
-
-        composable(route = AppScreen.WebView.route) { entry ->
-            val modelUrl = entry.arguments?.getString("modelUrl") ?: ""
-
-            WebViewScreen(
-                modelUrl = modelUrl
-                    .replace("...", "/")
-                    .replace("~~~", "?")
-            )
-        }
-
-        composable(route = AppScreen.LandmarksList.route) {
             LandmarksListScreen(
                 filters = filters,
                 onNavigateToNotification = {
@@ -293,9 +333,6 @@ fun AppNavigation(
                     )
                 },
                 onNavigateToNotification = {
-
-                },
-                onNavigateToSearch = {
 
                 },
                 onNavigateToFilters = {
@@ -422,10 +459,9 @@ fun AppNavigation(
                     },
                     onNavigateToSearchResults = { query ->
                         navController.navigate(
-                            route = AppScreen.SearchResults.route.replace(
-                                "{query}",
-                                query
-                            )
+                            route = AppScreen.SearchResults.route
+                                .replace("{query}", query)
+                                .replace("{selected_bottom_bar_item}", selectedBottomBarItem.name)
                         )
                     }
                 )
@@ -434,11 +470,64 @@ fun AppNavigation(
 
         composable(route = AppScreen.SearchResults.route) { navBackStackEntry ->
             val query = navBackStackEntry.arguments?.getString("query")
-            val selectedBottomBarItem =
-                navBackStackEntry.arguments?.getString("selected_bottom_bar_item")
+            val selectedBottomBarItemString = navBackStackEntry.arguments?.getString(
+                "selected_bottom_bar_item"
+            )
+            var selectedItem = BottomBarScreens.Home
+            selectedBottomBarItemString?.let { item ->
+                selectedItem = when (item) {
+                    "Home" -> BottomBarScreens.Home
+                    "Landmarks" -> BottomBarScreens.Landmarks
+                    "Artifacts" -> BottomBarScreens.Artifacts
+                    "Tours" -> BottomBarScreens.Tours
+                    "User" -> BottomBarScreens.User
+                    else -> BottomBarScreens.Home
+                }
+            }
             query?.let {
                 SearchResultsScreen(
                     query = it,
+                    selectedBottomBarItem = selectedItem,
+                    onNavigateToSearch = {
+                        navController.navigateUp()
+                    },
+                    onNavigateToSingleItem = { item ->
+                        navController.navigate(
+                            route = AppScreen.Expanded.route
+                                .replace(
+                                    "{id}",
+                                    item.id
+                                ).replace(
+                                    "{isLandmark}",
+                                    "${!item.isArtifact}"
+                                )
+                        )
+                    },
+                    onNavigateToHome = {
+                        navController.navigate(route = AppScreen.Home.route) {
+                            popUpTo(route = AppScreen.Home.route) {
+                                inclusive = true
+                            }
+                        }
+                    },
+                    onNavigateToTours = {
+                        navController.navigate(route = AppScreen.ToursList.route) {
+                            popUpTo(route = AppScreen.Home.route)
+                        }
+                    },
+                    onNavigateToLandmarks = {
+                        navController.navigate(route = AppScreen.LandmarksList.route) {
+                            popUpTo(route = AppScreen.Home.route)
+                        }
+                    },
+                    onNavigateToArtifacts = {
+                        navController.navigate(route = AppScreen.ArtifactsList.route) {
+                            popUpTo(route = AppScreen.Home.route)
+                        }
+                    },
+                    onNavigateToUser = {
+
+                    }
                 )
             }
         }

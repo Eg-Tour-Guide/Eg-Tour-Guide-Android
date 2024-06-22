@@ -1,10 +1,16 @@
 package com.egtourguide.home.presentation.screens.home
 
+import android.Manifest
 import android.annotation.SuppressLint
-import android.util.Log
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -19,6 +25,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
@@ -26,6 +33,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -35,23 +43,30 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.egtourguide.R
 import com.egtourguide.core.presentation.components.MainImage
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
+import com.egtourguide.home.domain.model.DetectedArtifact
 import com.egtourguide.home.domain.model.Event
 import com.egtourguide.home.domain.model.Place
 import com.egtourguide.home.presentation.components.BottomBar
@@ -61,7 +76,6 @@ import com.egtourguide.home.presentation.components.PlaceItem
 import com.egtourguide.home.presentation.components.ScreenHeader
 import kotlinx.coroutines.delay
 
-
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(
@@ -69,6 +83,7 @@ fun HomeScreen(
     onNavigateToSearch: () -> Unit = {},
     onNavigateToNotification: () -> Unit = {},
     onNavigateToSinglePlace: (Place) -> Unit = {},
+    onNavigateToDetectedArtifact: (DetectedArtifact) -> Unit = {},
     onNavigateToSingleCategory: (Section) -> Unit = {},
     onNavigateToEvent: (Event) -> Unit = {},
     onNavigateToTours: () -> Unit = {},
@@ -79,6 +94,40 @@ fun HomeScreen(
     val uiState by viewModel.uiState.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
+    var isArtifactDetectionDialogShown by remember { mutableStateOf(false) }
+
+    var hasCameraPermission by remember {
+        mutableStateOf(
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED
+        )
+    }
+
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        hasCameraPermission = isGranted
+    }
+
+    val galleryImageLauncher = rememberLauncherForActivityResult(
+        contract =
+        ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            val image = viewModel.getBitmapFromUri(context = context, uri = uri)
+            viewModel.detectArtifact(image = image!!, context = context)
+        }
+    }
+
+    val cameraImageLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicturePreview()
+    ) { bitmap: Bitmap? ->
+        bitmap?.let {
+            viewModel.detectArtifact(image = bitmap, context = context)
+        }
+    }
 
     Scaffold(
         bottomBar = {
@@ -106,8 +155,16 @@ fun HomeScreen(
                 showLogo = true,
                 showNotifications = true,
                 showSearch = true,
+                showActiveTour = true,
+                showCaptureObject = true,
                 onNotificationsClicked = onNavigateToNotification,
-                onSearchClicked = onNavigateToSearch
+                onSearchClicked = onNavigateToSearch,
+                onActiveTourClicked = {
+                    // TODO: Implement this!!
+                },
+                onCaptureObjectClicked = {
+                    isArtifactDetectionDialogShown = true
+                }
             )
 
             AnimatedVisibility(
@@ -167,6 +224,33 @@ fun HomeScreen(
             viewModel.clearSaveSuccess()
         }
     }
+
+    LaunchedEffect(key1 = uiState.detectedArtifact) {
+        if (uiState.detectedArtifact != null) {
+            isArtifactDetectionDialogShown = false
+            onNavigateToDetectedArtifact(uiState.detectedArtifact!!)
+            viewModel.clearDetectionSuccess()
+            Toast.makeText(context, uiState.detectedArtifact!!.message, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    if (isArtifactDetectionDialogShown) {
+        ArtifactDetectionDialog(
+            isDetectionLoading = uiState.isDetectionLoading,
+            onDismissRequest = { isArtifactDetectionDialogShown = false },
+            onGalleryClicked = {
+                galleryImageLauncher.launch("image/*")
+            },
+            onCameraClicked = {
+                if (hasCameraPermission) {
+                    cameraImageLauncher.launch(null)
+                } else {
+                    cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                }
+            }
+        )
+    }
+
 }
 
 @Composable
@@ -187,22 +271,6 @@ private fun HomeScreenContent(
     Column(
         Modifier.verticalScroll(state = scrollState)
     ) {
-        ScreenHeader(
-            modifier = Modifier.height(62.dp),
-            showLogo = true,
-            showNotifications = true,
-            showSearch = true,
-            showActiveTour = true,
-            showCaptureObject = true,
-            onNotificationsClicked = onNotificationClicked,
-            onSearchClicked = onSearchClicked,
-            onActiveTourClicked = {
-                // TODO: Implement this!!
-            },
-            onCaptureObjectClicked = {
-                // TODO: Implement this!!
-            }
-        )
         UpcomingEventsSection(
             events = events,
             onEventClicked = onEventClicked
@@ -392,10 +460,92 @@ private fun HomeSection(
     }
 }
 
+@Composable
+private fun ArtifactDetectionDialog(
+    isDetectionLoading: Boolean,
+    onDismissRequest: () -> Unit,
+    onGalleryClicked: () -> Unit,
+    onCameraClicked: () -> Unit
+) {
+    Dialog(
+        onDismissRequest = onDismissRequest,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(.9f)
+                .height(152.dp)
+                .background(
+                    color = MaterialTheme.colorScheme.background,
+                    shape = RoundedCornerShape(12.dp)
+                )
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            if(isDetectionLoading){
+                LoadingState()
+            }else{
+                ArtifactDetectionDialogOption(
+                    icon = R.drawable.ic_camera,
+                    title = "Camera",
+                    onClick = { onCameraClicked() }
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                ArtifactDetectionDialogOption(
+                    icon = R.drawable.ic_gallery,
+                    title = "Gallery",
+                    onClick = { onGalleryClicked() }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ArtifactDetectionDialogOption(
+    modifier: Modifier = Modifier,
+    icon: Int,
+    title: String,
+    onClick: () -> Unit
+) {
+    Column(
+        modifier = modifier
+            .background(
+                color = MaterialTheme.colorScheme.primaryContainer,
+                shape = RoundedCornerShape(4.dp)
+            )
+            .padding(vertical = 16.dp, horizontal = 42.dp)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) {
+                onClick()
+            },
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+            painter = painterResource(id = icon),
+            tint = Color.Unspecified,
+            contentDescription = null
+        )
+        Spacer(modifier = Modifier.height(6.dp))
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onPrimaryContainer
+        )
+    }
+}
+
 enum class Section {
     LandMarks,
     MightLike
 }
+
 
 @Preview(showBackground = true)
 @Composable

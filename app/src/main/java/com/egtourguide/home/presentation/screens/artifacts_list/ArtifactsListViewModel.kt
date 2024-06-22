@@ -29,7 +29,6 @@ class ArtifactsListViewModel @Inject constructor(
     fun onSaveClicked(artifact: AbstractedArtifact) {
         viewModelScope.launch(Dispatchers.IO) {
             artifact.isSaved = !artifact.isSaved
-
             changeArtifactSavedStateUseCase(artifactId = artifact.id).onResponse(
                 onLoading = {},
                 onSuccess = {

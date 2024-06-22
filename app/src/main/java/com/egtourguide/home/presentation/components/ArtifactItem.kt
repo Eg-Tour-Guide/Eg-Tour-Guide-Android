@@ -142,8 +142,6 @@ private fun ArtifactItemPreview() {
                 material = "Stone",
                 type = "Statues",
                 isSaved = false,
-                type = "Statues",
-                material = "Stone, Wood"
             ),
             onArtifactClicked = {},
             onSaveClicked = {},

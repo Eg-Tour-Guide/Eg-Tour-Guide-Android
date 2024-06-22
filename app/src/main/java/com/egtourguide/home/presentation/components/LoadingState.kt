@@ -34,12 +34,12 @@ fun LoadingState(
         "Just a moment...",
         "Almost there...",
         "We're on it..",
-        "Getting everything ready...",
-        "Just a second more..."
+        "Just a second more...",
+        "Getting everything ready..."
     )
     LaunchedEffect(key1 = Unit) {
         loadingTextList.forEach { text ->
-            delay(1000)
+            delay(2000)
             currentLoadingText = text
         }
     }
