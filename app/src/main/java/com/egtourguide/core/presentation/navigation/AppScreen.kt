@@ -14,6 +14,7 @@ sealed class AppScreen(val route: String) {
     object Expanded : AppScreen(route = ScreenRoutes.EXPANDED_SCREEN_ROUTE)
     object MoreReviews : AppScreen(route = ScreenRoutes.MORE_REVIEWS_ROUTE)
     object Review : AppScreen(route = ScreenRoutes.REVIEW_SCREEN_ROUTE)
+    object WebView : AppScreen(route = ScreenRoutes.WEB_VIEW_SCREEN_ROUTE)
     object Home : AppScreen(route = ScreenRoutes.HOME_SCREEN_ROUTE)
     object ToursList : AppScreen(route = ScreenRoutes.TOURS_SCREEN_ROUTE)
     object LandmarksList : AppScreen(route = ScreenRoutes.LANDMARKS_LIST_SCREEN_ROUTE)

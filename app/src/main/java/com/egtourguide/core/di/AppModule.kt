@@ -32,7 +32,7 @@ object AppModule {
             addInterceptor { chain ->
                 val newRequest = chain.request().newBuilder()
                 newRequest.addHeader("Accept", "application/json")
-                newRequest.addHeader("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1ZWY5NWRlMGM0NTI4NGI3MmVjODBjYSIsImlhdCI6MTcxNzg4MTU0NCwiZXhwIjoxNzI1NjU3NTQ0fQ.p5vUCq3vvx6Mj3zwQNNstPfoT2b17ATaO_J7ecQYvkI")
+                newRequest.addHeader("Authorization", "Bearer $token")
                 chain.proceed(newRequest.build())
             }
             addInterceptor(httpClientLoggingInterceptor)

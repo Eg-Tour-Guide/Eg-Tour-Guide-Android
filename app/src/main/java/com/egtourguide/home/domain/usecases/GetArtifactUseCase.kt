@@ -5,8 +5,5 @@ import javax.inject.Inject
 
 class GetArtifactUseCase @Inject constructor(private val repository: HomeRepository) {
 
-    suspend operator fun invoke(id: String) {
-        // TODO: Implement This!!
-        repository.getArtifact(id = id)
-    }
+    suspend operator fun invoke(id: String) = repository.getArtifact(id = id)
 }

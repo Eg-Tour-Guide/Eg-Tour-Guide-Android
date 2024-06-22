@@ -52,10 +52,13 @@ class HomeViewModel @Inject constructor(
 
     fun onSaveClicked(place: Place) {
         viewModelScope.launch(Dispatchers.IO) {
+            Log.d("```TAG```", "onSaveClicked: ")
+            place.isSaved = !place.isSaved
+
             changePlaceSavedStateUseCase(placeId = place.id).onResponse(
                 onLoading = {},
                 onSuccess = {
-                    _uiState.update { it.copy(isSaveSuccess = true, isSave = !place.isSaved) }
+                    _uiState.update { it.copy(isSaveSuccess = true, isSave = place.isSaved) }
                 },
                 onFailure = { error ->
                     _uiState.update { it.copy(saveError = error) }

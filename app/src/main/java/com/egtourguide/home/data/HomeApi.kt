@@ -1,5 +1,13 @@
 package com.egtourguide.home.data
 
+import com.egtourguide.home.data.dto.ArtifactsListDto
+import com.egtourguide.home.data.dto.HomeDto
+import com.egtourguide.home.data.dto.LandmarksListDto
+import com.egtourguide.home.data.dto.SearchHistoryDto
+import com.egtourguide.home.data.dto.SearchResultsDto
+import com.egtourguide.home.data.dto.ToursListDto
+import com.egtourguide.home.data.dto.SingleArtifactDto
+import com.egtourguide.home.data.dto.SingleLandmarkDto
 import com.egtourguide.home.data.dto.response.ArtifactsListDto
 import com.egtourguide.home.data.dto.response.HomeDto
 import com.egtourguide.home.data.dto.response.LandmarksListDto
@@ -14,12 +22,15 @@ import retrofit2.http.Query
 
 interface HomeApi {
 
-    // TODO: Change these!!
-    @GET("")
-    suspend fun getLandmark(): String
+    @GET("landmark/{landmarkID}")
+    suspend fun getLandmark(
+        @Path("landmarkID") landmarkID: String
+    ): SingleLandmarkDto
 
-    @GET("")
-    suspend fun getArtifact(): String
+    @GET("artifac/{artifactID}")
+    suspend fun getArtifact(
+        @Path("artifactID") artifactID: String
+    ): SingleArtifactDto
 
     @GET("home")
     suspend fun getHome(): HomeDto

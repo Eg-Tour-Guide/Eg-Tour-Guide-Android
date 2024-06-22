@@ -6,7 +6,7 @@ data class Place(
     val image: String,
     val category: String? = null,
     val location: String,
-    val isSaved: Boolean,
+    var isSaved: Boolean,
     val rating: Float,
     val ratingCount: Int
 )

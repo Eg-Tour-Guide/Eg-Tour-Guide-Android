@@ -26,6 +26,14 @@ fun MapItem(
         position = CameraPosition.fromLatLngZoom(place, 10f)
     }
 
+    val openMapsApp = {
+        val uri = Uri.parse("geo:0,0?q=${place.latitude},${place.longitude}($title)")
+        Intent(Intent.ACTION_VIEW, uri).also { intent ->
+            intent.setPackage("com.google.android.apps.maps")
+            context.startActivity(intent)
+        }
+    }
+
     GoogleMap(
         modifier = modifier,
         cameraPositionState = cameraPositionState,
@@ -37,17 +45,15 @@ fun MapItem(
             myLocationButtonEnabled = false
         ),
         onMapClick = {
-            val uri =
-                Uri.parse("geo:0,0?q=${place.latitude},${place.longitude}($title)")
-            Intent(Intent.ACTION_VIEW, uri).also { intent ->
-                intent.setPackage("com.google.android.apps.maps")
-                context.startActivity(intent)
-            }
+            openMapsApp()
         }
     ) {
         Marker(
             state = MarkerState(position = place),
-            title = title
+            onClick = {
+                openMapsApp()
+                false
+            }
         )
     }
 }

@@ -154,7 +154,7 @@ fun HomeScreen(
 
     LaunchedEffect(key1 = uiState.isSaveSuccess, key2 = uiState.saveError) {
         val successMsg =
-            if (uiState.isSave) "Place Saved Successfully" else "Place Unsaved Successfully"
+            if (uiState.isSave) R.string.saved_successfully else R.string.unsaved_successfully
         if (uiState.isSaveSuccess) {
             Toast.makeText(context, successMsg, Toast.LENGTH_SHORT).show()
             viewModel.clearSaveSuccess()
@@ -187,6 +187,22 @@ private fun HomeScreenContent(
     Column(
         Modifier.verticalScroll(state = scrollState)
     ) {
+        ScreenHeader(
+            modifier = Modifier.height(62.dp),
+            showLogo = true,
+            showNotifications = true,
+            showSearch = true,
+            showActiveTour = true,
+            showCaptureObject = true,
+            onNotificationsClicked = onNotificationClicked,
+            onSearchClicked = onSearchClicked,
+            onActiveTourClicked = {
+                // TODO: Implement this!!
+            },
+            onCaptureObjectClicked = {
+                // TODO: Implement this!!
+            }
+        )
         UpcomingEventsSection(
             events = events,
             onEventClicked = onEventClicked

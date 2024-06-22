@@ -107,6 +107,8 @@ fun LandmarksListScreen(
     LaunchedEffect(key1 = uiState.isSaveSuccess, key2 = uiState.saveError) {
         val successMsg =
             if (uiState.isSave) "Place Saved Successfully" else "Place Unsaved Successfully"
+        val successMsg =
+            if (uiState.isSave) R.string.saved_successfully else R.string.unsaved_successfully
         if (uiState.isSaveSuccess) {
             Toast.makeText(context, successMsg, Toast.LENGTH_SHORT).show()
             viewModel.clearSaveSuccess()

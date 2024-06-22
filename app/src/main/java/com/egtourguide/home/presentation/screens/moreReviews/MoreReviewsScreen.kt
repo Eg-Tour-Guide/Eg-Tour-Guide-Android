@@ -36,15 +36,17 @@ private fun MoreReviewsScreenPreview() {
             uiState = MoreReviewsScreenState(
                 reviews = listOf(
                     Review(
+                        id = "",
                         authorName = "Abdo Sharaf",
                         authorImage = "",
-                        rating = 3.5,
+                        rating = 3,
                         description = getLoremString(words = 20)
                     ),
                     Review(
+                        id = "",
                         authorName = "Abdo Sharaf",
                         authorImage = "",
-                        rating = 3.5,
+                        rating = 3,
                         description = getLoremString(words = 20)
                     ),
                 )
@@ -107,7 +109,7 @@ private fun MoreReviewsScreen(
             item {
                 MainButton(
                     modifier = Modifier
-                        .padding(start = 8.dp, end = 8.dp)
+                        .padding(start = 8.dp, end = 8.dp, top = 8.dp)
                         .fillMaxWidth()
                         .height(40.dp),
                     text = stringResource(id = R.string.review),

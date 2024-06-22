@@ -32,12 +32,12 @@ interface AuthApi {
     ): LoginResponseDTO
 
     // TODO: Change Response Model!
-    @POST("auth/send-code")
+    @POST("api/v1/auth/send-code")
     suspend fun sendCode(
         @Body requestBody: SendCodeRequestBody
     ): String
 
-    @POST("auth/signup")
+    @POST("api/v1/auth/signup")
     suspend fun signup(
         @Body requestBody: SignupRequestBody
     ): SignupResponseDTO

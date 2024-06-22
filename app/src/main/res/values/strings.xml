@@ -55,7 +55,7 @@
     <string name="back">Back</string>
     <string name="go_to_search">Go To Search</string>
     <string name="go_to_notifications">Go To Notifications</string>
-    <string name="un_save">Un Save</string>
+    <string name="unsave">Unsave</string>
     <string name="save">Save</string>
     <string name="location">Location</string>
     <string name="reviews_average_total">%.1f (%d Reviews)</string>
@@ -79,11 +79,24 @@
     <string name="recently_added">Recently Added</string>
     <string name="you_might_also_like">You Might Also Like</string>
     <string name="recently_viewed">Recently Viewed</string>
-    <string name="more">More...</string>
+    <string name="more">More…</string>
     <string name="rating">Rating</string>
     <string name="write_review">Write your review (optional)</string>
     <string name="submit">Submit</string>
+    <string name="add_to_tour">Add to Tour</string>
+    <string name="saved_successfully">Saved Successfully</string>
+    <string name="unsaved_successfully">Unsaved Successfully</string>
+    <string name="got_to_active_tour">Go to Active Tour</string>
+    <string name="capture_object">Capture Object</string>
+    <string name="show_vr_view">Show VR View</string>
+    <string name="show_ar_view">Show AR View</string>
     <string name="recent_searches">Recent Searches</string>
     <string name="clear">Clear</string>
     <string name="search">Search</string>
+    <string name="catogry">Category</string>
+    <string name="star">star</string>
+    <string name="sortby">Sort By</string>
+    <string name="tourism_type">Tourism Type</string>
+    <string name="material">Material</string>
+    <string name="duration">Duration</string>
 </resources>
