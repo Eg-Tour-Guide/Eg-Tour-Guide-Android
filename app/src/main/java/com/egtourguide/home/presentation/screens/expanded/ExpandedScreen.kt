@@ -45,6 +45,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -108,11 +109,15 @@ private fun ExpandedScreenPreview() {
 fun ExpandedScreenRoot(
     viewModel: ExpandedViewModel = hiltViewModel(),
     id: String,
+    tourId: String,
+    tourName: String,
+    tourImage: String,
     isLandmark: Boolean,
     onBackClicked: () -> Unit,
     onSeeMoreClicked: () -> Unit,
     onReviewClicked: () -> Unit,
-    navigateToWebScreen: (String) -> Unit
+    navigateToWebScreen: (String) -> Unit,
+    navigateToTours: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -131,6 +136,10 @@ fun ExpandedScreenRoot(
         }
     }
 
+    LaunchedEffect(key1 = tourId) {
+        viewModel.changeTourData(id = tourId, name = tourName, image = tourImage)
+    }
+
     LaunchedEffect(key1 = uiState.errorMessage) {
         uiState.errorMessage?.let {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
@@ -146,6 +155,23 @@ fun ExpandedScreenRoot(
                 Toast.LENGTH_SHORT
             ).show()
             viewModel.clearSaveSuccess()
+        }
+    }
+
+    if (uiState.showAddDialog) {
+        Dialog(onDismissRequest = viewModel::changeAddDialogVisibility) {
+            AddDialog(
+                tourImage = uiState.tourImage,
+                tourName = uiState.tourName,
+                navigateToTours = {
+                    navigateToTours()
+                },
+                onCancelClicked = viewModel::changeAddDialogVisibility,
+                onAddClicked = { duration ->
+                    viewModel.addToTour(duration)
+                    viewModel.changeAddDialogVisibility()
+                }
+            )
         }
     }
 
@@ -175,9 +201,7 @@ fun ExpandedScreenRoot(
         onSaveClicked = viewModel::changeSavedState,
         onSavePlace = viewModel::changePlaceSavedState,
         onSaveArtifact = viewModel::changeArtifactSavedState,
-        onAddClicked = {
-            // TODO: Implement this!!
-        },
+        onAddClicked = viewModel::changeAddDialogVisibility,
         onSeeMoreClicked = onSeeMoreClicked,
         onReviewClicked = onReviewClicked
     )

@@ -11,6 +11,7 @@ import com.egtourguide.auth.presentation.resetPassword.ResetPasswordScreen
 import com.egtourguide.auth.presentation.signup.SignUpScreen
 import com.egtourguide.auth.presentation.welcome.WelcomeScreen
 import com.egtourguide.home.presentation.components.BottomBarScreens
+import com.egtourguide.home.presentation.myTours.MyToursScreenRoot
 import com.egtourguide.home.presentation.screens.artifacts_list.ArtifactsListScreen
 import com.egtourguide.home.presentation.screens.expanded.ExpandedScreenRoot
 import com.egtourguide.home.presentation.screens.expanded.WebViewScreen
@@ -186,9 +187,15 @@ fun AppNavigation(
         composable(route = AppScreen.Expanded.route) { entry ->
             val id = entry.arguments?.getString("id") ?: ""
             val isLandmark = entry.arguments?.getString("isLandmark").toBoolean()
+            val tourId = entry.savedStateHandle.get<String>(key = "tourId") ?: ""
+            val tourName = entry.savedStateHandle.get<String>(key = "tourName") ?: ""
+            val tourImage = entry.savedStateHandle.get<String>(key = "tourImage") ?:""
 
             ExpandedScreenRoot(
                 id = id,
+                tourId = tourId,
+                tourName = tourName,
+                tourImage = tourImage,
                 isLandmark = isLandmark,
                 onBackClicked = { navController.navigateUp() },
                 onSeeMoreClicked = {
@@ -205,6 +212,11 @@ fun AppNavigation(
                                 .replace("/", "...")
                                 .replace("?", "~~~")
                         )
+                    )
+                },
+                navigateToTours = {
+                    navController.navigate(
+                        route = AppScreen.MyTours.route.replace("{isSelect}", "true")
                     )
                 }
             )
@@ -383,6 +395,23 @@ fun AppNavigation(
                             .replace("{id}", landmarkId)
                             .replace("{isLandmark}", "true")
                     )
+                }
+            )
+        }
+
+        composable(route = AppScreen.MyTours.route) {
+            MyToursScreenRoot(
+                onTourClicked = { tour ->
+                    navController.previousBackStackEntry?.savedStateHandle?.set("tourId", tour.id)
+                    navController.previousBackStackEntry?.savedStateHandle?.set(
+                        "tourName",
+                        tour.title
+                    )
+                    navController.previousBackStackEntry?.savedStateHandle?.set(
+                        "tourImage",
+                        tour.image
+                    )
+                    navController.navigateUp()
                 }
             )
         }

@@ -155,4 +155,31 @@ class ExpandedViewModel @Inject constructor(
     fun clearSaveSuccess() {
         _uiState.update { it.copy(isSaveSuccess = false) }
     }
+
+    fun changeAddDialogVisibility() {
+        _uiState.update {
+            it.copy(
+                showAddDialog = !it.showAddDialog,
+                tourID = "",
+                tourName = "",
+                tourImage = ""
+            )
+        }
+    }
+
+    fun changeTourData(id: String, name: String, image: String) {
+        _uiState.update {
+            it.copy(
+                tourID = id,
+                tourName = name,
+                tourImage = image
+            )
+        }
+    }
+
+    fun addToTour(duration: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            // TODO: Implement this!!
+        }
+    }
 }
