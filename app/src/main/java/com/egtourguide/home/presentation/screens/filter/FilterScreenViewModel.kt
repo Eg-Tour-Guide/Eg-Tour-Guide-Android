@@ -1,7 +1,6 @@
 package com.egtourguide.home.presentation.screens.filter
 
 import androidx.lifecycle.ViewModel
-import com.egtourguide.home.presentation.screens.home.HomeUIState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -126,6 +125,16 @@ class FilterScreenViewModel @Inject constructor() : ViewModel() {
 
     fun onResetClick() {
         _uiState.update { it.copy(reset = true) }
+        categoryList.clear()
+        locationList.clear()
+        materialList.clear()
+        artifactTypeList.clear()
+        tourTypeList.clear()
+        tourismTypeList.clear()
+        durationList.clear()
+        ratingList.clear()
+        sortByList.clear()
+
     }
     fun clearSuccess() {
         _uiState.update { it.copy(isSuccess = false) }

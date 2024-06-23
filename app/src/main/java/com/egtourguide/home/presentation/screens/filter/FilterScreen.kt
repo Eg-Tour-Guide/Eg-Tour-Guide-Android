@@ -37,7 +37,6 @@ import com.egtourguide.R
 import com.egtourguide.core.presentation.components.MainButton
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 import com.egtourguide.home.presentation.components.ChipFilter
-import com.egtourguide.home.presentation.components.DurationSlider
 import com.egtourguide.home.presentation.components.RangeSliderWithBubble
 import com.egtourguide.home.presentation.components.ScreenHeader
 

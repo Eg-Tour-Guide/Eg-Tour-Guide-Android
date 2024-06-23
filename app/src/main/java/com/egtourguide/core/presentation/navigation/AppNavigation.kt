@@ -337,6 +337,7 @@ fun AppNavigation(
 
         composable(route = AppScreen.Review.route) {
             ReviewScreen(
+                id = "",
                 onNavigateBack = { navController.navigateUp() }
             )
         }

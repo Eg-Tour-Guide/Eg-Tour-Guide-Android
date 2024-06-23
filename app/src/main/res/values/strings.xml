@@ -102,4 +102,10 @@
     <string name="reset">Reset</string>
     <string name="apply">Apply</string>
     <string name="tour_type">Tour Type</string>
+    <string name="user">User</string>
+    <string name="saved">Saved</string>
+    <string name="my_tours">My Tours</string>
+    <string name="setting">Settings</string>
+    <string name="change_password">Change Password</string>
+    <string name="logout">Logout</string>
 </resources>
