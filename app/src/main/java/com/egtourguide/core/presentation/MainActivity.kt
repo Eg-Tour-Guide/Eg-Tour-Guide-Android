@@ -11,7 +11,6 @@ import com.egtourguide.core.presentation.navigation.AppNavigation
 import com.egtourguide.core.presentation.navigation.AppScreen
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 import com.egtourguide.core.utils.DataStoreKeys.IS_LOGGED_KEY
-import com.egtourguide.home.presentation.screens.filter.FilterScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -40,12 +39,11 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             EGTourGuideTheme {
-//                val navController = rememberNavController()
-//                AppNavigation(
-//                    navController = navController,
-//                    startDestination = getStartDestination()
-//                )
-                FilterScreen (onNavigateBack = {}, onNavigateToResults = {})
+                val navController = rememberNavController()
+                AppNavigation(
+                    navController = navController,
+                    startDestination = getStartDestination()
+                )
             }
         }
     }
