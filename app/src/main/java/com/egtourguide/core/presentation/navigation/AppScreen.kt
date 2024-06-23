@@ -20,6 +20,7 @@ sealed class AppScreen(val route: String) {
     object LandmarksList : AppScreen(route = ScreenRoutes.LANDMARKS_LIST_SCREEN_ROUTE)
     object ArtifactsList : AppScreen(route = ScreenRoutes.ARTIFACTS_LIST_SCREEN_ROUTE)
     object Search : AppScreen(route = ScreenRoutes.SEARCH_SCREEN_ROUTE)
+    object SearchResults : AppScreen(route = ScreenRoutes.SEARCH_RESULTS_SCREEN_ROUTE)
     object ToursPlan : AppScreen(route = ScreenRoutes.TOURS_PLAN_SCREEN_ROUTE)
     object MyTours: AppScreen(route = ScreenRoutes.MY_TOURS_SCREEN_ROUTE)
 }
