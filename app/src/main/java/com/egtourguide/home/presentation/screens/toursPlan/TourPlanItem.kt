@@ -1,6 +1,7 @@
 package com.egtourguide.home.presentation.screens.toursPlan
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -17,11 +18,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.egtourguide.R
 import com.egtourguide.core.presentation.components.MainImage
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
+import com.egtourguide.core.utils.Constants.LANDMARK_IMAGE_LINK_PREFIX
+import com.egtourguide.home.domain.model.TourDetailsPlace
 import com.egtourguide.home.presentation.components.DataRow
 
 @Preview
@@ -29,14 +33,25 @@ import com.egtourguide.home.presentation.components.DataRow
 fun TourPlanItemPreview() {
     EGTourGuideTheme {
         TourPlanItem(
-
+            place = TourDetailsPlace(
+                id = "",
+                image = "",
+                title = "Pyramids",
+                govName = "Giza",
+                ratingAverage = 4.5,
+                ratingQuantity = 72,
+                duration = 3
+            ),
+            onClick = {}
         )
     }
 }
 
 @Composable
 fun TourPlanItem(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    place: TourDetailsPlace,
+    onClick: (String) -> Unit
 ) {
     Row(
         modifier = modifier
@@ -44,11 +59,14 @@ fun TourPlanItem(
             .height(110.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(MaterialTheme.colorScheme.primaryContainer)
+            .clickable {
+                onClick(place.id)
+            }
             .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         MainImage(
-            data = "",
+            data = "$LANDMARK_IMAGE_LINK_PREFIX${place.image}",
             contentDescription = null,
             modifier = Modifier
                 .width(125.dp)
@@ -62,15 +80,17 @@ fun TourPlanItem(
                 .padding(start = 8.dp)
         ) {
             Text(
-                text = "Pyramids",
+                text = place.title,
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
 
             DataRow(
                 icon = R.drawable.ic_location,
                 iconDescription = stringResource(R.string.location),
-                text = "Giza",
+                text = place.govName,
                 iconPadding = 4.dp,
                 iconSize = 10.dp,
                 textStyle = MaterialTheme.typography.labelLarge,
@@ -84,8 +104,8 @@ fun TourPlanItem(
                 iconDescription = null,
                 text = stringResource(
                     id = R.string.reviews_average_total,
-                    4.5,
-                    72
+                    place.ratingAverage,
+                    place.ratingQuantity
                 ),
                 iconPadding = 4.dp,
                 iconSize = 10.dp,
@@ -99,7 +119,7 @@ fun TourPlanItem(
             DataRow(
                 icon = R.drawable.ic_timesheet,
                 iconDescription = stringResource(R.string.duration),
-                text = "3 hours",
+                text = stringResource(id = R.string.hours, place.duration),
                 iconPadding = 4.dp,
                 iconSize = 10.dp,
                 textStyle = MaterialTheme.typography.labelLarge,

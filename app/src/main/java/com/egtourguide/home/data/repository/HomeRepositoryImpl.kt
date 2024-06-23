@@ -2,9 +2,7 @@ package com.egtourguide.home.data.repository
 
 import com.egtourguide.core.utils.safeCall
 import com.egtourguide.home.data.HomeApi
-import com.egtourguide.home.domain.model.AbstractedArtifact
-import com.egtourguide.home.domain.model.AbstractedTour
-import com.egtourguide.home.domain.model.SearchResult
+import com.egtourguide.home.data.dto.body.TourDetailsBody
 import com.egtourguide.home.domain.repository.HomeRepository
 import javax.inject.Inject
 
@@ -52,5 +50,16 @@ class HomeRepositoryImpl @Inject constructor(private val homeApi: HomeApi) : Hom
 
     override suspend fun getSearchHistory() = safeCall {
         homeApi.getSearchHistory().search.map { it.search }
+    }
+
+    override suspend fun getTourDetails(tourId: String) = safeCall {
+        homeApi.getTourDetails(tourId).toTourDetails()
+    }
+
+    override suspend fun updateTourDetails(
+        tourId: String,
+        tourDetails: TourDetailsBody
+    ) = safeCall {
+        homeApi.updateTourDetails(tourId = tourId, tourDetails = tourDetails)
     }
 }

@@ -100,4 +100,9 @@
     <string name="material">Material</string>
     <string name="duration">Duration</string>
     <string name="start_tour">Start Tour</string>
+    <string name="day">Day\n%s</string>
+    <string name="hours">%s hours</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="select_date">Select date</string>
 </resources>

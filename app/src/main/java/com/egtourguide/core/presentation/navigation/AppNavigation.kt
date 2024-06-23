@@ -19,6 +19,7 @@ import com.egtourguide.home.presentation.screens.landmarks_list.LandmarksListScr
 import com.egtourguide.home.presentation.screens.moreReviews.MoreReviewsScreenRoot
 import com.egtourguide.home.presentation.screens.review.ReviewScreen
 import com.egtourguide.home.presentation.screens.search.SearchScreen
+import com.egtourguide.home.presentation.screens.toursPlan.ToursPlanScreenRoot
 import com.egtourguide.home.presentation.screens.tours_list.ToursListScreen
 
 @Composable
@@ -304,8 +305,11 @@ fun AppNavigation(
                 onNavigateToFilters = {
 
                 },
-                onNavigateToSingleTour = {
-
+                onNavigateToSingleTour = { tour ->
+                    // TODO: Remove this!!!
+                    navController.navigate(
+                        route = AppScreen.ToursPlan.route.replace("{tourId}", tour.id)
+                    )
                 },
                 onNavigateToHome = {
                     navController.navigateUp()
@@ -361,6 +365,24 @@ fun AppNavigation(
                 },
                 onNavigateToSearchResults = {
 
+                }
+            )
+        }
+
+        composable(route = AppScreen.ToursPlan.route) { entry ->
+            val tourID = entry.arguments?.getString("tourId") ?: ""
+
+            ToursPlanScreenRoot(
+                tourId = tourID,
+                onBackClicked = {
+                    navController.navigateUp()
+                },
+                navigateToLandmark = { landmarkId ->
+                    navController.navigate(
+                        route = AppScreen.Expanded.route
+                            .replace("{id}", landmarkId)
+                            .replace("{isLandmark}", "true")
+                    )
                 }
             )
         }
