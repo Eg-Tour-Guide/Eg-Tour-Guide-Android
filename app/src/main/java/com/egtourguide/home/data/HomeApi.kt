@@ -1,6 +1,6 @@
 package com.egtourguide.home.data
 
-import com.egtourguide.home.data.dto.ArtifactsListDto
+import com.egtourguide.home.data.dto.ArtifactDetectionDto
 import com.egtourguide.home.data.dto.HomeDto
 import com.egtourguide.home.data.dto.LandmarksListDto
 import com.egtourguide.home.data.dto.SearchHistoryDto
@@ -8,8 +8,13 @@ import com.egtourguide.home.data.dto.SearchResultsDto
 import com.egtourguide.home.data.dto.ToursListDto
 import com.egtourguide.home.data.dto.SingleArtifactDto
 import com.egtourguide.home.data.dto.SingleLandmarkDto
+import com.egtourguide.home.data.dto.response.ArtifactsListDto
+import okhttp3.MultipartBody
+import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -59,4 +64,13 @@ interface HomeApi {
 
     @GET("search-history")
     suspend fun getSearchHistory(): SearchHistoryDto
+
+    @DELETE("delete-search-history")
+    suspend fun deleteSearchHistory()
+
+    @Multipart
+    @POST("rec")
+    suspend fun detectArtifact(
+        @Part photo: MultipartBody.Part
+    ):ArtifactDetectionDto
 }

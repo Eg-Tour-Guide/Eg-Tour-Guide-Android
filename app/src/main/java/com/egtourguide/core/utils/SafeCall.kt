@@ -1,5 +1,6 @@
 package com.egtourguide.core.utils
 
+import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
@@ -17,6 +18,7 @@ suspend fun <T> safeCall(call: suspend () -> T): Flow<ResultWrapper<T>> = flow {
         emit(ResultWrapper.Failure(message = "Please check your internet connection!"))
     } catch (e: Exception) {
         e.printStackTrace()
+        Log.d("```TAG```", "safeCall: $e")
         emit(ResultWrapper.Failure(message = "An error happened! Please try again later."))
     }
 }

@@ -2,6 +2,9 @@ package com.egtourguide.home.presentation.screens.tours_list
 
 import android.annotation.SuppressLint
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -41,13 +44,16 @@ import com.egtourguide.R
 import com.egtourguide.home.domain.model.AbstractedTour
 import com.egtourguide.home.presentation.components.BottomBar
 import com.egtourguide.home.presentation.components.BottomBarScreens
+import com.egtourguide.home.presentation.components.LoadingState
 import com.egtourguide.home.presentation.components.ScreenHeader
 import com.egtourguide.home.presentation.components.TourItem
+import java.util.HashMap
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ToursListScreen(
     viewModel: ToursListViewModel = hiltViewModel(),
+    filters: HashMap<*, *>? = null,
     onNavigateToSearch: () -> Unit = {},
     onNavigateToNotification: () -> Unit = {},
     onNavigateToFilters: () -> Unit = {},
@@ -60,6 +66,8 @@ fun ToursListScreen(
     val uiState by viewModel.uiState.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
+    viewModel.filters = filters
+
     Scaffold(
         bottomBar = {
             BottomBar(
@@ -76,7 +84,7 @@ fun ToursListScreen(
         }
     ) {
         ToursListScreenContent(
-            tours = uiState.tours,
+            uiState = uiState,
             onSearchClicked = onNavigateToSearch,
             onNotificationClicked = onNavigateToNotification,
             onFilterClicked = onNavigateToFilters,
@@ -98,12 +106,17 @@ fun ToursListScreen(
     }
 
     LaunchedEffect(key1 = uiState.isSaveSuccess, key2 = uiState.saveError) {
-        val successMsg = if (uiState.isSave) "Tour Saved Successfully" else "Tour Unsaved Successfully"
+        val successMsg =
+            if (uiState.isSave) "Tour Saved Successfully" else "Tour Unsaved Successfully"
         if (uiState.isSaveSuccess) {
             Toast.makeText(context, successMsg, Toast.LENGTH_SHORT).show()
             viewModel.clearSaveSuccess()
         } else if (uiState.saveError != null) {
-            Toast.makeText(context, "There are a problem in saving the Tour, try again later", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                "There are a problem in saving the Tour, try again later",
+                Toast.LENGTH_SHORT
+            ).show()
             viewModel.clearSaveError()
         }
     }
@@ -111,7 +124,7 @@ fun ToursListScreen(
 
 @Composable
 fun ToursListScreenContent(
-    tours: List<AbstractedTour>,
+    uiState: ToursListUIState,
     onSearchClicked: () -> Unit,
     onNotificationClicked: () -> Unit,
     onFilterClicked: () -> Unit,
@@ -134,15 +147,28 @@ fun ToursListScreenContent(
         )
         Spacer(modifier = Modifier.height(18.dp))
         ToursHeader(
-            toursCount = tours.size,
+            toursCount = uiState.tours.size,
             onFilterClicked = onFilterClicked
         )
         Spacer(modifier = Modifier.height(16.dp))
-        ToursSection(
-            tours = tours,
-            onTourClicked = onTourClicked,
-            onSaveClicked = onSaveClicked
-        )
+        AnimatedVisibility(
+            visible = uiState.isLoading,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            LoadingState(modifier = Modifier.fillMaxSize())
+        }
+        AnimatedVisibility(
+            visible = !uiState.isLoading,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            ToursSection(
+                tours = uiState.tours,
+                onTourClicked = onTourClicked,
+                onSaveClicked = onSaveClicked
+            )
+        }
     }
 }
 
