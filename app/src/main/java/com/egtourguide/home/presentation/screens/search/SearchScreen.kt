@@ -1,13 +1,16 @@
 package com.egtourguide.home.presentation.screens.search
 
 import android.annotation.SuppressLint
+import android.widget.Space
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,9 +18,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -35,6 +42,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -44,6 +52,7 @@ import com.egtourguide.R
 import com.egtourguide.core.presentation.components.MainTextField
 import com.egtourguide.home.presentation.components.BottomBar
 import com.egtourguide.home.presentation.components.BottomBarScreens
+import com.egtourguide.home.presentation.components.LoadingState
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -128,8 +137,23 @@ private fun SearchScreenContent(
             exit = fadeOut()
         ) {
             RecentSearchesSection(
+                isSearchHistoryLoading = uiState.isRecentSearchesLoading,
+                isClearHistoryLoading = uiState.isClearHistoryLoading,
                 searchHistory = uiState.searchHistory,
                 onClearClicked = onClearHistoryClicked,
+                onSearchItemClicked = onSearchItemClicked
+            )
+        }
+        AnimatedVisibility(
+            visible = uiState.isSearchLoading,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            LoadingState(modifier = Modifier.fillMaxSize())
+        }
+        AnimatedVisibility(visible = !uiState.isSearchLoading && uiState.searchQuery.isNotEmpty()) {
+            SearchSuggestionsSection(
+                suggestionsList = uiState.searchSuggestions,
                 onSearchItemClicked = onSearchItemClicked
             )
         }
@@ -146,7 +170,8 @@ private fun SearchBar(
         modifier = Modifier.fillMaxWidth(),
         value = query,
         onValueChanged = onQueryChanged,
-        placeholderText = stringResource(R.string.search),
+        labelText = stringResource(id = R.string.search),
+        placeholderText = "What are you looking for?",
         leadingIcon = R.drawable.ic_search,
         imeAction = ImeAction.Search,
         keyboardActions = KeyboardActions(onSearch = { onSearchClicked() })
@@ -155,6 +180,8 @@ private fun SearchBar(
 
 @Composable
 private fun RecentSearchesSection(
+    isSearchHistoryLoading: Boolean,
+    isClearHistoryLoading: Boolean,
     searchHistory: List<String>,
     onClearClicked: () -> Unit,
     onSearchItemClicked: (String) -> Unit
@@ -171,27 +198,63 @@ private fun RecentSearchesSection(
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onBackground
             )
-            Text(
-                modifier = Modifier
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null
-                    ) {
-                        onClearClicked()
-                    },
-                text = stringResource(R.string.clear),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.error
-            )
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        LazyColumn {
-            items(items = searchHistory) { item ->
-                SearchItem(
-                    item = item,
-                    onSearchItemClicked = onSearchItemClicked
+            if (isClearHistoryLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(18.dp),
+                    strokeWidth = 1.dp
+                )
+            } else {
+                Text(
+                    modifier = Modifier
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) {
+                            onClearClicked()
+                        },
+                    text = stringResource(R.string.clear),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.error
                 )
             }
+
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        AnimatedVisibility(
+            visible = isSearchHistoryLoading,
+            enter = fadeIn(),
+            exit = fadeOut(animationSpec = tween(durationMillis = 500))
+        ) {
+            LoadingState(modifier = Modifier.fillMaxWidth())
+        }
+        AnimatedVisibility(
+            visible = !isSearchHistoryLoading,
+            enter = fadeIn(animationSpec = tween(delayMillis = 500)),
+            exit = fadeOut()
+        ) {
+            LazyColumn {
+                items(items = searchHistory) { item ->
+                    SearchItem(
+                        item = item,
+                        onSearchItemClicked = onSearchItemClicked
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SearchSuggestionsSection(
+    suggestionsList: List<String>,
+    onSearchItemClicked: (String) -> Unit
+) {
+    LazyColumn {
+        items(items = suggestionsList) { item ->
+            SearchItem(
+                item = item,
+                onSearchItemClicked = onSearchItemClicked
+            )
         }
     }
 }
@@ -225,8 +288,12 @@ private fun SearchItem(
                     contentDescription = "Search Icon"
                 )
                 Text(
-                    modifier = Modifier.padding(start = 16.dp),
+                    modifier = Modifier
+                        .padding(start = 16.dp)
+                        .fillMaxWidth(fraction = 0.95f),
                     text = item,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onBackground
                 )
@@ -236,6 +303,12 @@ private fun SearchItem(
                 contentDescription = "Arrow Icon"
             )
         }
+        Spacer(modifier = Modifier.height(8.dp))
+        HorizontalDivider(
+            modifier = Modifier.fillMaxWidth(),
+            thickness = 1.dp,
+            color = MaterialTheme.colorScheme.primary.copy(.1f)
+        )
     }
 }
 

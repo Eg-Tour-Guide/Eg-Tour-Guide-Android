@@ -8,7 +8,7 @@ import com.egtourguide.home.domain.model.AbstractedArtifact
 import com.egtourguide.home.domain.model.AbstractedTour
 import com.egtourguide.home.domain.model.SearchResult
 import com.egtourguide.home.domain.repository.HomeRepository
-import kotlinx.coroutines.flow.Flow
+import okhttp3.MultipartBody
 import javax.inject.Inject
 
 class HomeRepositoryImpl @Inject constructor(private val homeApi: HomeApi) : HomeRepository {
@@ -70,5 +70,13 @@ class HomeRepositoryImpl @Inject constructor(private val homeApi: HomeApi) : Hom
 
     override suspend fun getSearchHistory() = safeCall {
         homeApi.getSearchHistory().search.map { it.search }
+    }
+
+    override suspend fun deleteSearchHistory() = safeCall {
+        homeApi.deleteSearchHistory()
+    }
+
+    override suspend fun detectArtifact(image: MultipartBody.Part) = safeCall {
+        homeApi.detectArtifact(photo = image).toDomainDetectedArtifact()
     }
 }

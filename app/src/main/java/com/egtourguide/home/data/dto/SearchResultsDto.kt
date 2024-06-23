@@ -14,6 +14,9 @@ data class SearchResultsDto(
             val _id: String,
             val image: String,
             val name: String,
+            val type: String,
+            val material: String,
+            val museumName: String,
             val saved: Boolean
         ) {
             fun toSearchResult(): SearchResult {
@@ -21,9 +24,11 @@ data class SearchResultsDto(
                     id = _id,
                     image = image,
                     name = name,
-                    location = "",
+                    location = museumName,
                     isSaved = saved,
-                    isLandmark = false,
+                    material = material,
+                    artifactType = type,
+                    isArtifact = true,
                     rating = null,
                     ratingCount = null
                 )
@@ -34,6 +39,7 @@ data class SearchResultsDto(
             val _id: String,
             val govName: String,
             val image: String,
+            val category: String,
             val name: String,
             val ratingAverage: Int,
             val ratingQuantity: Int,
@@ -44,11 +50,12 @@ data class SearchResultsDto(
                     id = _id,
                     image = image,
                     name = name,
-                    location = "",
+                    location = govName,
                     isSaved = saved,
-                    isLandmark = false,
-                    rating = null,
-                    ratingCount = null
+                    category = category,
+                    isArtifact = false,
+                    rating = ratingAverage.toFloat(),
+                    ratingCount = ratingQuantity
                 )
             }
         }

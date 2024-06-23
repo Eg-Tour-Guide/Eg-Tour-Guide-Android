@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.HashMap
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,6 +22,7 @@ class ToursListViewModel @Inject constructor(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ToursListUIState())
     val uiState = _uiState.asStateFlow()
+    var filters: HashMap<*, *>? = null
 
     fun getToursList() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -51,6 +53,8 @@ class ToursListViewModel @Inject constructor(
             )
         }
     }
+
+
 
     fun clearSaveSuccess() {
         _uiState.update { it.copy(isSaveSuccess = false) }
