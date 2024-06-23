@@ -1,4 +1,4 @@
-package com.egtourguide.home.data.dto
+package com.egtourguide.home.data.dto.response
 
 import com.egtourguide.home.domain.model.Place
 

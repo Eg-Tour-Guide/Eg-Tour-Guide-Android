@@ -1,22 +1,24 @@
 package com.egtourguide.home.data
 
 import com.egtourguide.home.data.body.ReviewRequestBody
-import com.egtourguide.home.data.dto.ArtifactsListDto
 import com.egtourguide.home.data.dto.ArtifactDetectionDto
-import com.egtourguide.home.data.dto.HomeDto
-import com.egtourguide.home.data.dto.LandmarksListDto
-import com.egtourguide.home.data.dto.SearchHistoryDto
-import com.egtourguide.home.data.dto.SearchResultsDto
-import com.egtourguide.home.data.dto.ToursListDto
-import com.egtourguide.home.data.dto.SingleArtifactDto
-import com.egtourguide.home.data.dto.SingleLandmarkDto
 import com.egtourguide.home.data.dto.response.ArtifactsListDto
 import retrofit2.http.Body
 import okhttp3.MultipartBody
 import retrofit2.http.DELETE
+import com.egtourguide.home.data.dto.response.HomeDto
+import com.egtourguide.home.data.dto.response.LandmarksListDto
+import com.egtourguide.home.data.dto.response.SearchHistoryDto
+import com.egtourguide.home.data.dto.response.SearchResultsDto
+import com.egtourguide.home.data.dto.response.ToursListDto
+import com.egtourguide.home.data.dto.response.SingleArtifactDto
+import com.egtourguide.home.data.dto.response.SingleLandmarkDto
+import com.egtourguide.home.data.dto.response.TourDetailsDto
+import com.egtourguide.home.data.dto.body.TourDetailsBody
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -87,4 +89,15 @@ interface HomeApi {
     suspend fun detectArtifact(
         @Part photo: MultipartBody.Part
     ):ArtifactDetectionDto
+
+    @GET("/api/v1/tours/tour-details/{tourId}")
+    suspend fun getTourDetails(
+        @Path("tourId") tourId: String
+    ): TourDetailsDto
+
+    @PUT("api/v1/tours/edit-tour-details/{tourId}")
+    suspend fun updateTourDetails(
+        @Path("tourId") tourId: String,
+        @Body tourDetails: TourDetailsBody
+    ): String // TODO: Change This!!
 }

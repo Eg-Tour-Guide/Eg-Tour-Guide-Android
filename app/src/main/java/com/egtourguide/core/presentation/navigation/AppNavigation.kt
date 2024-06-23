@@ -14,6 +14,7 @@ import com.egtourguide.auth.presentation.resetPassword.ResetPasswordScreen
 import com.egtourguide.auth.presentation.signup.SignUpScreen
 import com.egtourguide.auth.presentation.welcome.WelcomeScreen
 import com.egtourguide.home.presentation.components.BottomBarScreens
+import com.egtourguide.home.presentation.myTours.MyToursScreenRoot
 import com.egtourguide.home.presentation.screens.artifacts_list.ArtifactsListScreen
 import com.egtourguide.home.presentation.screens.expanded.ExpandedScreenRoot
 import com.egtourguide.home.presentation.screens.expanded.WebViewScreen
@@ -23,6 +24,7 @@ import com.egtourguide.home.presentation.screens.moreReviews.MoreReviewsScreenRo
 import com.egtourguide.home.presentation.screens.review.ReviewScreen
 import com.egtourguide.home.presentation.screens.search.SearchScreen
 import com.egtourguide.home.presentation.screens.search_results.SearchResultsScreen
+import com.egtourguide.home.presentation.screens.toursPlan.ToursPlanScreenRoot
 import com.egtourguide.home.presentation.screens.tours_list.ToursListScreen
 import com.google.gson.Gson
 
@@ -201,9 +203,15 @@ fun AppNavigation(
         composable(route = AppScreen.Expanded.route) { entry ->
             val id = entry.arguments?.getString("id") ?: ""
             val isLandmark = entry.arguments?.getString("isLandmark").toBoolean()
+            val tourId = entry.savedStateHandle.get<String>(key = "tourId") ?: ""
+            val tourName = entry.savedStateHandle.get<String>(key = "tourName") ?: ""
+            val tourImage = entry.savedStateHandle.get<String>(key = "tourImage") ?:""
 
             ExpandedScreenRoot(
                 id = id,
+                tourId = tourId,
+                tourName = tourName,
+                tourImage = tourImage,
                 isLandmark = isLandmark,
                 onBackClicked = { navController.navigateUp() },
                 onSeeMoreClicked = {
@@ -221,30 +229,35 @@ fun AppNavigation(
                                 .replace("?", "~~~")
                         )
                     )
-                    /*composable(
-                        route = AppScreen.LandmarksList.route,
-                        arguments = listOf(
-                            navArgument("filters") {
-                                type = NavType.StringType
-                                nullable = true
-                            }
-                        )
-                    ) { backStackEntry ->
-                        val filtersJson = backStackEntry.arguments?.getString("filters")
-                        var filters: HashMap<*, *>? = null
-                        filtersJson?.let {
-                            Log.d("```TAG```", "AppNavigation: ${filtersJson.substringAfter('/')}")
-                            filters = Gson().fromJson(
-                                filtersJson.substringAfter('/'),
-                                HashMap::class.java
-                            )
-                        }
-                    }*/
-
-
+                },
+                navigateToTours = {
+                    navController.navigate(
+                        route = AppScreen.MyTours.route.replace("{isSelect}", "true")
+                    )
                 }
             )
         }
+
+        /*composable(
+            route = AppScreen.LandmarksList.route,
+            arguments = listOf(
+                navArgument("filters") {
+                    type = NavType.StringType
+                    nullable = true
+                }
+            )
+        ) { backStackEntry ->
+            val filtersJson = backStackEntry.arguments?.getString("filters")
+            var filters: HashMap<*, *>? = null
+            filtersJson?.let {
+                Log.d("```TAG```", "AppNavigation: ${filtersJson.substringAfter('/')}")
+                filters = Gson().fromJson(
+                    filtersJson.substringAfter('/'),
+                    HashMap::class.java
+                )
+            }
+        }*/
+
         composable(route = AppScreen.WebView.route) { entry ->
             val modelUrl = entry.arguments?.getString("modelUrl") ?: ""
 
@@ -380,8 +393,11 @@ fun AppNavigation(
                 onNavigateToFilters = {
 
                 },
-                onNavigateToSingleTour = {
-
+                onNavigateToSingleTour = { tour ->
+                    // TODO: Remove this!!!
+                    navController.navigate(
+                        route = AppScreen.ToursPlan.route.replace("{tourId}", tour.id)
+                    )
                 },
                 onNavigateToHome = {
                     navController.navigateUp()
@@ -531,6 +547,41 @@ fun AppNavigation(
                     }
                 )
             }
+        }
+
+        composable(route = AppScreen.ToursPlan.route) { entry ->
+            val tourID = entry.arguments?.getString("tourId") ?: ""
+
+            ToursPlanScreenRoot(
+                tourId = tourID,
+                onBackClicked = {
+                    navController.navigateUp()
+                },
+                navigateToLandmark = { landmarkId ->
+                    navController.navigate(
+                        route = AppScreen.Expanded.route
+                            .replace("{id}", landmarkId)
+                            .replace("{isLandmark}", "true")
+                    )
+                }
+            )
+        }
+
+        composable(route = AppScreen.MyTours.route) {
+            MyToursScreenRoot(
+                onTourClicked = { tour ->
+                    navController.previousBackStackEntry?.savedStateHandle?.set("tourId", tour.id)
+                    navController.previousBackStackEntry?.savedStateHandle?.set(
+                        "tourName",
+                        tour.title
+                    )
+                    navController.previousBackStackEntry?.savedStateHandle?.set(
+                        "tourImage",
+                        tour.image
+                    )
+                    navController.navigateUp()
+                }
+            )
         }
     }
 }
