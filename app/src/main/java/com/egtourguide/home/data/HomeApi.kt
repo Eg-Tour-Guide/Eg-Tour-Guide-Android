@@ -1,5 +1,7 @@
 package com.egtourguide.home.data
 
+import com.egtourguide.home.data.body.ReviewRequestBody
+import com.egtourguide.home.data.dto.ArtifactsListDto
 import com.egtourguide.home.data.dto.ArtifactDetectionDto
 import com.egtourguide.home.data.dto.HomeDto
 import com.egtourguide.home.data.dto.LandmarksListDto
@@ -9,6 +11,7 @@ import com.egtourguide.home.data.dto.ToursListDto
 import com.egtourguide.home.data.dto.SingleArtifactDto
 import com.egtourguide.home.data.dto.SingleLandmarkDto
 import com.egtourguide.home.data.dto.response.ArtifactsListDto
+import retrofit2.http.Body
 import okhttp3.MultipartBody
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -29,6 +32,17 @@ interface HomeApi {
     suspend fun getArtifact(
         @Path("artifactID") artifactID: String
     ): SingleArtifactDto
+
+    @POST("api/v1/reviews/add-Treview/{tourId}")
+    suspend fun reviewTour(
+        @Path("tourId") tourId: String,
+        @Body requestBody: ReviewRequestBody
+    )
+    @POST("api/v1/reviews/add-Preview/{placeId}")
+    suspend fun reviewPlace(
+        @Path("placeId") placeId: String,
+        @Body requestBody: ReviewRequestBody
+    )
 
     @GET("home")
     suspend fun getHome(): HomeDto

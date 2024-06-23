@@ -1,17 +1,23 @@
 package com.egtourguide.home.presentation.screens.filter
 
 data class FilterScreenState(
-    val selected: List<String>?=null,
-    var categoryFilters: List<Filter>?= listOf(Filter("Test1",false),Filter("Test2",true)),
-    var locationFilters: List<Filter>?= listOf(Filter("Test1",false),Filter("Test2",true)),
-    var ratingFilters: List<Filter>?= listOf(Filter("Test1",false),Filter("Test2",true)),
-    var tourismTypeFilters: List<Filter>?= listOf(Filter("Test1",false),Filter("Test2",true)),
-    var artifactTypeList: List<Filter>?= listOf(Filter("Test1",false),Filter("Test2",true),Filter("Test2",true),Filter("Test2",true),Filter("Test2",true),Filter("Test2",true),Filter("Test2",true),Filter("Test2",true),Filter("Test2",true),Filter("Test2",true),Filter("Test2",true)),
-    var materialList: List<Filter>?= listOf(Filter("Test1",false),Filter("Test2",true)),
-    var sortList: List<Filter>?= listOf(Filter("Test1",false),Filter("Test2",true)),
-    val duration: Int=0
+    val selectedMap: HashMap<String,List<String>>?=null,
+    var categoryFilters: List<String>?=null,
+    var locationFilters: List<String>?=null,
+    var ratingFilters: List<String>?= null,
+    var tourismTypeFilters: List<String>?=null,
+    var artifactTypeList: List<String>?= null,
+    var tourTypeList: List<String>?= null,
+    var materialList: List<String>?= null,
+    var sortList: List<String>?= null,
+    val duration: List<String>?=null,
+    val isLoading: Boolean = false,
+    val isError: Boolean = false,
+    val isSuccess: Boolean = false,
+    val error: String = "",
+    val isLandmarks: Boolean=false,
+    val isArtifacts: Boolean=false,
+    val isTours: Boolean=false,
+    val reset:Boolean=false
 )
-data class Filter(
-    val label: String = " ",
-    var isSelected: Boolean = false
-)
+
