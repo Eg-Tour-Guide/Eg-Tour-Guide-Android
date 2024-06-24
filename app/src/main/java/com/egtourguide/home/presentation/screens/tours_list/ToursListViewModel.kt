@@ -30,11 +30,12 @@ class ToursListViewModel @Inject constructor(
                 onLoading = {
                     _uiState.update { it.copy(isLoading = true) }
                 },
+                onSuccess = { response ->
+                    val tours = filterTours(tours = response, filters = filters)
+                    _uiState.update { it.copy(isLoading = false, tours = tours) }
+                },
                 onFailure = { error ->
                     _uiState.update { it.copy(isLoading = false, error = error) }
-                },
-                onSuccess = { response ->
-                    _uiState.update { it.copy(isLoading = false, tours = response) }
                 }
             )
         }
@@ -55,12 +56,60 @@ class ToursListViewModel @Inject constructor(
     }
 
 
-
     fun clearSaveSuccess() {
         _uiState.update { it.copy(isSaveSuccess = false) }
     }
 
     fun clearSaveError() {
         _uiState.update { it.copy(saveError = null) }
+    }
+
+    private fun filterTours(
+        tours: List<AbstractedTour>,
+        filters: HashMap<*, *>?
+    ): List<AbstractedTour> {
+        var resultedList = tours
+        filters?.forEach { (filterKey, filterValue) ->
+            filterKey as String
+            filterValue as List<String>
+            when (filterKey) {
+                /*"Tour Type" -> {
+                    resultedList = resultedList.filter { item ->
+                        filterValue.contains(item.type)
+                    }
+                }*/
+
+                /*"Location" -> {
+                    resultedList = resultedList.filter { item ->
+                        filterValue.contains(item.location)
+                    }
+                }*/
+
+                "Rating" -> {
+                    val ratingValue = filterValue.first().toInt()
+                    resultedList = resultedList.filter { item ->
+                        item.rating >= ratingValue
+                    }
+                }
+
+                "Duration" -> {
+                    val minDays = filterValue.first().toInt()
+                    val maxDays = filterValue.last().toInt()
+                    resultedList = resultedList.filter { item ->
+                        item.duration in minDays..maxDays
+                    }
+                }
+
+                "Sort By" -> {
+                    val sortType = filterValue.first().toInt()
+                    resultedList = if (sortType == 0) {
+                        resultedList.sortedBy { item -> item.rating }
+                    } else {
+                        resultedList.sortedByDescending { item -> item.rating }
+                    }
+                }
+            }
+        }
+        return resultedList
     }
 }

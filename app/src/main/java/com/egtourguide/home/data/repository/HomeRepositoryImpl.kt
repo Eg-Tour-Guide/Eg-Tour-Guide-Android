@@ -5,6 +5,7 @@ import com.egtourguide.core.utils.safeCall
 import com.egtourguide.home.data.HomeApi
 import com.egtourguide.home.domain.model.AbstractedArtifact
 import com.egtourguide.home.domain.model.AbstractedTour
+import com.egtourguide.home.domain.model.SavedItem
 import com.egtourguide.home.domain.model.SearchResult
 import com.egtourguide.home.domain.repository.HomeRepository
 import kotlinx.coroutines.flow.Flow
@@ -63,5 +64,9 @@ class HomeRepositoryImpl @Inject constructor(private val homeApi: HomeApi) : Hom
 
     override suspend fun detectArtifact(image: MultipartBody.Part) = safeCall {
         homeApi.detectArtifact(photo = image).toDomainDetectedArtifact()
+    }
+
+    override suspend fun getSavedList(): Flow<ResultWrapper<List<SavedItem>>> {
+        TODO("Not yet implemented")
     }
 }

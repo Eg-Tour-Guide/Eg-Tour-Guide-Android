@@ -3,6 +3,7 @@ package com.egtourguide.home.data
 import com.egtourguide.home.data.dto.ArtifactDetectionDto
 import com.egtourguide.home.data.dto.HomeDto
 import com.egtourguide.home.data.dto.LandmarksListDto
+import com.egtourguide.home.data.dto.SavedItemsDto
 import com.egtourguide.home.data.dto.SearchHistoryDto
 import com.egtourguide.home.data.dto.SearchResultsDto
 import com.egtourguide.home.data.dto.ToursListDto
@@ -72,5 +73,8 @@ interface HomeApi {
     @POST("rec")
     suspend fun detectArtifact(
         @Part photo: MultipartBody.Part
-    ):ArtifactDetectionDto
+    ): ArtifactDetectionDto
+
+    @GET("api/v1/favorite/my-fav")
+    suspend fun getSavedItems():SavedItemsDto
 }

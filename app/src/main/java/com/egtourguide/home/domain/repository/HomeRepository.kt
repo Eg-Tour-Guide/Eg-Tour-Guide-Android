@@ -8,6 +8,7 @@ import com.egtourguide.home.domain.model.DetectedArtifact
 import com.egtourguide.home.domain.model.Home
 import com.egtourguide.home.domain.model.Landmark
 import com.egtourguide.home.domain.model.Place
+import com.egtourguide.home.domain.model.SavedItem
 import com.egtourguide.home.domain.model.SearchResult
 import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody
@@ -27,4 +28,5 @@ interface HomeRepository {
     suspend fun getSearchHistory(): Flow<ResultWrapper<List<String>>>
     suspend fun deleteSearchHistory(): Flow<ResultWrapper<Unit>>
     suspend fun detectArtifact(image: MultipartBody.Part): Flow<ResultWrapper<DetectedArtifact>>
+    suspend fun getSavedList(): Flow<ResultWrapper<List<SavedItem>>>
 }

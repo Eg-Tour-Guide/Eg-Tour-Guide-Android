@@ -61,7 +61,7 @@ fun ToursListScreen(
     onNavigateToLandmarks: () -> Unit = {},
     onNavigateToHome: () -> Unit = {},
     onNavigateToArtifacts: () -> Unit = {},
-    onNavigateToUser: () -> Unit = {},
+    onNavigateToUser: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current

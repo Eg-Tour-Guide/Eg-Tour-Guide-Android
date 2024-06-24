@@ -1,12 +1,14 @@
 package com.egtourguide.home.domain.model
 
-data class SearchResult(
+data class SavedItem(
     val id: String,
     val image: String,
     val name: String,
-    val location: String,
+    val location: String? = null,
+    val duration: Int? = null,
     var isSaved: Boolean,
     val isArtifact: Boolean,
+    val isTour:Boolean,
     val category: String? = null,
     val material: String? = null,
     val artifactType: String? = null,

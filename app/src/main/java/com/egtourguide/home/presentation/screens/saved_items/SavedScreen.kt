@@ -1,5 +1,4 @@
-package com.egtourguide.home.presentation.screens.search_results
-
+package com.egtourguide.home.presentation.screens.saved_items
 
 import android.annotation.SuppressLint
 import android.widget.Toast
@@ -26,7 +25,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -52,63 +50,36 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.egtourguide.R
 import com.egtourguide.core.presentation.components.MainImage
-import com.egtourguide.home.domain.model.SearchResult
-import com.egtourguide.home.presentation.components.BottomBar
-import com.egtourguide.home.presentation.components.BottomBarScreens
+import com.egtourguide.home.domain.model.SavedItem
 import com.egtourguide.home.presentation.components.LoadingState
 import com.egtourguide.home.presentation.components.ScreenHeader
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun SearchResultsScreen(
-    viewModel: SearchResultsViewModel = hiltViewModel(),
-    query: String = "",
+fun SavedScreen(
+    viewModel: SavedViewModel = hiltViewModel(),
     filters: HashMap<*, *>? = null,
-    selectedBottomBarItem: BottomBarScreens = BottomBarScreens.Home,
-    onNavigateToSearch: () -> Unit = {},
-    onNavigateToNotification: () -> Unit = {},
+    onNavigateBack: () -> Unit = {},
     onNavigateToFilters: () -> Unit = {},
-    onNavigateToSingleItem: (SearchResult) -> Unit = {},
-    onNavigateToLandmarks: () -> Unit = {},
-    onNavigateToTours: () -> Unit = {},
-    onNavigateToHome: () -> Unit = {},
-    onNavigateToArtifacts: () -> Unit = {},
-    onNavigateToUser: () -> Unit = {},
+    onNavigateToSingleItem: (SavedItem) -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
     viewModel.filters = filters
 
-    Scaffold(
-        bottomBar = {
-            BottomBar(
-                selectedScreen = selectedBottomBarItem
-            ) { selectedScreen ->
-                when (selectedScreen) {
-                    BottomBarScreens.Home -> onNavigateToHome()
-                    BottomBarScreens.Tours -> onNavigateToTours()
-                    BottomBarScreens.Landmarks -> onNavigateToLandmarks()
-                    BottomBarScreens.Artifacts -> onNavigateToArtifacts()
-                    BottomBarScreens.User -> onNavigateToUser()
-                }
-            }
-        }
-    ) {
-        SearchResultsScreenContent(
-            uiState = uiState,
-            onSearchClicked = onNavigateToSearch,
-            onNotificationClicked = onNavigateToNotification,
-            onFilterClicked = onNavigateToFilters,
-            onResultClicked = onNavigateToSingleItem,
-            onSaveClicked = viewModel::onSaveClicked
-        )
-    }
+    SavedScreenContent(
+        uiState = uiState,
+        onFilterClicked = onNavigateToFilters,
+        onSaveClicked = viewModel::onSaveClicked,
+        onItemClicked = onNavigateToSingleItem,
+        onBackClicked = onNavigateBack
+    )
 
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_CREATE) {
-                viewModel.getSearchResults(query = query)
+                viewModel.getSavedItems()
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
@@ -119,7 +90,7 @@ fun SearchResultsScreen(
 
     LaunchedEffect(key1 = uiState.isSaveSuccess, key2 = uiState.saveError) {
         val successMsg =
-            if (uiState.isSave) "Place Saved Successfully" else "Place Unsaved Successfully"
+            if (uiState.isSave) R.string.saved_successfully else R.string.unsaved_successfully
         if (uiState.isSaveSuccess) {
             Toast.makeText(context, successMsg, Toast.LENGTH_SHORT).show()
             viewModel.clearSaveSuccess()
@@ -135,13 +106,12 @@ fun SearchResultsScreen(
 }
 
 @Composable
-fun SearchResultsScreenContent(
-    uiState: SearchResultsUIState,
-    onSearchClicked: () -> Unit,
-    onNotificationClicked: () -> Unit,
+fun SavedScreenContent(
+    uiState: SavedScreenUIState,
     onFilterClicked: () -> Unit,
-    onResultClicked: (SearchResult) -> Unit,
-    onSaveClicked: (SearchResult) -> Unit
+    onItemClicked: (SavedItem) -> Unit,
+    onSaveClicked: (SavedItem) -> Unit,
+    onBackClicked: () -> Unit
 ) {
     Column(
         Modifier
@@ -151,15 +121,12 @@ fun SearchResultsScreenContent(
     ) {
         ScreenHeader(
             modifier = Modifier.height(62.dp),
-            showLogo = true,
-            showNotifications = true,
-            showSearch = true,
-            onNotificationsClicked = onNotificationClicked,
-            onSearchClicked = onSearchClicked
+            showBack = true,
+            onBackClicked = onBackClicked
         )
         Spacer(modifier = Modifier.height(18.dp))
-        ResultsHeader(
-            resultsCount = uiState.results.size,
+        SavedHeader(
+            itemsCount = uiState.savedList.size,
             onFilterClicked = onFilterClicked
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -175,9 +142,9 @@ fun SearchResultsScreenContent(
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            ResultsSection(
-                results = uiState.results,
-                onResultClicked = onResultClicked,
+            ItemsSection(
+                items = uiState.savedList,
+                onItemClicked = onItemClicked,
                 onSaveClicked = onSaveClicked
             )
         }
@@ -185,8 +152,8 @@ fun SearchResultsScreenContent(
 }
 
 @Composable
-private fun ResultsHeader(
-    resultsCount: Int,
+private fun SavedHeader(
+    itemsCount: Int,
     onFilterClicked: () -> Unit
 ) {
     Row(
@@ -197,7 +164,7 @@ private fun ResultsHeader(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "$resultsCount Results",
+            text = "$itemsCount Saved",
             style = MaterialTheme.typography.displaySmall,
             color = MaterialTheme.colorScheme.onBackground
         )
@@ -216,10 +183,10 @@ private fun ResultsHeader(
 }
 
 @Composable
-private fun ResultsSection(
-    results: List<SearchResult>,
-    onResultClicked: (SearchResult) -> Unit,
-    onSaveClicked: (SearchResult) -> Unit
+private fun ItemsSection(
+    items: List<SavedItem>,
+    onItemClicked: (SavedItem) -> Unit,
+    onSaveClicked: (SavedItem) -> Unit
 ) {
     LazyVerticalGrid(
         modifier = Modifier
@@ -229,10 +196,10 @@ private fun ResultsSection(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        items(items = results) { result ->
+        items(items = items) { item ->
             ResultItem(
-                item = result,
-                onItemClicked = onResultClicked,
+                item = item,
+                onItemClicked = onItemClicked,
                 onSaveClicked = onSaveClicked
             )
         }
@@ -241,9 +208,9 @@ private fun ResultsSection(
 
 @Composable
 fun ResultItem(
-    item: SearchResult,
-    onItemClicked: (SearchResult) -> Unit,
-    onSaveClicked: (SearchResult) -> Unit
+    item: SavedItem,
+    onItemClicked: (SavedItem) -> Unit,
+    onSaveClicked: (SavedItem) -> Unit
 ) {
     var isSaved by remember { mutableStateOf(item.isSaved) }
     Column(
@@ -283,23 +250,43 @@ fun ResultItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    modifier = Modifier.padding(end = 2.dp),
-                    painter = painterResource(id = R.drawable.ic_location),
-                    tint = Color.Unspecified,
-                    contentDescription = "Location Icon"
-                )
-                Text(
-                    modifier = Modifier.fillMaxWidth(.90f),
-                    text = " ${item.location}",
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
+            if(item.isTour){
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        modifier = Modifier.padding(end = 2.dp),
+                        painter = painterResource(id = R.drawable.ic_timesheet),
+                        tint = Color.Unspecified,
+                        contentDescription = "Location Icon"
+                    )
+                    Text(
+                        text = " ${item.duration} Days",
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+            }else{
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        modifier = Modifier.padding(end = 2.dp),
+                        painter = painterResource(id = R.drawable.ic_location),
+                        tint = Color.Unspecified,
+                        contentDescription = "Location Icon"
+                    )
+                    Text(
+                        modifier = Modifier.fillMaxWidth(.90f),
+                        text = " ${item.location}",
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
             }
             IconButton(
                 modifier = Modifier.size(24.dp),
@@ -358,6 +345,6 @@ fun ResultItem(
 
 @Preview
 @Composable
-private fun SearchResultsScreenPreview() {
-    SearchResultsScreen()
+private fun SavedScreenPreview() {
+    SavedScreen()
 }
