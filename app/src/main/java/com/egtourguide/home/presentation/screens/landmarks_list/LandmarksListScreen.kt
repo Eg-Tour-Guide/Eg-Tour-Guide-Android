@@ -44,6 +44,7 @@ import com.egtourguide.R
 import com.egtourguide.home.domain.model.Place
 import com.egtourguide.home.presentation.components.BottomBar
 import com.egtourguide.home.presentation.components.BottomBarScreens
+import com.egtourguide.home.presentation.components.EmptyState
 import com.egtourguide.home.presentation.components.LoadingState
 import com.egtourguide.home.presentation.components.PlaceItem
 import com.egtourguide.home.presentation.components.ScreenHeader
@@ -156,6 +157,13 @@ fun LandmarksListScreenContent(
             exit = fadeOut()
         ) {
             LoadingState(modifier = Modifier.fillMaxSize())
+        }
+        AnimatedVisibility(
+            visible = uiState.isShowEmptyState && uiState.landmarks.isEmpty(),
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            EmptyState(modifier = Modifier.fillMaxSize(), message = "No Landmarks Found")
         }
         AnimatedVisibility(
             visible = !uiState.isLoading,

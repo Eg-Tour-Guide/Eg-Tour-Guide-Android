@@ -1,7 +1,7 @@
 package com.egtourguide.home.data
 
 import com.egtourguide.home.data.body.ReviewRequestBody
-import com.egtourguide.home.data.dto.ArtifactDetectionDto
+import com.egtourguide.home.data.dto.response.ArtifactDetectionDto
 import com.egtourguide.home.data.dto.response.ArtifactsListDto
 import retrofit2.http.Body
 import okhttp3.MultipartBody
@@ -15,6 +15,7 @@ import com.egtourguide.home.data.dto.response.SingleArtifactDto
 import com.egtourguide.home.data.dto.response.SingleLandmarkDto
 import com.egtourguide.home.data.dto.response.TourDetailsDto
 import com.egtourguide.home.data.dto.body.TourDetailsBody
+import com.egtourguide.home.data.dto.response.SavedItemsDto
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
@@ -88,7 +89,7 @@ interface HomeApi {
     @POST("rec")
     suspend fun detectArtifact(
         @Part photo: MultipartBody.Part
-    ):ArtifactDetectionDto
+    ): ArtifactDetectionDto
 
     @GET("/api/v1/tours/tour-details/{tourId}")
     suspend fun getTourDetails(
@@ -100,4 +101,7 @@ interface HomeApi {
         @Path("tourId") tourId: String,
         @Body tourDetails: TourDetailsBody
     ): String // TODO: Change This!!
+
+    @GET("api/v1/favorite/my-fav")
+    suspend fun getSavedItems(): SavedItemsDto
 }

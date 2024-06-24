@@ -62,7 +62,6 @@ class HomeViewModel @Inject constructor(
     fun onSaveClicked(place: Place) {
         viewModelScope.launch(Dispatchers.IO) {
             place.isSaved = !place.isSaved
-
             changePlaceSavedStateUseCase(placeId = place.id).onResponse(
                 onLoading = {},
                 onSuccess = {

@@ -25,4 +25,5 @@ object ScreenRoutes {
     const val WEB_VIEW_SCREEN_ROUTE = "WEB_VIEW_SCREEN_ROUTE/{modelUrl}"
     const val TOURS_PLAN_SCREEN_ROUTE = "TOURS_PLAN_SCREEN_ROUTE/{tourId}"
     const val MY_TOURS_SCREEN_ROUTE = "MY_TOURS_SCREEN_ROUTE/{isSelect}"
+    const val SAVED_ITEMS_SCREEN_ROUTE = "SAVED_ITEMS_SCREEN_ROUTE"
 }

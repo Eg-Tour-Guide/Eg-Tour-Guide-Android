@@ -10,6 +10,7 @@ import com.egtourguide.home.domain.model.DetectedArtifact
 import com.egtourguide.home.domain.model.Home
 import com.egtourguide.home.domain.model.Landmark
 import com.egtourguide.home.domain.model.Place
+import com.egtourguide.home.domain.model.SavedItem
 import com.egtourguide.home.domain.model.SearchResult
 import com.egtourguide.home.domain.model.TourDetails
 import kotlinx.coroutines.flow.Flow
@@ -52,6 +53,7 @@ interface HomeRepository {
     suspend fun deleteSearchHistory(): Flow<ResultWrapper<Unit>>
 
     suspend fun detectArtifact(image: MultipartBody.Part): Flow<ResultWrapper<DetectedArtifact>>
+    suspend fun getSavedList(): Flow<ResultWrapper<List<SavedItem>>>
 
     suspend fun getTourDetails(tourId: String): Flow<ResultWrapper<TourDetails>>
 
@@ -59,4 +61,5 @@ interface HomeRepository {
         tourId: String,
         tourDetails: TourDetailsBody
     ): Flow<ResultWrapper<String>> // TODO: Change This!!
+
 }

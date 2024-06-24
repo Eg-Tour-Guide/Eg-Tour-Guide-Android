@@ -6,9 +6,11 @@ import com.egtourguide.home.data.HomeApi
 import com.egtourguide.home.data.body.ReviewRequestBody
 import com.egtourguide.home.domain.model.AbstractedArtifact
 import com.egtourguide.home.domain.model.AbstractedTour
+import com.egtourguide.home.domain.model.SavedItem
 import com.egtourguide.home.domain.model.SearchResult
 import com.egtourguide.home.data.dto.body.TourDetailsBody
 import com.egtourguide.home.domain.repository.HomeRepository
+import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody
 import javax.inject.Inject
 
@@ -79,6 +81,10 @@ class HomeRepositoryImpl @Inject constructor(private val homeApi: HomeApi) : Hom
 
     override suspend fun detectArtifact(image: MultipartBody.Part) = safeCall {
         homeApi.detectArtifact(photo = image).toDomainDetectedArtifact()
+    }
+
+    override suspend fun getSavedList() = safeCall {
+        homeApi.getSavedItems().toDomainSavedItems()
     }
 
     override suspend fun getTourDetails(tourId: String) = safeCall {

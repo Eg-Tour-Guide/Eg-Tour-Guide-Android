@@ -2,6 +2,7 @@ package com.egtourguide.home.presentation.screens.search_results
 
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -29,6 +30,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,6 +55,7 @@ import com.egtourguide.core.presentation.components.MainImage
 import com.egtourguide.home.domain.model.SearchResult
 import com.egtourguide.home.presentation.components.BottomBar
 import com.egtourguide.home.presentation.components.BottomBarScreens
+import com.egtourguide.home.presentation.components.EmptyState
 import com.egtourguide.home.presentation.components.LoadingState
 import com.egtourguide.home.presentation.components.ScreenHeader
 
@@ -61,6 +64,7 @@ import com.egtourguide.home.presentation.components.ScreenHeader
 fun SearchResultsScreen(
     viewModel: SearchResultsViewModel = hiltViewModel(),
     query: String = "",
+    filters: HashMap<*, *>? = null,
     selectedBottomBarItem: BottomBarScreens = BottomBarScreens.Home,
     onNavigateToSearch: () -> Unit = {},
     onNavigateToNotification: () -> Unit = {},
@@ -75,6 +79,7 @@ fun SearchResultsScreen(
     val uiState by viewModel.uiState.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
+    viewModel.filters = filters
 
     Scaffold(
         bottomBar = {
@@ -113,7 +118,7 @@ fun SearchResultsScreen(
         }
     }
 
-    /*LaunchedEffect(key1 = uiState.isSaveSuccess, key2 = uiState.saveError) {
+    LaunchedEffect(key1 = uiState.isSaveSuccess, key2 = uiState.saveError) {
         val successMsg =
             if (uiState.isSave) "Place Saved Successfully" else "Place Unsaved Successfully"
         if (uiState.isSaveSuccess) {
@@ -127,7 +132,7 @@ fun SearchResultsScreen(
             ).show()
             viewModel.clearSaveError()
         }
-    }*/
+    }
 }
 
 @Composable
@@ -165,6 +170,15 @@ fun SearchResultsScreenContent(
             exit = fadeOut()
         ) {
             LoadingState(modifier = Modifier.fillMaxSize())
+        }
+        AnimatedVisibility(
+            visible = uiState.isShowEmptyState && uiState.results.isEmpty(),
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            EmptyState(
+                message = "No Results Found"
+            )
         }
         AnimatedVisibility(
             visible = !uiState.isLoading,

@@ -5,7 +5,7 @@ data class SearchResult(
     val image: String,
     val name: String,
     val location: String,
-    val isSaved: Boolean,
+    var isSaved: Boolean,
     val isArtifact: Boolean,
     val category: String? = null,
     val material: String? = null,
