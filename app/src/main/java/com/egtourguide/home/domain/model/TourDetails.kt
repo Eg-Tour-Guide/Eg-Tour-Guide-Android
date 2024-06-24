@@ -1,8 +1,7 @@
 package com.egtourguide.home.domain.model
 
-// TODO: Change model!!
 data class TourDetails(
-    val startDate: Long,
+    val name: String,
     val days: Map<Int, List<TourDetailsPlace>>
 )
 

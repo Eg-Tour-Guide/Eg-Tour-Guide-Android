@@ -49,7 +49,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.egtourguide.R
-import com.egtourguide.core.presentation.components.LoadingProgress
 import com.egtourguide.core.presentation.components.MainButton
 import com.egtourguide.core.presentation.components.MainImage
 import com.egtourguide.core.presentation.components.MapItem
@@ -271,8 +270,10 @@ private fun ExpandedScreen(
         )
 
         if (uiState.isLoading) {
-            LoadingProgress(
-                modifier = Modifier.weight(1f)
+            LoadingState(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
             )
         } else {
             LazyColumn(

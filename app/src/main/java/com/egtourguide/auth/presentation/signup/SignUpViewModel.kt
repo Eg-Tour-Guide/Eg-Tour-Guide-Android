@@ -102,9 +102,7 @@ class SignUpViewModel @Inject constructor(
                     _uiState.update { it.copy(isLoading = true, errorMessage = null) }
                 },
                 onSuccess = { response ->
-                    // TODO: Get sent code!!
-                    Log.d(TAG, "sendCode: $response")
-                    _uiState.update { it.copy(isSuccess = true, code = "") }
+                    _uiState.update { it.copy(isSuccess = true, code = response.code) }
                 },
                 onFailure = { msg ->
                     _uiState.update { it.copy(isLoading = false, errorMessage = msg) }

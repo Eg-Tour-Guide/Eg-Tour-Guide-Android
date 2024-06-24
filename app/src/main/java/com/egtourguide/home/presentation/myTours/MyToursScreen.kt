@@ -12,8 +12,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.egtourguide.core.presentation.components.LoadingProgress
 import com.egtourguide.home.domain.model.AbstractedTour
+import com.egtourguide.home.presentation.components.LoadingState
 import com.egtourguide.home.presentation.components.TourItem
 
 // TODO: Change all of this!!
@@ -36,7 +36,10 @@ private fun MyToursScreenContent(
     onTourClicked: (AbstractedTour) -> Unit,
 ) {
     if (uiState.isLoading) {
-        LoadingProgress()
+        LoadingState(
+            modifier = Modifier
+                .fillMaxWidth()
+        )
     } else {
         LazyVerticalGrid(
             modifier = Modifier.fillMaxWidth(),

@@ -41,9 +41,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.egtourguide.R
-import com.egtourguide.core.presentation.components.LoadingProgress
 import com.egtourguide.core.presentation.components.MainButton
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
+import com.egtourguide.home.presentation.components.LoadingState
 import com.egtourguide.home.presentation.components.ScreenHeader
 
 @Preview
@@ -82,96 +82,17 @@ fun ToursPlanScreenRoot(
     ToursPlanScreenContent(
         uiState = uiState,
         onBackClicked = onBackClicked,
-        onDateChanged = viewModel::onDateChanged,
-        changePickerVisibility = viewModel::changeDialogVisibility,
-        changeChosenDay = viewModel::changeChosenDay,
         onPlaceClicked = navigateToLandmark
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ToursPlanScreenContent(
     uiState: ToursPlanScreenState = ToursPlanScreenState(),
     onBackClicked: () -> Unit = {},
-    onDateChanged: (Long) -> Unit = {},
-    changePickerVisibility: () -> Unit = {},
     changeChosenDay: (Int) -> Unit = {},
     onPlaceClicked: (String) -> Unit = {}
 ) {
-    val dateState = rememberDatePickerState()
-
-    LaunchedEffect(key1 = dateState.selectedDateMillis) {
-        onDateChanged(dateState.selectedDateMillis ?: 0)
-    }
-
-    // TODO: Check size problem!!
-    if (uiState.showDatePicker) {
-        DatePickerDialog(
-            onDismissRequest = changePickerVisibility,
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        changePickerVisibility()
-                    }
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.ok),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = { changePickerVisibility() }
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.cancel),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                }
-            },
-            colors = DatePickerDefaults.colors(
-                containerColor = MaterialTheme.colorScheme.background
-            )
-        ) {
-            DatePicker(
-                state = dateState,
-                showModeToggle = true,
-                title = {
-                    Text(
-                        text = stringResource(id = R.string.select_date),
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(top = 16.dp, start = 24.dp)
-                    )
-                },
-                colors = DatePickerDefaults.colors(
-                    dayContentColor = MaterialTheme.colorScheme.onBackground,
-                    todayDateBorderColor = MaterialTheme.colorScheme.primary,
-                    weekdayContentColor = MaterialTheme.colorScheme.onBackground,
-                    navigationContentColor = MaterialTheme.colorScheme.onBackground,
-                    yearContentColor = MaterialTheme.colorScheme.onBackground,
-                    disabledYearContentColor = MaterialTheme.colorScheme.outline,
-                    disabledDayContentColor = MaterialTheme.colorScheme.outline,
-                    titleContentColor = MaterialTheme.colorScheme.onBackground,
-                    headlineContentColor = MaterialTheme.colorScheme.onBackground,
-                    dividerColor = MaterialTheme.colorScheme.outline,
-                    dateTextFieldColors = TextFieldDefaults.colors(
-                        focusedTextColor = MaterialTheme.colorScheme.primary,
-                        unfocusedTextColor = MaterialTheme.colorScheme.primary,
-                        focusedPlaceholderColor = MaterialTheme.colorScheme.outline,
-                        unfocusedPlaceholderColor = MaterialTheme.colorScheme.outline,
-                        focusedContainerColor = MaterialTheme.colorScheme.background,
-                        unfocusedContainerColor = MaterialTheme.colorScheme.background,
-                        cursorColor = MaterialTheme.colorScheme.primary
-                    )
-                )
-            )
-        }
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -184,8 +105,10 @@ fun ToursPlanScreenContent(
         )
 
         if (uiState.isLoading) {
-            LoadingProgress(
-                modifier = Modifier.weight(1f)
+            LoadingState(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
             )
         } else {
             LazyColumn(
@@ -214,7 +137,6 @@ fun ToursPlanScreenContent(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         contentPadding = PaddingValues(horizontal = 16.dp)
                     ) {
-                        // TODO: Date passed disabled item!!
                         items(items = uiState.days.keys.toList(), key = { it }) { day ->
                             Box(
                                 modifier = Modifier
@@ -240,7 +162,7 @@ fun ToursPlanScreenContent(
                     }
                 }
 
-                items(items = uiState.days[uiState.chosenDay].orEmpty(), key = { it.id }) { place ->
+                items(items = uiState.days[uiState.chosenDay].orEmpty()) { place ->
                     TourPlanItem(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -250,18 +172,6 @@ fun ToursPlanScreenContent(
                     )
                 }
             }
-
-            // TODO: Remove this!!
-//            if (uiState.startDate != 0L && uiState.days.isNotEmpty()) {
-            MainButton(
-                text = stringResource(id = R.string.start_tour),
-                onClick = changePickerVisibility,
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth()
-                    .height(40.dp)
-            )
-//            }
         }
     }
 }

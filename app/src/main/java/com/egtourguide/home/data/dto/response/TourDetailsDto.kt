@@ -3,13 +3,13 @@ package com.egtourguide.home.data.dto.response
 import com.egtourguide.home.domain.model.TourDetails
 import com.egtourguide.home.domain.model.TourDetailsPlace
 
-// TODO: Change model!!
 data class TourDetailsDto(
     val status: String,
+    val name: String,
     val details: List<Detail>
 ) {
     fun toTourDetails() = TourDetails(
-        startDate = 0,
+        name = name,
         days = details.associate {
             it.day to it.places.map { place ->
                 place.toTourDetailsPlace()
@@ -24,29 +24,29 @@ data class Detail(
 )
 
 data class Place(
-    val _id: String,
-    val name: String,
-    val govName: String,
-    val images: List<String>,
-    val description: String,
-    val location: Location,
-    val category: String,
-    val ratingAverage: Double,
-    val ratingQuantity: Int,
-    val __v: Int,
-    val type: String,
-    val vrModel: String?
+    val placeDetails: PlaceDetails,
+    val time: Int
 ) {
     fun toTourDetailsPlace() = TourDetailsPlace(
-        id = _id,
-        image = images[0],
-        title = name,
-        govName = govName,
-        ratingAverage = ratingAverage,
-        ratingQuantity = ratingQuantity,
-        duration = 3
+        id = placeDetails._id,
+        image = placeDetails.images[0],
+        title = placeDetails.name,
+        govName = placeDetails.govNAme,
+        ratingAverage = placeDetails.ratingAverage,
+        ratingQuantity = placeDetails.ratingQuantity,
+        duration = time
+
     )
 }
+
+data class PlaceDetails(
+    val _id: String,
+    val name: String,
+    val govNAme: String,
+    val images: List<String>,
+    val ratingAverage: Double,
+    val ratingQuantity: Int
+)
 
 data class Location(
     val coordinates: List<Double>

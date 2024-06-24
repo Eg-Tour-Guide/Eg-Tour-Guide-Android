@@ -31,9 +31,8 @@ class AuthRepositoryImpl @Inject constructor(private val authApi: AuthApi) : Aut
         authApi.login(requestBody = requestBody).toLoginResponse()
     }
 
-    // TODO: Change returned data!!
     override suspend fun sendCode(requestBody: SendCodeRequestBody) = safeCall {
-        authApi.sendCode(requestBody = requestBody)
+        authApi.sendCode(requestBody = requestBody).toSendCodeResponse()
     }
 
     override suspend fun signup(requestBody: SignupRequestBody) = safeCall {

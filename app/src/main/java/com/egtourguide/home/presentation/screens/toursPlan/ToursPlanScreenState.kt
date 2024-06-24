@@ -8,9 +8,7 @@ data class ToursPlanScreenState(
     val id: String = "",
     val title: String = "",
     val days: Map<Int, List<TourDetailsPlace>> = emptyMap(), // TODO: Change model!!
-    val startDate: Long = 0,
-    val chosenDate: Long = 0,
-    val callIsSent: Boolean = false, // TODO: Check if not needed!!
+    val callIsSent: Boolean = false,
     val showDatePicker: Boolean = false,
     val chosenDay: Int = 1
 )

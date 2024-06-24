@@ -206,7 +206,7 @@ fun AppNavigation(
             val expandedType = entry.arguments?.getString("expandedType") ?: ""
             val tourId = entry.savedStateHandle.get<String>(key = "tourId") ?: ""
             val tourName = entry.savedStateHandle.get<String>(key = "tourName") ?: ""
-            val tourImage = entry.savedStateHandle.get<String>(key = "tourImage") ?:""
+            val tourImage = entry.savedStateHandle.get<String>(key = "tourImage") ?: ""
 
             ExpandedScreenRoot(
                 id = id,
@@ -219,7 +219,14 @@ fun AppNavigation(
                     navController.navigate(route = AppScreen.MoreReviews.route)
                 },
                 onReviewClicked = {
-                    navController.navigate(route = AppScreen.Review.route)
+                    navController.navigate(
+                        route = AppScreen.Review.route
+                            .replace("{id}", id)
+                            .replace(
+                                "{source}",
+                                if (expandedType == ExpandedType.LANDMARK.name) "place" else "tour"
+                            )
+                    )
                 },
                 navigateToWebScreen = { modelUrl ->
                     navController.navigate(
@@ -412,10 +419,28 @@ fun AppNavigation(
             )
         }
 
-        composable(route = AppScreen.Review.route) {
+        composable(route = AppScreen.Review.route) { entry ->
+            val itemId = entry.arguments?.getString("id") ?: ""
+            val source = entry.arguments?.getString("source") ?: ""
+
             ReviewScreen(
-                id = "",
-                onNavigateBack = { navController.navigateUp() }
+                id = itemId,
+                isPlace = source == "place",
+                isTour = source == "tour",
+                onNavigateBack = {
+                    navController.navigate(
+                        route = AppScreen.Expanded.route
+                            .replace("{id}", itemId)
+                            .replace(
+                                "{expandedType}",
+                                if (source == "place") ExpandedType.LANDMARK.name else ExpandedType.TOUR.name
+                            )
+                    ) {
+                        popUpTo(route = AppScreen.Expanded.route) {
+                            inclusive = true
+                        }
+                    }
+                }
             )
         }
 

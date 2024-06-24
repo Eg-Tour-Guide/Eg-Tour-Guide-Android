@@ -14,15 +14,14 @@ import com.egtourguide.R
 import com.egtourguide.core.utils.Constants.BASE_URL
 import kotlinx.coroutines.Dispatchers
 
-// TODO: Change default images!!
 @Composable
 fun MainImage(
     data: Any,
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Crop,
     contentDescription: String? = null,
-    @DrawableRes placeHolderImage: Int = R.drawable.ic_launcher_background,
-    @DrawableRes errorImage: Int = R.drawable.ic_error
+    @DrawableRes placeHolderImage: Int = R.drawable.ic_placeholder,
+    @DrawableRes errorImage: Int = R.drawable.ic_error_image
 ) {
     val context = LocalContext.current
 

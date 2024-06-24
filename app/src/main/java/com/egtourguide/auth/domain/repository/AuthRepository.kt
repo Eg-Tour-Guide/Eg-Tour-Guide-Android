@@ -7,6 +7,7 @@ import com.egtourguide.auth.data.dto.body.SendCodeRequestBody
 import com.egtourguide.auth.data.dto.body.SignupRequestBody
 import com.egtourguide.auth.domain.model.ForgotPasswordResponse
 import com.egtourguide.auth.domain.model.LoginResponse
+import com.egtourguide.auth.domain.model.SendCodeResponse
 import com.egtourguide.auth.domain.model.SignupResponse
 import com.egtourguide.core.utils.ResultWrapper
 import kotlinx.coroutines.flow.Flow
@@ -26,8 +27,7 @@ interface AuthRepository {
         requestBody: LoginRequestBody
     ): Flow<ResultWrapper<LoginResponse>>
 
-    // TODO: Change return type!!
-    suspend fun sendCode(requestBody: SendCodeRequestBody): Flow<ResultWrapper<String>>
+    suspend fun sendCode(requestBody: SendCodeRequestBody): Flow<ResultWrapper<SendCodeResponse>>
 
     suspend fun signup(requestBody: SignupRequestBody): Flow<ResultWrapper<SignupResponse>>
 }

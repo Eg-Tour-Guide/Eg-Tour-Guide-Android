@@ -9,6 +9,7 @@ import com.egtourguide.auth.data.dto.body.SendCodeRequestBody
 import com.egtourguide.auth.data.dto.body.SignupRequestBody
 import com.egtourguide.auth.data.dto.response.ForgotPasswordResponseDTO
 import com.egtourguide.auth.data.dto.response.LoginResponseDTO
+import com.egtourguide.auth.data.dto.response.SendCodeDto
 import com.egtourguide.auth.data.dto.response.SignupResponseDTO
 import retrofit2.http.PATCH
 import retrofit2.http.Path
@@ -31,11 +32,10 @@ interface AuthApi {
         @Body requestBody: LoginRequestBody
     ): LoginResponseDTO
 
-    // TODO: Change Response Model!
     @POST("api/v1/auth/send-code")
     suspend fun sendCode(
         @Body requestBody: SendCodeRequestBody
-    ): String
+    ): SendCodeDto
 
     @POST("api/v1/auth/signup")
     suspend fun signup(

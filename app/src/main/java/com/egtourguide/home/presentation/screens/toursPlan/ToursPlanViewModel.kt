@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.egtourguide.core.utils.onResponse
 import com.egtourguide.home.domain.usecases.GetTourDetailsUseCase
-import com.egtourguide.home.domain.usecases.UpdateTourDetailsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,8 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ToursPlanViewModel @Inject constructor(
-    private val getTourDetailsUseCase: GetTourDetailsUseCase,
-    private val updateTourDetailsUseCase: UpdateTourDetailsUseCase
+    private val getTourDetailsUseCase: GetTourDetailsUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ToursPlanScreenState())
@@ -32,10 +30,8 @@ class ToursPlanViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            title = "Test Title", // TODO: Change this!!,
+                            title = response.name,
                             days = response.days,
-                            startDate = response.startDate,
-                            chosenDate = 1647,
                             callIsSent = false,
                             showDatePicker = false
                         )
@@ -46,36 +42,5 @@ class ToursPlanViewModel @Inject constructor(
                 }
             )
         }
-    }
-
-    fun changeTourDate() {
-        viewModelScope.launch(Dispatchers.IO) {
-            updateTourDetailsUseCase(
-                tourId = _uiState.value.id,
-                startDate = _uiState.value.chosenDate.toString() // TODO: Change this!!
-            ).onResponse(
-                onLoading = {
-                    _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-                },
-                onSuccess = {
-                    _uiState.update { it.copy(isLoading = false, startDate = it.chosenDate) }
-                },
-                onFailure = { message ->
-                    _uiState.update { it.copy(isLoading = false, errorMessage = message) }
-                }
-            )
-        }
-    }
-
-    fun changeDialogVisibility() {
-        _uiState.update { it.copy(showDatePicker = !it.showDatePicker) }
-    }
-
-    fun changeChosenDay(day: Int) {
-        _uiState.update { it.copy(chosenDay = day) }
-    }
-
-    fun onDateChanged(date: Long) {
-        _uiState.update { it.copy(chosenDate = date) }
     }
 }

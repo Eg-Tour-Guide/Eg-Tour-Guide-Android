@@ -6,6 +6,7 @@ import com.egtourguide.core.utils.onResponse
 import com.egtourguide.home.data.dto.body.ReviewRequestBody
 import com.egtourguide.home.domain.usecases.ReviewPlaceUseCase
 import com.egtourguide.home.domain.usecases.ReviewTourUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 class ReviewViewModel @Inject constructor(
     private val sendReviewTourUseCase: ReviewTourUseCase,
     private val sendReviewPlaceUseCase: ReviewPlaceUseCase

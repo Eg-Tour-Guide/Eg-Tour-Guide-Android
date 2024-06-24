@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -83,11 +84,25 @@ fun ScreenHeader(
     ) {
         // TODO: Change logo!!
         if (showLogo) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_logo),
-                contentDescription = stringResource(id = R.string.logo),
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.padding(start = 16.dp)
-            )
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_logo),
+                    contentDescription = stringResource(id = R.string.logo),
+                    modifier = Modifier
+                        .height(40.dp)
+                        .width(30.dp)
+                )
+
+                Image(
+                    painter = painterResource(id = R.drawable.ic_text_logo),
+                    contentDescription = stringResource(id = R.string.logo),
+                    modifier = Modifier.height(16.dp)
+                )
+            }
         }
 
         if (showBack) {

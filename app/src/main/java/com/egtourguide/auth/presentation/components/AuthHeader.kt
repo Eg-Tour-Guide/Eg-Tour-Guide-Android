@@ -3,7 +3,9 @@ package com.egtourguide.auth.presentation.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,7 +40,10 @@ fun AuthHeader(
     ) {
         Image(
             painter = painterResource(id = R.drawable.ic_logo),
-            contentDescription = stringResource(id = R.string.logo)
+            contentDescription = stringResource(id = R.string.logo),
+            modifier = Modifier
+                .height(150.dp)
+                .width(110.dp)
         )
 
         Text(
