@@ -2,6 +2,7 @@ package com.egtourguide.home.presentation.screens.search_results
 
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -78,6 +79,7 @@ fun SearchResultsScreen(
     val uiState by viewModel.uiState.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
+    Log.d("````TAG````", "filters in screen: $filters")
     viewModel.filters = filters
 
     Scaffold(
@@ -206,7 +208,7 @@ private fun ResultsHeader(
             style = MaterialTheme.typography.displaySmall,
             color = MaterialTheme.colorScheme.onBackground
         )
-        Icon(
+        /*Icon(
             modifier = Modifier.clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null
@@ -216,7 +218,7 @@ private fun ResultsHeader(
             painter = painterResource(id = R.drawable.ic_filter),
             contentDescription = "Filter Icon",
             tint = Color.Unspecified
-        )
+        )*/
     }
 }
 

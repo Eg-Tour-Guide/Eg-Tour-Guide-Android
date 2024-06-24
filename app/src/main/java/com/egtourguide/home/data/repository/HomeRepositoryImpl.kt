@@ -114,4 +114,8 @@ class HomeRepositoryImpl @Inject constructor(private val homeApi: HomeApi) : Hom
     ) = safeCall {
         homeApi.addPlaceToTour(tourId = tourId, place = addPlaceBody)
     }
+
+    override suspend fun getMyTours() = safeCall {
+        homeApi.getMyTours().tours.map { it.toDomainAbstractedTour() }
+    }
 }

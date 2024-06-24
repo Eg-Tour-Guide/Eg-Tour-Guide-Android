@@ -69,11 +69,13 @@ fun ScreenHeader(
     showVrView: Boolean = false,
     showArView: Boolean = false,
     showBack: Boolean = false,
+    showAdd: Boolean = false,
     onBackClicked: () -> Unit = {},
     onSearchClicked: () -> Unit = {},
     onCaptureObjectClicked: () -> Unit = {},
     onVrViewClicked: () -> Unit = {},
-    onArViewClicked: () -> Unit = {}
+    onArViewClicked: () -> Unit = {},
+    onAddClicked: () -> Unit = {}
 ) {
     Row(
         modifier = modifier
@@ -161,6 +163,17 @@ fun ScreenHeader(
                     modifier = Modifier
                         .size(20.dp)
                         .clickable { onArViewClicked() }
+                )
+            }
+
+            if (showAdd) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_add),
+                    contentDescription = stringResource(R.string.add_icon),
+                    tint = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier
+                        .size(20.dp)
+                        .clickable { onAddClicked() }
                 )
             }
         }

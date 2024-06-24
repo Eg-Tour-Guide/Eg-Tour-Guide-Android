@@ -70,4 +70,5 @@ interface HomeRepository {
     suspend fun getEvent(eventId: String): Flow<ResultWrapper<SingleEvent>>
 
     suspend fun addPlaceToTour(tourId: String, addPlaceBody: AddPlaceBody): Flow<ResultWrapper<Unit>>
+    suspend fun getMyTours(): Flow<ResultWrapper<List<AbstractedTour>>>
 }

@@ -17,6 +17,7 @@ import com.egtourguide.home.data.dto.response.SingleArtifactDto
 import com.egtourguide.home.data.dto.response.SingleLandmarkDto
 import com.egtourguide.home.data.dto.response.TourDetailsDto
 import com.egtourguide.home.data.dto.body.TourDetailsBody
+import com.egtourguide.home.data.dto.response.MyToursDto
 import com.egtourguide.home.data.dto.response.SavedItemsDto
 import com.egtourguide.home.data.dto.response.SingleEventDto
 import com.egtourguide.home.data.dto.response.SingleTourDto
@@ -110,6 +111,9 @@ interface HomeApi {
 
     @GET("api/v1/favorite/my-fav")
     suspend fun getSavedItems(): SavedItemsDto
+
+    @GET("/api/v1/tours/user-Tours")
+    suspend fun getMyTours(): MyToursDto
 
     @GET("api/v1/tours/tour/{tourId}")
     suspend fun getTour(

@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.egtourguide.core.utils.onResponse
 import com.egtourguide.home.domain.model.AbstractedArtifact
-import com.egtourguide.home.domain.model.Place
 import com.egtourguide.home.domain.usecases.ChangeArtifactSavedStateUseCase
 import com.egtourguide.home.domain.usecases.GetArtifactsListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -75,20 +74,26 @@ class ArtifactsListViewModel @Inject constructor(
 
             when (filterKey) {
                 "Artifact Type" -> {
-                    resultedList = resultedList.filter { item ->
-                        filterValue.contains(item.type)
+                    if(filterValue.isNotEmpty()){
+                        resultedList = resultedList.filter { item ->
+                            filterValue.contains(item.type)
+                        }
                     }
                 }
 
                 "Location" -> {
-                    resultedList = resultedList.filter { item ->
-                        filterValue.contains(item.museumName)
+                    if(filterValue.isNotEmpty()){
+                        resultedList = resultedList.filter { item ->
+                            filterValue.contains(item.museumName)
+                        }
                     }
                 }
 
                 "Material" -> {
-                    resultedList = resultedList.filter { item ->
-                        filterValue.contains(item.material)
+                    if(filterValue.isNotEmpty()){
+                        resultedList = resultedList.filter { item ->
+                            filterValue.contains(item.material)
+                        }
                     }
                 }
             }

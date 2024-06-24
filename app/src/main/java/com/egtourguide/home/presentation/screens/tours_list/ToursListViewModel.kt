@@ -92,26 +92,32 @@ class ToursListViewModel @Inject constructor(
                 }*/
 
                 "Rating" -> {
-                    val ratingValue = filterValue.first().toInt()
-                    resultedList = resultedList.filter { item ->
-                        item.rating >= ratingValue
+                    if(filterValue.isNotEmpty()){
+                        val ratingValue = filterValue.first().toInt()
+                        resultedList = resultedList.filter { item ->
+                            item.rating >= ratingValue
+                        }
                     }
                 }
 
                 "Duration" -> {
-                    val minDays = filterValue.first().toInt()
-                    val maxDays = filterValue.last().toInt()
-                    resultedList = resultedList.filter { item ->
-                        item.duration in minDays..maxDays
+                    if(filterValue.size==2){
+                        val minDays = filterValue.first().toInt()
+                        val maxDays = filterValue.last().toInt()
+                        resultedList = resultedList.filter { item ->
+                            item.duration in minDays..maxDays
+                        }
                     }
                 }
 
                 "Sort By" -> {
-                    val sortType = filterValue.first().toInt()
-                    resultedList = if (sortType == 0) {
-                        resultedList.sortedBy { item -> item.rating }
-                    } else {
-                        resultedList.sortedByDescending { item -> item.rating }
+                    if(filterValue.isNotEmpty()){
+                        val sortType = filterValue.first().toInt()
+                        resultedList = if (sortType == 0) {
+                            resultedList.sortedBy { item -> item.rating }
+                        } else {
+                            resultedList.sortedByDescending { item -> item.rating }
+                        }
                     }
                 }
             }

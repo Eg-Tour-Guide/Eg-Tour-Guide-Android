@@ -124,4 +124,5 @@
     <string name="tour_schedule">Tour Schedule</string>
     <string name="related_tours">Related Tours</string>
     <string name="added_successfully">Added Successfully</string>
+    <string name="add_icon">add icon</string>
 </resources>
