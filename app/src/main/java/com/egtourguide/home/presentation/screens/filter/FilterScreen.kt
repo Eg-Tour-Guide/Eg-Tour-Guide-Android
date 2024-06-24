@@ -1,5 +1,6 @@
 package com.egtourguide.home.presentation.screens.filter
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -46,11 +47,11 @@ fun FilterScreen(
     viewModel: FilterScreenViewModel = hiltViewModel(),
     source: String,
     query: String = "",
-    onNavigateToResults: (HashMap<String,List<String>>) -> Unit,
+    onNavigateToResults: (HashMap<String, List<String>>) -> Unit,
     onNavigateBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    var isSearch = true
+    var isSearch = false
     var isArtifacts = false
     var isLandmarks = false
     var isTours = false
@@ -77,8 +78,11 @@ fun FilterScreen(
     }
 
     LaunchedEffect(key1 = uiState.isSuccess) {
-        viewModel.clearSuccess()
-        onNavigateToResults(uiState.selectedMap!!)
+        if (uiState.isSuccess) {
+            viewModel.clearSuccess()
+            Log.d("````TAG````", "selectedmap: ${uiState.selectedMap}")
+            onNavigateToResults(uiState.selectedMap!!)
+        }
 
     }
 

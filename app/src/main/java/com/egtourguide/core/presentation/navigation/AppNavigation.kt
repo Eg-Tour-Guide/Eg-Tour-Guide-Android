@@ -204,7 +204,8 @@ fun AppNavigation(
         }
 //        TODO here
         composable(route = AppScreen.Filter.route) { it ->
-            val source = it.arguments?.getString("source")
+            val source = it.arguments?.getString("SOURCE")
+            Log.d("````TAG````", "AppNavigation source: $source")
             FilterScreen(
                 source = source!!,
                 onNavigateToResults = { hashMap ->
@@ -228,9 +229,7 @@ fun AppNavigation(
                                 popUpTo(AppScreen.SearchResults.route)
                             }
 
-                            "saved" -> navController.navigate(AppScreen.LandmarksList.route) {
-//                                popUpTo(AppScreen..route)
-                            }
+                            "saved" -> navController.navigate(AppScreen.LandmarksList.route)
 
                             "my_tours" -> navController.navigate(AppScreen.MyTours.route) {
                                 popUpTo(AppScreen.MyTours.route)
@@ -346,7 +345,12 @@ fun AppNavigation(
                     )
                 },
                 onNavigateToFilters = {
-
+                    navController.navigate(
+                        route = AppScreen.Filter.route.replace(
+                            "{SOURCE}",
+                            "landmark"
+                        ).replace("{QUERY}", "null")
+                    )
                 },
                 onNavigateToSinglePlace = {
                     navController.navigate(

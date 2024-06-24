@@ -1,5 +1,6 @@
 package com.egtourguide.home.presentation.screens.filter
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,7 +21,6 @@ class FilterScreenViewModel @Inject constructor() : ViewModel() {
     private var sortByList = mutableListOf<String>()
     private var queryList = mutableListOf<String>()
     private var durationList = mutableListOf<String>()
-
 
 
     init {
@@ -77,7 +77,7 @@ class FilterScreenViewModel @Inject constructor() : ViewModel() {
                     "Suez",
                     "Luxor"
                 ),
-                sortList = listOf("Featured", "Recently Added"),
+                sortList = listOf("Rating: High To Low", "Rating: Low To High"),
                 tourismTypeFilters = listOf(
                     "Adventure",
                     "Ecotourism",
@@ -120,7 +120,8 @@ class FilterScreenViewModel @Inject constructor() : ViewModel() {
         selectedMap["Sort By"] = sortByList
         selectedMap["Material"] = materialList
         selectedMap["Query"] = queryList
-        _uiState.update { it.copy(isSuccess = true) }
+        Log.d("```TAG```", "onApplyClick: ${selectedMap["Location"]}")
+        _uiState.update { it.copy(isSuccess = true, selectedMap = selectedMap) }
     }
 
     fun onResetClick() {
@@ -136,20 +137,24 @@ class FilterScreenViewModel @Inject constructor() : ViewModel() {
         sortByList.clear()
 
     }
+
     fun clearSuccess() {
         _uiState.update { it.copy(isSuccess = false) }
     }
-    fun tourScreen(){
+
+    fun tourScreen() {
         _uiState.update { it.copy(isTours = true) }
     }
-    fun landmarkScreen(){
+
+    fun landmarkScreen() {
         _uiState.update { it.copy(isLandmarks = true) }
     }
-    fun artifactScreen(){
+
+    fun artifactScreen() {
         _uiState.update { it.copy(isArtifacts = true) }
     }
 
-    fun changeDuration(startDay: Int,endDay:Int) {
+    fun changeDuration(startDay: Int, endDay: Int) {
         durationList.clear()
         durationList.add(startDay.toString())
         durationList.add(endDay.toString())

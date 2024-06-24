@@ -1,5 +1,6 @@
 package com.egtourguide.home.presentation.components
 
+import android.util.Log
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
@@ -45,6 +46,7 @@ fun ChipFilter(
         onClick = {
             if(isSelected){
                 addSelectedFilter(text)
+                Log.d("````TAG````", "ChipFilter: $text")
             }else{
                 removeSelectedFilter(text)
             }

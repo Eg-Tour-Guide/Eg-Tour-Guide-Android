@@ -1,6 +1,7 @@
 package com.egtourguide.home.presentation.screens.landmarks_list
 
 import android.media.Rating
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.egtourguide.core.utils.onResponse
@@ -76,40 +77,50 @@ class LandmarksListViewModel @Inject constructor(
         landMarks: List<Place>,
         filters: HashMap<*, *>?
     ): List<Place> {
+        Log.d("`````TAG`````", "filterLandmarks: $filters")
         var resultedList = landMarks
         filters?.forEach { (filterKey, filterValue) ->
             filterKey as String
             filterValue as List<String>
             when (filterKey) {
                 "Tourism Type" -> {
-                    resultedList = resultedList.filter { item ->
-                        filterValue.contains(item.category)
+                    if(filterValue.isNotEmpty()){
+                        resultedList = resultedList.filter { item ->
+                            filterValue.contains(item.category)
+                        }
                     }
                 }
 
                 "Location" -> {
-                    resultedList = resultedList.filter { item ->
-                        filterValue.contains(item.location)
+                    if(filterValue.isNotEmpty()){
+                        resultedList = resultedList.filter { item ->
+                            filterValue.contains(item.location)
+                        }
                     }
                 }
 
                 "Rating" -> {
-                    val ratingValue = filterValue.first().toInt()
-                    resultedList = resultedList.filter { item ->
-                        item.rating >= ratingValue
+                    if(filterValue.isNotEmpty()){
+                        val ratingValue = filterValue.first().toInt()
+                        resultedList = resultedList.filter { item ->
+                            item.rating >= ratingValue
+                        }
                     }
                 }
 
                 "Sort By" -> {
-                    val sortType = filterValue.first().toInt()
-                    resultedList = if (sortType == 0) {
-                        resultedList.sortedBy { item -> item.rating }
-                    } else {
-                        resultedList.sortedByDescending { item -> item.rating }
+                    if(filterValue.isNotEmpty()){
+                        val sortType = filterValue.first().toInt()
+                        resultedList = if (sortType == 0) {
+                            resultedList.sortedBy { item -> item.rating }
+                        } else {
+                            resultedList.sortedByDescending { item -> item.rating }
+                        }
                     }
                 }
             }
         }
+        Log.d("````TAG````", "results: $resultedList")
         return resultedList
     }
 }
