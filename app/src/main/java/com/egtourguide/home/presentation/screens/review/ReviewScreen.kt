@@ -33,13 +33,18 @@ import com.egtourguide.core.presentation.components.MainTextField
 @Composable
 fun ReviewScreen(
     viewModel: ReviewViewModel = hiltViewModel(),
-    isPlace: Boolean = false,
-    isTour: Boolean = false,
+    source:String="",
     id: String,
     onNavigateBack: () -> Unit
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
+    var isPlace=false
+    var isTour =false
+    when (source){
+        "tour"-> isTour=true
+        "place"-> isPlace=true
+    }
     viewModel.tourOrPlace(isTour, isPlace,id)
     ReviewContent(
         onNavigateBack = onNavigateBack,

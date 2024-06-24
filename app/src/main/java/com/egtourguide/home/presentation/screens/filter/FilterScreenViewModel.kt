@@ -2,23 +2,29 @@ package com.egtourguide.home.presentation.screens.filter
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.time.delay
 import javax.inject.Inject
 
 class FilterScreenViewModel @Inject constructor() : ViewModel() {
     private val _uiState = MutableStateFlow(FilterScreenState())
     val uiState = _uiState.asStateFlow()
     private var selectedMap = hashMapOf<String, List<String>>()
-    private var categoryList = mutableListOf<String>()
-    private var artifactTypeList = mutableListOf<String>()
-    private var locationList = mutableListOf<String>()
-    private var ratingList = mutableListOf<String>()
-    private var materialList = mutableListOf<String>()
-    private var tourTypeList = mutableListOf<String>()
-    private var tourismTypeList = mutableListOf<String>()
-    private var sortByList = mutableListOf<String>()
+    var categoryList = mutableListOf<String>()
+    var artifactTypeList = mutableListOf<String>()
+    var locationList = mutableListOf<String>()
+    var ratingList = mutableListOf<String>()
+    private var addedRatingList = mutableListOf<String>()
+    var materialList = mutableListOf<String>()
+    var tourTypeList = mutableListOf<String>()
+    var tourismTypeList = mutableListOf<String>()
+    var sortByList = mutableListOf<String>()
+    private var addedSortByList = mutableListOf<String>()
     private var queryList = mutableListOf<String>()
     private var durationList = mutableListOf<String>()
 
@@ -29,17 +35,17 @@ class FilterScreenViewModel @Inject constructor() : ViewModel() {
                 categoryFilters = listOf("Tours", "Landmarks", "Artifacts"),
                 artifactTypeList = listOf(
                     "Pottery",
-                    "Sculptures",
-                    "Statues",
+                    "Sculpture",
+                    "Statue",
                     "Jewelry",
-                    "Manuscripts",
-                    "Tools",
-                    "Utensils",
-                    "Weapons",
+                    "Manuscript",
+                    "Tool",
+                    "Utensil",
+                    "Weapon",
                     "Armor",
-                    "Textiles",
-                    "Coins",
-                    "Religious",
+                    "Textile",
+                    "Coin",
+                    "Religiou",
                     "Artistic",
                     "Architectural",
                     "Decorative"
@@ -116,8 +122,8 @@ class FilterScreenViewModel @Inject constructor() : ViewModel() {
         selectedMap["Tour Type"] = tourTypeList
         selectedMap["Duration"] = durationList
         selectedMap["Location"] = locationList
-        selectedMap["Rating"] = ratingList
-        selectedMap["Sort By"] = sortByList
+        selectedMap["Rating"] = addedRatingList
+        selectedMap["Sort By"] = addedSortByList
         selectedMap["Material"] = materialList
         selectedMap["Query"] = queryList
         Log.d("```TAG```", "onApplyClick: ${selectedMap["Location"]}")
@@ -125,7 +131,6 @@ class FilterScreenViewModel @Inject constructor() : ViewModel() {
     }
 
     fun onResetClick() {
-        _uiState.update { it.copy(reset = true) }
         categoryList.clear()
         locationList.clear()
         materialList.clear()
@@ -135,7 +140,13 @@ class FilterScreenViewModel @Inject constructor() : ViewModel() {
         durationList.clear()
         ratingList.clear()
         sortByList.clear()
+        addedRatingList.clear()
+        addedSortByList.clear()
+        _uiState.update { it.copy(reset = true) }
 
+    }
+    fun clearRest(){
+        _uiState.update { it.copy(reset = false) }
     }
 
     fun clearSuccess() {
@@ -163,14 +174,54 @@ class FilterScreenViewModel @Inject constructor() : ViewModel() {
     fun addSelectedCategoryFilter(label: String) {
         categoryList.clear()
         categoryList.add(label)
+        _uiState.update { it.copy(category = label) }
         when (label) {
-            "Tours" -> _uiState.update { it.copy(isTours = true) }
-            "Landmarks" -> _uiState.update { it.copy(isLandmarks = true) }
-            "Artifacts" -> _uiState.update { it.copy(isArtifacts = true) }
+            "Tours" -> {
+                _uiState.update {
+                    it.copy(
+                        isTours = true,
+                        isLandmarks = false,
+                        isArtifacts = false
+                    )
+                }
+                tourismTypeList.clear()
+                artifactTypeList.clear()
+                materialList.clear()
+
+            }
+
+            "Landmarks" -> {
+                _uiState.update {
+                    it.copy(
+                        isTours = false,
+                        isLandmarks = true,
+                        isArtifacts = false
+                    )
+                }
+                artifactTypeList.clear()
+                materialList.clear()
+                durationList.clear()
+                tourTypeList.clear()
+
+            }
+
+            "Artifacts" -> {
+                _uiState.update {
+                    it.copy(
+                        isTours = true,
+                        isLandmarks = false,
+                        isArtifacts = true
+                    )
+                }
+                durationList.clear()
+                tourTypeList.clear()
+                tourismTypeList.clear()
+            }
         }
     }
 
     fun saveQuery(query: String) {
+
         queryList.add(query)
     }
 
@@ -208,20 +259,28 @@ class FilterScreenViewModel @Inject constructor() : ViewModel() {
 
     fun addSelectedRatingFilter(label: String) {
         ratingList.clear()
+        addedRatingList.clear()
         ratingList.add(label.first().toString())
+        addedRatingList.add(label.first().toString())
     }
 
     fun removeSelectedRatingFilter(label: String) {
+        addedRatingList.clear()
         ratingList.clear()
     }
 
     fun addSelectedSortByFilter(label: String) {
         sortByList.clear()
+        addedSortByList.clear()
         sortByList.add(label)
+        if (label == "Rating: High To Low") addedSortByList.add("1")
+        if (label == "Rating: Low To High") addedSortByList.add("0")
+
     }
 
     fun removeSelectedSortByFilter(label: String) {
         sortByList.clear()
+        addedSortByList.clear()
     }
 
     fun addSelectedTourismTypeFilter(label: String) {

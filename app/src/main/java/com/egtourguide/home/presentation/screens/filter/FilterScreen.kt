@@ -40,6 +40,7 @@ import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 import com.egtourguide.home.presentation.components.ChipFilter
 import com.egtourguide.home.presentation.components.RangeSliderWithBubble
 import com.egtourguide.home.presentation.components.ScreenHeader
+import kotlinx.coroutines.delay
 
 
 @Composable
@@ -77,11 +78,14 @@ fun FilterScreen(
         viewModel.artifactScreen()
     }
 
-    LaunchedEffect(key1 = uiState.isSuccess) {
+    LaunchedEffect(key1 = uiState.isSuccess, key2 = uiState.reset) {
         if (uiState.isSuccess) {
             viewModel.clearSuccess()
             Log.d("````TAG````", "selectedmap: ${uiState.selectedMap}")
             onNavigateToResults(uiState.selectedMap!!)
+        }
+        if (uiState.reset){
+            viewModel.clearRest()
         }
 
     }
@@ -89,12 +93,12 @@ fun FilterScreen(
 
     Column {
         ScreenHeader(
-            showBack = true,
-            onBackClicked = onNavigateBack
+            showBack = true, onBackClicked = onNavigateBack
         )
 
         ScreenContent(
             uiState = uiState,
+            viewModel = viewModel,
             reset = uiState.reset,
             isSearch = isSearch,
             isTours = uiState.isTours,
@@ -127,6 +131,7 @@ fun FilterScreen(
 private fun ScreenContent(
     modifier: Modifier = Modifier,
     uiState: FilterScreenState,
+    viewModel: FilterScreenViewModel,
     reset: Boolean,
     isSearch: Boolean,
     isLandmarks: Boolean,
@@ -159,13 +164,12 @@ private fun ScreenContent(
     ) {
         if (isSearch) {
             item {
-                FlowFilterSection(
-                    text = stringResource(id = R.string.catogry),
+                FlowFilterSection(text = stringResource(id = R.string.catogry),
                     list = uiState.categoryFilters!!,
                     reset = reset,
+                    selectedList = viewModel.categoryList,
                     addToSelectedList = addToSelectedCategoryList,
-                    removeFromSelectedList = {}
-                )
+                    removeFromSelectedList = {})
             }
         }
         if (isLandmarks) {
@@ -173,6 +177,8 @@ private fun ScreenContent(
                 FlowFilterSection(
                     text = stringResource(id = R.string.tourism_type),
                     list = uiState.tourismTypeFilters!!,
+                    selectedList = viewModel.tourismTypeList,
+                    reset = reset,
                     addToSelectedList = addToSelectedTourismTypeList,
                     removeFromSelectedList = removeFromSelectedTourismTypeList
                 )
@@ -183,6 +189,8 @@ private fun ScreenContent(
                 FlowFilterSection(
                     text = stringResource(id = R.string.material),
                     list = uiState.materialList!!,
+                    reset = reset,
+                    selectedList = viewModel.materialList,
                     addToSelectedList = addToSelectedMaterialList,
                     removeFromSelectedList = removeFromSelectedMaterialList
                 )
@@ -190,6 +198,8 @@ private fun ScreenContent(
                 FlowFilterSection(
                     text = stringResource(id = R.string.artifact_type),
                     list = uiState.artifactTypeList!!,
+                    reset = reset,
+                    selectedList = viewModel.artifactTypeList,
                     addToSelectedList = addToSelectedArtifactTypeList,
                     removeFromSelectedList = removeFromSelectedArtifactList
                 )
@@ -200,6 +210,8 @@ private fun ScreenContent(
                 FlowFilterSection(
                     text = stringResource(id = R.string.tour_type),
                     list = uiState.tourTypeList!!,
+                    reset = reset,
+                    selectedList = viewModel.tourTypeList,
                     addToSelectedList = addToSelectedTourTypeList,
                     removeFromSelectedList = removeFromSelectedTourTypeList
                 )
@@ -207,40 +219,48 @@ private fun ScreenContent(
                     text = stringResource(id = R.string.duration),
                     style = MaterialTheme.typography.displayMedium,
                     color = MaterialTheme.colorScheme.primary,
-                    modifier = modifier
-                        .padding(top = 16.dp)
+                    modifier = modifier.padding(top = 16.dp)
                 )
 //                DurationSlider(onValueChange = durationUpdate)
                 RangeSliderWithBubble(durationUpdate)
             }
         }
         item {
-            FlowFilterSection(
-                text = stringResource(id = R.string.location),
-                list = uiState.locationFilters!!,
-                addToSelectedList = addToSelectedLocationList,
-                removeFromSelectedList = removeFromSelectedLocationList
-            )
+            if (!isSearch) {
+                FlowFilterSection(
+                    text = stringResource(id = R.string.location),
+                    list = uiState.locationFilters!!,
+                    reset = reset,
+                    selectedList = viewModel.locationList,
+                    addToSelectedList = addToSelectedLocationList,
+                    removeFromSelectedList = removeFromSelectedLocationList
+                )
+            }
+            if (isTours || isLandmarks) {
+                FlowFilterSection(
+                    text = stringResource(id = R.string.rating),
+                    list = uiState.ratingFilters!!,
+                    isRating = true,
+                    selectedList = viewModel.ratingList,
+                    reset = reset,
+                    addToSelectedList = addToSelectedRatingList,
+                    removeFromSelectedList = removeFromSelectedRatingList
+                )
+            }
 
-            FlowFilterSection(
-                text = stringResource(id = R.string.rating),
-                list = uiState.ratingFilters!!,
-                isRating = true,
-                addToSelectedList = addToSelectedRatingList,
-                removeFromSelectedList = removeFromSelectedRatingList
-            )
 
             FlowFilterSection(
                 text = stringResource(id = R.string.sortby),
                 list = uiState.sortList!!,
+                reset = reset,
+                selectedList = viewModel.sortByList,
                 addToSelectedList = addToSelectedSortByList,
                 removeFromSelectedList = removeFromSelectedSortByList
             )
         }
         item {
             FilterFooter(
-                onResetClick = onResetClick,
-                onApplyClick = onApplyClick
+                onResetClick = onResetClick, onApplyClick = onApplyClick
             )
         }
     }
@@ -253,6 +273,7 @@ private fun FlowFilterSection(
     modifier: Modifier = Modifier,
     text: String,
     list: List<String>,
+    selectedList:List<String>,
     reset: Boolean = false,
     isCategory: Boolean = false,
     isRating: Boolean = false,
@@ -263,8 +284,7 @@ private fun FlowFilterSection(
         text = text,
         color = MaterialTheme.colorScheme.onBackground,
         style = MaterialTheme.typography.displayMedium,
-        modifier = Modifier
-            .padding(top = 16.dp, end = 16.dp)
+        modifier = Modifier.padding(top = 16.dp, end = 16.dp)
     )
 
     FlowRow(
@@ -276,12 +296,11 @@ private fun FlowFilterSection(
             ChipFilter(
                 text = item,
                 isRating = isRating,
-                selected = false,
+                selectedList = selectedList,
                 reset = reset,
                 addSelectedFilter = addToSelectedList,
                 removeSelectedFilter = removeFromSelectedList,
-                modifier = modifier
-                    .padding(top = 16.dp)
+                modifier = modifier.padding(top = 16.dp)
             )
         }
     }
@@ -309,8 +328,7 @@ private fun FilterFooter(
             isWightBtn = true,
             isLoading = isLoading,
             isEnabled = !isLoading,
-            modifier = modifier
-                .weight(0.5f)
+            modifier = modifier.weight(0.5f)
 
         )
 
@@ -319,8 +337,7 @@ private fun FilterFooter(
             onClick = onApplyClick,
             isLoading = isLoading,
             isEnabled = !isLoading,
-            modifier = modifier
-                .weight(0.5f)
+            modifier = modifier.weight(0.5f)
         )
     }
 }
@@ -330,11 +347,7 @@ private fun FilterFooter(
 @Composable
 private fun FilterScreenReview() {
     EGTourGuideTheme {
-        FilterScreen(
-            source = "",
-            onNavigateBack = {},
-            onNavigateToResults = {}
-        )
+        FilterScreen(source = "", onNavigateBack = {}, onNavigateToResults = {})
     }
 
 }

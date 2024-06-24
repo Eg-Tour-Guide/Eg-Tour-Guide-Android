@@ -30,27 +30,32 @@ fun ChipFilter(
     text: String,
     isRating: Boolean = false,
     selected: Boolean = false,
-    reset:Boolean=false,
-    addSelectedFilter:(String)->Unit,
-    removeSelectedFilter:(String)->Unit
+    selectedList: List<String> = listOf(),
+    reset: Boolean = false,
+    addSelectedFilter: (String) -> Unit,
+    removeSelectedFilter: (String) -> Unit
 ) {
+
+
     var isSelected by remember {
-        if (reset) {
-            mutableStateOf(false)
-        }else{
-            mutableStateOf(selected)
-        }
+        mutableStateOf(selectedList.contains(text))
     }
+    if (reset){
+        isSelected=false
+    }
+
     FilterChip(
         selected = isSelected,
         onClick = {
-            if(isSelected){
+            isSelected = !isSelected
+            if (isSelected) {
                 addSelectedFilter(text)
                 Log.d("````TAG````", "ChipFilter: $text")
-            }else{
+            } else {
+                Log.d("````TAG````", "not ChipFilter: $text")
                 removeSelectedFilter(text)
             }
-            isSelected = !isSelected
+//            isSelected = !isSelected
         },
         colors = FilterChipDefaults.filterChipColors(
             containerColor = if (!isSelected) MaterialTheme.colorScheme.primaryContainer
@@ -97,6 +102,11 @@ fun ChipFilter(
 @Composable
 private fun ChipFilterReview() {
     EGTourGuideTheme {
-        ChipFilter(text = "Hi", selected = false, isRating = false, addSelectedFilter = {}, removeSelectedFilter = {})
+        ChipFilter(
+            text = "Hi",
+            selected = false,
+            isRating = false,
+            addSelectedFilter = {},
+            removeSelectedFilter = {})
     }
 }
