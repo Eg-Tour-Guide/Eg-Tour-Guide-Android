@@ -33,10 +33,14 @@ import com.egtourguide.core.presentation.components.MainTextField
 @Composable
 fun ReviewScreen(
     viewModel: ReviewViewModel = hiltViewModel(),
+    isPlace: Boolean = false,
+    isTour: Boolean = false,
+    id: String,
     onNavigateBack: () -> Unit
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
+    viewModel.tourOrPlace(isTour, isPlace,id)
     ReviewContent(
         onNavigateBack = onNavigateBack,
         uiState = uiState,
@@ -44,12 +48,17 @@ fun ReviewScreen(
         onSubmitClick = viewModel::onSubmitClick,
         onChangeRating = viewModel::changeRating
     )
-    LaunchedEffect(key1 = uiState.isSuccess) {
+    LaunchedEffect(key1 = uiState.isSuccess, key2 = uiState.isError) {
         if (uiState.isSuccess) {
             Toast.makeText(context, "You Rate with ${uiState.rating} stars", Toast.LENGTH_SHORT)
                 .show()
             viewModel.clearSuccess()
             onNavigateBack()
+        }
+        if (uiState.isError){
+            Toast.makeText(context, "Something get wrong", Toast.LENGTH_SHORT)
+                .show()
+            viewModel.clearError()
         }
     }
 }
@@ -157,6 +166,7 @@ private fun ReviewFooter(
 private fun ReviewScreenReview() {
     EGTourGuideTheme {
         ReviewScreen(
+            id = "",
             onNavigateBack = { }
         )
     }

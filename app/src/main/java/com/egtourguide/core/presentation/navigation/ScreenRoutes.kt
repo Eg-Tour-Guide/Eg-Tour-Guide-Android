@@ -22,4 +22,6 @@ object ScreenRoutes {
     const val SEARCH_SCREEN_ROUTE = "SEARCH_SCREEN_ROUTE/{selected_bottom_bar_item}"
     const val SEARCH_RESULTS_SCREEN_ROUTE = "SEARCH_RESULTS_SCREEN_ROUTE/{query}/{selected_bottom_bar_item}"
     const val WEB_VIEW_SCREEN_ROUTE = "WEB_VIEW_SCREEN_ROUTE/{modelUrl}"
+    const val TOURS_PLAN_SCREEN_ROUTE = "TOURS_PLAN_SCREEN_ROUTE/{tourId}"
+    const val MY_TOURS_SCREEN_ROUTE = "MY_TOURS_SCREEN_ROUTE/{isSelect}"
 }

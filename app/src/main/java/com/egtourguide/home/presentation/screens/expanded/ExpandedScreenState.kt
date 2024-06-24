@@ -29,5 +29,9 @@ data class ExpandedScreenState(
     val relatedPlaces: List<Place> = emptyList(),
     val relatedArtifacts: List<AbstractedArtifact> = emptyList(),
     val vrModel: String = "",
-    val arModel: String = ""
+    val arModel: String = "",
+    val showAddDialog: Boolean = false,
+    val tourID: String = "",
+    val tourName: String = "",
+    val tourImage: String = ""
 )

@@ -29,13 +29,17 @@ fun ChipFilter(
     text: String,
     isRating: Boolean = false,
     selected: Boolean = false,
+    reset:Boolean=false,
     addSelectedFilter:(String)->Unit,
     removeSelectedFilter:(String)->Unit
 ) {
     var isSelected by remember {
-        mutableStateOf(selected)
+        if (reset) {
+            mutableStateOf(false)
+        }else{
+            mutableStateOf(selected)
+        }
     }
-    //TODO(Edit Here colors, shape)
     FilterChip(
         selected = isSelected,
         onClick = {
@@ -62,7 +66,7 @@ fun ChipFilter(
                 Text(
                     text = text,
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = modifier
+                    modifier = Modifier
                 )
             } else {
                 Row {
@@ -70,13 +74,13 @@ fun ChipFilter(
                         painter = painterResource(id = R.drawable.ic_star),
                         contentDescription = stringResource(id = R.string.star),
                         tint = Color(0xFFFF8D18),
-                        modifier = modifier
+                        modifier = Modifier
                             .size(14.dp)
                     )
                     Text(
                         text = text,
                         style = MaterialTheme.typography.titleMedium,
-                        modifier = modifier
+                        modifier = Modifier
                     )
                 }
             }

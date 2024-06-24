@@ -99,4 +99,24 @@
     <string name="tourism_type">Tourism Type</string>
     <string name="material">Material</string>
     <string name="duration">Duration</string>
+    <string name="reset">Reset</string>
+    <string name="apply">Apply</string>
+    <string name="tour_type">Tour Type</string>
+    <string name="user">User</string>
+    <string name="saved">Saved</string>
+    <string name="my_tours">My Tours</string>
+    <string name="setting">Settings</string>
+    <string name="change_password">Change Password</string>
+    <string name="logout">Logout</string>
+    <string name="start_tour">Start Tour</string>
+    <string name="day">Day\n%s</string>
+    <string name="hours">%s hours</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="select_date">Select date</string>
+    <string name="tour">Tour</string>
+    <string name="please_pick_the_tour">Please, pick the tour you wish to add this landmark to.</string>
+    <string name="please_choose_the_duration">Please, choose the duration you would like to spend at this landmark.</string>
+    <string name="choose_tour">Choose Tour</string>
+    <string name="add">Add</string>
 </resources>
