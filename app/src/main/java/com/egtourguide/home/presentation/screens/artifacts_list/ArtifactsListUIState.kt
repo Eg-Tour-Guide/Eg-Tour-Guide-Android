@@ -7,6 +7,7 @@ data class ArtifactsListUIState(
     val artifacts: List<AbstractedArtifact> = emptyList(),
     val error: String? = null,
     val isSaveSuccess: Boolean = false,
+    val isShowEmptyState: Boolean = false,
     val isSave:Boolean=true,
     val saveError: String? = null,
 )

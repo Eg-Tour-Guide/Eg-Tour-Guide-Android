@@ -11,6 +11,7 @@ import com.egtourguide.core.presentation.navigation.AppNavigation
 import com.egtourguide.core.presentation.navigation.AppScreen
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 import com.egtourguide.core.utils.DataStoreKeys.IS_LOGGED_KEY
+import com.egtourguide.home.presentation.screens.saved_items.SavedScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay

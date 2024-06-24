@@ -214,7 +214,7 @@ fun HomeScreen(
                 "There are a problem in saving the place, try again later",
                 Toast.LENGTH_SHORT
             ).show()
-            viewModel.clearSaveSuccess()
+            viewModel.clearSaveError()
         }
     }
 
@@ -320,12 +320,14 @@ private fun HomeScreenContent(
         Spacer(modifier = Modifier.height(16.dp))
 
         //Recently Viewed
-        HomeSection(
-            sectionTitle = stringResource(R.string.recently_viewed),
-            sectionPlaces = recentlyViewedPlaces,
-            onPlaceClicked = onPlaceClicked,
-            onSaveClicked = onSaveClicked
-        )
+        if(recentlyAddedPlaces.isNotEmpty()){
+            HomeSection(
+                sectionTitle = stringResource(R.string.recently_viewed),
+                sectionPlaces = recentlyViewedPlaces,
+                onPlaceClicked = onPlaceClicked,
+                onSaveClicked = onSaveClicked
+            )
+        }
     }
 }
 

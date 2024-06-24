@@ -1,7 +1,8 @@
 package com.egtourguide.home.data
 
-import com.egtourguide.home.data.dto.body.ReviewRequestBody
+import com.egtourguide.home.data.body.ReviewRequestBody
 import com.egtourguide.home.data.dto.response.ArtifactDetectionDto
+import com.egtourguide.home.data.dto.body.ReviewRequestBody
 import com.egtourguide.home.data.dto.body.AddPlaceBody
 import com.egtourguide.home.data.dto.response.ArtifactsListDto
 import retrofit2.http.Body
@@ -16,6 +17,7 @@ import com.egtourguide.home.data.dto.response.SingleArtifactDto
 import com.egtourguide.home.data.dto.response.SingleLandmarkDto
 import com.egtourguide.home.data.dto.response.TourDetailsDto
 import com.egtourguide.home.data.dto.body.TourDetailsBody
+import com.egtourguide.home.data.dto.response.SavedItemsDto
 import com.egtourguide.home.data.dto.response.SingleEventDto
 import com.egtourguide.home.data.dto.response.SingleTourDto
 import retrofit2.http.GET
@@ -105,6 +107,9 @@ interface HomeApi {
         @Path("tourId") tourId: String,
         @Body tourDetails: TourDetailsBody
     ): String // TODO: Change This!!
+
+    @GET("api/v1/favorite/my-fav")
+    suspend fun getSavedItems(): SavedItemsDto
 
     @GET("api/v1/tours/tour/{tourId}")
     suspend fun getTour(

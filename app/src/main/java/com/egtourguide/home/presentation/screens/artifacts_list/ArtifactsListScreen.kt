@@ -45,6 +45,7 @@ import com.egtourguide.home.domain.model.AbstractedArtifact
 import com.egtourguide.home.presentation.components.ArtifactItem
 import com.egtourguide.home.presentation.components.BottomBar
 import com.egtourguide.home.presentation.components.BottomBarScreens
+import com.egtourguide.home.presentation.components.EmptyState
 import com.egtourguide.home.presentation.components.LoadingState
 import com.egtourguide.home.presentation.components.ScreenHeader
 import java.util.HashMap
@@ -66,6 +67,7 @@ fun ArtifactsListScreen(
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
     viewModel.filters=filters
+
     Scaffold(
         bottomBar = {
             BottomBar(
@@ -151,6 +153,13 @@ fun ArtifactsListScreenContent(
             exit = fadeOut()
         ) {
             LoadingState(modifier = Modifier.fillMaxSize())
+        }
+        AnimatedVisibility(
+            visible = uiState.isShowEmptyState && uiState.artifacts.isEmpty(),
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            EmptyState(modifier = Modifier.fillMaxSize(), message = "No Artifacts Found")
         }
         AnimatedVisibility(
             visible = !uiState.isLoading,

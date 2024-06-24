@@ -14,6 +14,7 @@ sealed class AppScreen(val route: String) {
     object Expanded : AppScreen(route = ScreenRoutes.EXPANDED_SCREEN_ROUTE)
     object MoreReviews : AppScreen(route = ScreenRoutes.MORE_REVIEWS_ROUTE)
     object Review : AppScreen(route = ScreenRoutes.REVIEW_SCREEN_ROUTE)
+    object Filter : AppScreen(route = ScreenRoutes.FILTER_SCREEN_ROUTE)
     object WebView : AppScreen(route = ScreenRoutes.WEB_VIEW_SCREEN_ROUTE)
     object Home : AppScreen(route = ScreenRoutes.HOME_SCREEN_ROUTE)
     object ToursList : AppScreen(route = ScreenRoutes.TOURS_SCREEN_ROUTE)
@@ -22,5 +23,6 @@ sealed class AppScreen(val route: String) {
     object Search : AppScreen(route = ScreenRoutes.SEARCH_SCREEN_ROUTE)
     object SearchResults : AppScreen(route = ScreenRoutes.SEARCH_RESULTS_SCREEN_ROUTE)
     object ToursPlan : AppScreen(route = ScreenRoutes.TOURS_PLAN_SCREEN_ROUTE)
-    object MyTours: AppScreen(route = ScreenRoutes.MY_TOURS_SCREEN_ROUTE)
+    object MyTours : AppScreen(route = ScreenRoutes.MY_TOURS_SCREEN_ROUTE)
+    object Saved : AppScreen(route = ScreenRoutes.SAVED_ITEMS_SCREEN_ROUTE)
 }

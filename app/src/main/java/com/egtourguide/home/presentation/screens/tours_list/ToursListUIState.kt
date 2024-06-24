@@ -7,6 +7,7 @@ data class ToursListUIState(
     val tours: List<AbstractedTour> = emptyList(),
     val error: String? = null,
     val isSaveSuccess: Boolean = false,
+    val isShowEmptyState: Boolean = false,
     val isSave: Boolean = true,
     val saveError: String? = null,
 )

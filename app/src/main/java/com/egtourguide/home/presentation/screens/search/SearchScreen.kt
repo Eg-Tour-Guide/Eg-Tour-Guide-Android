@@ -52,6 +52,7 @@ import com.egtourguide.R
 import com.egtourguide.core.presentation.components.MainTextField
 import com.egtourguide.home.presentation.components.BottomBar
 import com.egtourguide.home.presentation.components.BottomBarScreens
+import com.egtourguide.home.presentation.components.EmptyState
 import com.egtourguide.home.presentation.components.LoadingState
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -142,6 +143,16 @@ private fun SearchScreenContent(
                 searchHistory = uiState.searchHistory,
                 onClearClicked = onClearHistoryClicked,
                 onSearchItemClicked = onSearchItemClicked
+            )
+        }
+        AnimatedVisibility(
+            visible = uiState.isShowEmptyState && uiState.searchSuggestions.isEmpty() && uiState.searchQuery.isNotEmpty(),
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            EmptyState(
+                modifier = Modifier.fillMaxWidth(),
+                message = "No Results Found"
             )
         }
         AnimatedVisibility(

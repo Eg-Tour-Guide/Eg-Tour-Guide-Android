@@ -18,6 +18,7 @@ data class FilterScreenState(
     val isLandmarks: Boolean=false,
     val isArtifacts: Boolean=false,
     val isTours: Boolean=false,
-    val reset:Boolean=false
+    val reset:Boolean=false,
+    val category:String=" "
 )
 

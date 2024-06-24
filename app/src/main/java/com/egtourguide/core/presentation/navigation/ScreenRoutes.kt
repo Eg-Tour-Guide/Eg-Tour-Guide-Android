@@ -13,7 +13,8 @@ object ScreenRoutes {
     const val HOME_SCREEN_ROUTE = "HOME_SCREEN_ROUTE"
 
     // Home Routes
-    const val EXPANDED_SCREEN_ROUTE = "EXPANDED_SCREEN_ROUTE/{id}/{expandedType}"
+    const val FILTER_SCREEN_ROUTE ="FILTER_SCREEN_ROUTE/{SOURCE}/{QUERY}"
+    const val EXPANDED_SCREEN_ROUTE = "EXPANDED_SCREEN_ROUTE/{id}/{isLandmark}"
     const val LANDMARKS_LIST_SCREEN_ROUTE = "LANDMARKS_LIST_SCREEN_ROUTE?filters={filters}"
     const val ARTIFACTS_LIST_SCREEN_ROUTE = "ARTIFACTS_LIST_SCREEN_ROUTE"
     const val MORE_REVIEWS_ROUTE = "MORE_REVIEWS_ROUTE"
@@ -24,4 +25,5 @@ object ScreenRoutes {
     const val WEB_VIEW_SCREEN_ROUTE = "WEB_VIEW_SCREEN_ROUTE/{modelUrl}"
     const val TOURS_PLAN_SCREEN_ROUTE = "TOURS_PLAN_SCREEN_ROUTE/{tourId}"
     const val MY_TOURS_SCREEN_ROUTE = "MY_TOURS_SCREEN_ROUTE/{isSelect}"
+    const val SAVED_ITEMS_SCREEN_ROUTE = "SAVED_ITEMS_SCREEN_ROUTE"
 }

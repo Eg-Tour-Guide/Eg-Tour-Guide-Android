@@ -19,10 +19,12 @@ import com.egtourguide.home.presentation.screens.artifacts_list.ArtifactsListScr
 import com.egtourguide.home.presentation.screens.expanded.ExpandedScreenRoot
 import com.egtourguide.home.presentation.screens.expanded.ExpandedType
 import com.egtourguide.home.presentation.screens.expanded.WebViewScreen
+import com.egtourguide.home.presentation.screens.filter.FilterScreen
 import com.egtourguide.home.presentation.screens.home.HomeScreen
 import com.egtourguide.home.presentation.screens.landmarks_list.LandmarksListScreen
 import com.egtourguide.home.presentation.screens.moreReviews.MoreReviewsScreenRoot
 import com.egtourguide.home.presentation.screens.review.ReviewScreen
+import com.egtourguide.home.presentation.screens.saved_items.SavedScreen
 import com.egtourguide.home.presentation.screens.search.SearchScreen
 import com.egtourguide.home.presentation.screens.search_results.SearchResultsScreen
 import com.egtourguide.home.presentation.screens.toursPlan.ToursPlanScreenRoot
@@ -119,6 +121,7 @@ fun AppNavigation(
             )
         }
 
+
         composable(route = AppScreen.ForgetPassword.route) {
             ForgotPasswordScreen(
                 onNavigateUp = {
@@ -198,6 +201,48 @@ fun AppNavigation(
                 onNavigateToUser = {
 
                 }
+            )
+        }
+//        TODO here
+        composable(route = AppScreen.Filter.route) { it ->
+            val source = it.arguments?.getString("SOURCE")
+            Log.d("````TAG````", "AppNavigation source: $source")
+            FilterScreen(
+                source = source!!,
+                onNavigateToResults = { hashMap ->
+                    val hashMapJson = Gson().toJson(hashMap)
+                    source?.let {
+                        when (it) {
+                            "tour" -> navController.navigate(AppScreen.ToursList.route) {
+                                popUpTo(AppScreen.ToursList.route)
+                            }
+
+                            "landmark" -> navController.navigate(
+                                AppScreen.LandmarksList.route.replace(
+                                    "{filters}",
+                                    hashMapJson
+                                )
+                            ) {
+                                popUpTo(AppScreen.LandmarksList.route)
+                            }
+
+                            "search" -> navController.navigate(AppScreen.SearchResults.route) {
+                                popUpTo(AppScreen.SearchResults.route)
+                            }
+
+                            "saved" -> navController.navigate(AppScreen.LandmarksList.route)
+
+                            "my_tours" -> navController.navigate(AppScreen.MyTours.route) {
+                                popUpTo(AppScreen.MyTours.route)
+                            }
+
+                            "artifact" -> navController.navigate(AppScreen.ArtifactsList.route) {
+                                popUpTo(AppScreen.ArtifactsList.route)
+                            }
+                        }
+                    }
+                },
+                onNavigateBack = { navController.navigateUp() }
             )
         }
 
@@ -297,7 +342,12 @@ fun AppNavigation(
                     )
                 },
                 onNavigateToFilters = {
-
+                    navController.navigate(
+                        route = AppScreen.Filter.route.replace(
+                            "{SOURCE}",
+                            "landmark"
+                        ).replace("{QUERY}", "null")
+                    )
                 },
                 onNavigateToSinglePlace = {
                     navController.navigate(
@@ -573,6 +623,20 @@ fun AppNavigation(
                             .replace("{id}", landmarkId)
                             .replace("{expandedType}", ExpandedType.LANDMARK.name)
                     )
+                }
+            )
+        }
+
+        composable(route = AppScreen.Saved.route) {
+            SavedScreen(
+                onNavigateBack = {
+                    navController.navigateUp()
+                },
+                onNavigateToSingleItem = { item ->
+                    //TODO handel navigation here
+                },
+                onNavigateToFilters = {
+
                 }
             )
         }
