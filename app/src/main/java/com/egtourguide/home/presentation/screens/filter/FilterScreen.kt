@@ -44,40 +44,42 @@ import com.egtourguide.home.presentation.components.ScreenHeader
 @Composable
 fun FilterScreen(
     viewModel: FilterScreenViewModel = hiltViewModel(),
-    isSearch: Boolean = true,
-    isTours: Boolean = false,
-    isLandmarks: Boolean = false,
-    isArtifacts: Boolean = false,
+    source: String,
     query: String = "",
-    onNavigateToResults: () -> Unit,
+    onNavigateToResults: (HashMap<String,List<String>>) -> Unit,
     onNavigateBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    var isSearch = true
+    var isArtifacts = false
+    var isLandmarks = false
+    var isTours = false
+
+    when (source) {
+        "artifact" -> isArtifacts = true
+        "tour" -> isTours = true
+        "landmark" -> isLandmarks = true
+        "saved" -> isLandmarks = true
+        "search" -> isSearch = true
+        "my_tours" -> isTours = true
+    }
     if (isSearch) {
         viewModel.saveQuery(query)
     }
-    if (isTours){
+    if (isTours) {
         viewModel.tourScreen()
     }
-    if (isLandmarks){
+    if (isLandmarks) {
         viewModel.landmarkScreen()
     }
-    if (isArtifacts){
+    if (isArtifacts) {
         viewModel.artifactScreen()
     }
 
-    LaunchedEffect(key1 = uiState.isArtifacts, key2 = uiState.isLandmarks,key3 = uiState.isTours) {
-//        viewModel.clearSuccess()
-//        onNavigateToResults()
-        if (uiState.isTours){
-            viewModel.tourScreen()
-        }
-        if (uiState.isLandmarks){
-            viewModel.landmarkScreen()
-        }
-        if (uiState.isArtifacts){
-            viewModel.artifactScreen()
-        }
+    LaunchedEffect(key1 = uiState.isSuccess) {
+        viewModel.clearSuccess()
+        onNavigateToResults(uiState.selectedMap!!)
+
     }
 
 
@@ -122,11 +124,11 @@ private fun ScreenContent(
     modifier: Modifier = Modifier,
     uiState: FilterScreenState,
     reset: Boolean,
-    isSearch: Boolean ,
+    isSearch: Boolean,
     isLandmarks: Boolean,
     isTours: Boolean,
     isArtifacts: Boolean,
-    durationUpdate: (Int,Int) -> Unit,
+    durationUpdate: (Int, Int) -> Unit,
     addToSelectedCategoryList: (String) -> Unit,
     addToSelectedLocationList: (String) -> Unit,
     removeFromSelectedLocationList: (String) -> Unit,
@@ -247,7 +249,7 @@ private fun FlowFilterSection(
     modifier: Modifier = Modifier,
     text: String,
     list: List<String>,
-    reset:Boolean=false,
+    reset: Boolean = false,
     isCategory: Boolean = false,
     isRating: Boolean = false,
     addToSelectedList: (String) -> Unit,
@@ -325,6 +327,7 @@ private fun FilterFooter(
 private fun FilterScreenReview() {
     EGTourGuideTheme {
         FilterScreen(
+            source = "",
             onNavigateBack = {},
             onNavigateToResults = {}
         )

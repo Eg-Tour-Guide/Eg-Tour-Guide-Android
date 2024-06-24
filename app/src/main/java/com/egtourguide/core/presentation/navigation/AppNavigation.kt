@@ -18,6 +18,7 @@ import com.egtourguide.home.presentation.myTours.MyToursScreenRoot
 import com.egtourguide.home.presentation.screens.artifacts_list.ArtifactsListScreen
 import com.egtourguide.home.presentation.screens.expanded.ExpandedScreenRoot
 import com.egtourguide.home.presentation.screens.expanded.WebViewScreen
+import com.egtourguide.home.presentation.screens.filter.FilterScreen
 import com.egtourguide.home.presentation.screens.home.HomeScreen
 import com.egtourguide.home.presentation.screens.landmarks_list.LandmarksListScreen
 import com.egtourguide.home.presentation.screens.moreReviews.MoreReviewsScreenRoot
@@ -118,6 +119,7 @@ fun AppNavigation(
             )
         }
 
+
         composable(route = AppScreen.ForgetPassword.route) {
             ForgotPasswordScreen(
                 onNavigateUp = {
@@ -199,13 +201,56 @@ fun AppNavigation(
                 }
             )
         }
+//        TODO here
+        composable(route = AppScreen.Filter.route) { it ->
+            val source = it.arguments?.getString("source")
+            FilterScreen(
+                source = source!!,
+                onNavigateToResults = { hashMap ->
+                    val hashMapJson = Gson().toJson(hashMap)
+                    source?.let {
+                        when (it) {
+                            "tour" -> navController.navigate(AppScreen.ToursList.route) {
+                                popUpTo(AppScreen.ToursList.route)
+                            }
+
+                            "landmark" -> navController.navigate(
+                                AppScreen.LandmarksList.route.replace(
+                                    "{filters}",
+                                    hashMapJson
+                                )
+                            ) {
+                                popUpTo(AppScreen.LandmarksList.route)
+                            }
+
+                            "search" -> navController.navigate(AppScreen.SearchResults.route) {
+                                popUpTo(AppScreen.SearchResults.route)
+                            }
+
+                            "saved" -> navController.navigate(AppScreen.LandmarksList.route) {
+//                                popUpTo(AppScreen..route)
+                            }
+
+                            "my_tours" -> navController.navigate(AppScreen.MyTours.route) {
+                                popUpTo(AppScreen.MyTours.route)
+                            }
+
+                            "artifact" -> navController.navigate(AppScreen.ArtifactsList.route) {
+                                popUpTo(AppScreen.ArtifactsList.route)
+                            }
+                        }
+                    }
+                },
+                onNavigateBack = { navController.navigateUp() }
+            )
+        }
 
         composable(route = AppScreen.Expanded.route) { entry ->
             val id = entry.arguments?.getString("id") ?: ""
             val isLandmark = entry.arguments?.getString("isLandmark").toBoolean()
             val tourId = entry.savedStateHandle.get<String>(key = "tourId") ?: ""
             val tourName = entry.savedStateHandle.get<String>(key = "tourName") ?: ""
-            val tourImage = entry.savedStateHandle.get<String>(key = "tourImage") ?:""
+            val tourImage = entry.savedStateHandle.get<String>(key = "tourImage") ?: ""
 
             ExpandedScreenRoot(
                 id = id,
