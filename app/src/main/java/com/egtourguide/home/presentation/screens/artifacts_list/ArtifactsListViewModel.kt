@@ -45,14 +45,20 @@ class ArtifactsListViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             getArtifactsListUseCase().onResponse(
                 onLoading = {
-                    _uiState.update { it.copy(isLoading = true) }
+                    _uiState.update { it.copy(isLoading = true, isShowEmptyState = false) }
                 },
                 onFailure = { error ->
                     _uiState.update { it.copy(isLoading = false, error = error) }
                 },
                 onSuccess = { response ->
                     val artifacts = filterArtifacts(artifacts = response, filters = filters)
-                    _uiState.update { it.copy(isLoading = false, artifacts = artifacts) }
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            artifacts = artifacts,
+                            isShowEmptyState = true
+                        )
+                    }
                 }
             )
         }

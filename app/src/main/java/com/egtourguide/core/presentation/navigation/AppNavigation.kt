@@ -22,6 +22,7 @@ import com.egtourguide.home.presentation.screens.home.HomeScreen
 import com.egtourguide.home.presentation.screens.landmarks_list.LandmarksListScreen
 import com.egtourguide.home.presentation.screens.moreReviews.MoreReviewsScreenRoot
 import com.egtourguide.home.presentation.screens.review.ReviewScreen
+import com.egtourguide.home.presentation.screens.saved_items.SavedScreen
 import com.egtourguide.home.presentation.screens.search.SearchScreen
 import com.egtourguide.home.presentation.screens.search_results.SearchResultsScreen
 import com.egtourguide.home.presentation.screens.toursPlan.ToursPlanScreenRoot
@@ -205,7 +206,7 @@ fun AppNavigation(
             val isLandmark = entry.arguments?.getString("isLandmark").toBoolean()
             val tourId = entry.savedStateHandle.get<String>(key = "tourId") ?: ""
             val tourName = entry.savedStateHandle.get<String>(key = "tourName") ?: ""
-            val tourImage = entry.savedStateHandle.get<String>(key = "tourImage") ?:""
+            val tourImage = entry.savedStateHandle.get<String>(key = "tourImage") ?: ""
 
             ExpandedScreenRoot(
                 id = id,
@@ -563,6 +564,20 @@ fun AppNavigation(
                             .replace("{id}", landmarkId)
                             .replace("{isLandmark}", "true")
                     )
+                }
+            )
+        }
+
+        composable(route = AppScreen.Saved.route) {
+            SavedScreen(
+                onNavigateBack = {
+                    navController.navigateUp()
+                },
+                onNavigateToSingleItem = { item ->
+                    //TODO handel navigation here
+                },
+                onNavigateToFilters = {
+
                 }
             )
         }

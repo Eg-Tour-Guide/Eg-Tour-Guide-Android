@@ -35,11 +35,17 @@ class SearchResultsViewModel @Inject constructor(
             }
             searchUseCase(searchQuery).onResponse(
                 onLoading = {
-                    _uiState.update { it.copy(isLoading = true) }
+                    _uiState.update { it.copy(isLoading = true, isShowEmptyState = false) }
                 },
                 onSuccess = { response ->
                     val results = filterSearchResults(results = response, filters = filters)
-                    _uiState.update { it.copy(isLoading = false, results = results) }
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            results = results,
+                            isShowEmptyState = true
+                        )
+                    }
                 },
                 onFailure = { error ->
                     _uiState.update { it.copy(isLoading = false, error = error) }

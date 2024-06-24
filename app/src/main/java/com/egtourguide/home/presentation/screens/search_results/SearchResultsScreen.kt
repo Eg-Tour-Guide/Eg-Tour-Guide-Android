@@ -55,6 +55,7 @@ import com.egtourguide.core.presentation.components.MainImage
 import com.egtourguide.home.domain.model.SearchResult
 import com.egtourguide.home.presentation.components.BottomBar
 import com.egtourguide.home.presentation.components.BottomBarScreens
+import com.egtourguide.home.presentation.components.EmptyState
 import com.egtourguide.home.presentation.components.LoadingState
 import com.egtourguide.home.presentation.components.ScreenHeader
 
@@ -169,6 +170,15 @@ fun SearchResultsScreenContent(
             exit = fadeOut()
         ) {
             LoadingState(modifier = Modifier.fillMaxSize())
+        }
+        AnimatedVisibility(
+            visible = uiState.isShowEmptyState && uiState.results.isEmpty(),
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            EmptyState(
+                message = "No Results Found"
+            )
         }
         AnimatedVisibility(
             visible = !uiState.isLoading,

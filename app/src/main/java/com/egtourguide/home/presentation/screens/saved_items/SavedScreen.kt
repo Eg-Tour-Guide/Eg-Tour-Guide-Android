@@ -51,6 +51,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import com.egtourguide.R
 import com.egtourguide.core.presentation.components.MainImage
 import com.egtourguide.home.domain.model.SavedItem
+import com.egtourguide.home.presentation.components.EmptyState
 import com.egtourguide.home.presentation.components.LoadingState
 import com.egtourguide.home.presentation.components.ScreenHeader
 
@@ -115,7 +116,6 @@ fun SavedScreenContent(
 ) {
     Column(
         Modifier
-            .padding(bottom = 60.dp)
             .fillMaxSize()
             .background(color = MaterialTheme.colorScheme.background)
     ) {
@@ -136,6 +136,13 @@ fun SavedScreenContent(
             exit = fadeOut()
         ) {
             LoadingState(modifier = Modifier.fillMaxSize())
+        }
+        AnimatedVisibility(
+            visible = uiState.isShowEmptyState && uiState.savedList.isEmpty(),
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            EmptyState(modifier = Modifier.fillMaxSize(), message = "No Saved Items Found")
         }
         AnimatedVisibility(
             visible = !uiState.isLoading,

@@ -1,15 +1,7 @@
 package com.egtourguide.home.data
 
 import com.egtourguide.home.data.body.ReviewRequestBody
-import com.egtourguide.home.data.dto.ArtifactDetectionDto
-import com.egtourguide.home.data.dto.HomeDto
-import com.egtourguide.home.data.dto.LandmarksListDto
-import com.egtourguide.home.data.dto.SavedItemsDto
-import com.egtourguide.home.data.dto.SearchHistoryDto
-import com.egtourguide.home.data.dto.SearchResultsDto
-import com.egtourguide.home.data.dto.ToursListDto
-import com.egtourguide.home.data.dto.SingleArtifactDto
-import com.egtourguide.home.data.dto.SingleLandmarkDto
+import com.egtourguide.home.data.dto.response.ArtifactDetectionDto
 import com.egtourguide.home.data.dto.response.ArtifactsListDto
 import retrofit2.http.Body
 import okhttp3.MultipartBody
@@ -23,6 +15,7 @@ import com.egtourguide.home.data.dto.response.SingleArtifactDto
 import com.egtourguide.home.data.dto.response.SingleLandmarkDto
 import com.egtourguide.home.data.dto.response.TourDetailsDto
 import com.egtourguide.home.data.dto.body.TourDetailsBody
+import com.egtourguide.home.data.dto.response.SavedItemsDto
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
@@ -96,7 +89,7 @@ interface HomeApi {
     @POST("rec")
     suspend fun detectArtifact(
         @Part photo: MultipartBody.Part
-    ):ArtifactDetectionDto
+    ): ArtifactDetectionDto
 
     @GET("/api/v1/tours/tour-details/{tourId}")
     suspend fun getTourDetails(
@@ -108,8 +101,7 @@ interface HomeApi {
         @Path("tourId") tourId: String,
         @Body tourDetails: TourDetailsBody
     ): String // TODO: Change This!!
-    ): ArtifactDetectionDto
 
     @GET("api/v1/favorite/my-fav")
-    suspend fun getSavedItems():SavedItemsDto
+    suspend fun getSavedItems(): SavedItemsDto
 }

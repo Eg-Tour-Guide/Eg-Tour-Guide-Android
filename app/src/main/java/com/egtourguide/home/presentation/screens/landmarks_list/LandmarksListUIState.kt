@@ -7,6 +7,7 @@ data class LandmarksListUIState(
     val landmarks: List<Place> = emptyList(),
     val error: String? = null,
     val isSaveSuccess: Boolean = false,
-    val isSave:Boolean=true,
+    val isShowEmptyState: Boolean = false,
+    val isSave: Boolean = true,
     val saveError: String? = null,
 )

@@ -83,8 +83,8 @@ class HomeRepositoryImpl @Inject constructor(private val homeApi: HomeApi) : Hom
         homeApi.detectArtifact(photo = image).toDomainDetectedArtifact()
     }
 
-    override suspend fun getSavedList(): Flow<ResultWrapper<List<SavedItem>>> {
-        TODO("Not yet implemented")
+    override suspend fun getSavedList() = safeCall {
+        homeApi.getSavedItems().toDomainSavedItems()
     }
 
     override suspend fun getTourDetails(tourId: String) = safeCall {

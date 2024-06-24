@@ -44,6 +44,7 @@ import com.egtourguide.R
 import com.egtourguide.home.domain.model.AbstractedTour
 import com.egtourguide.home.presentation.components.BottomBar
 import com.egtourguide.home.presentation.components.BottomBarScreens
+import com.egtourguide.home.presentation.components.EmptyState
 import com.egtourguide.home.presentation.components.LoadingState
 import com.egtourguide.home.presentation.components.ScreenHeader
 import com.egtourguide.home.presentation.components.TourItem
@@ -157,6 +158,13 @@ fun ToursListScreenContent(
             exit = fadeOut()
         ) {
             LoadingState(modifier = Modifier.fillMaxSize())
+        }
+        AnimatedVisibility(
+            visible = uiState.isShowEmptyState && uiState.tours.isEmpty(),
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            EmptyState(modifier = Modifier.fillMaxSize(), message = "No Tours Found")
         }
         AnimatedVisibility(
             visible = !uiState.isLoading,

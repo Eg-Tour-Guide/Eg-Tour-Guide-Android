@@ -27,7 +27,12 @@ class SearchViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             getSearchHistoryUseCase().onResponse(
                 onLoading = {
-                    _uiState.update { it.copy(isRecentSearchesLoading = true) }
+                    _uiState.update {
+                        it.copy(
+                            isRecentSearchesLoading = true,
+
+                        )
+                    }
                 },
                 onSuccess = { response ->
                     _uiState.update {
@@ -49,13 +54,14 @@ class SearchViewModel @Inject constructor(
             viewModelScope.launch(Dispatchers.IO) {
                 getSearchSuggestionsUseCase(query = uiState.value.searchQuery).onResponse(
                     onLoading = {
-                        _uiState.update { it.copy(isSearchLoading = true) }
+                        _uiState.update { it.copy(isSearchLoading = true,isShowEmptyState = false) }
                     },
                     onSuccess = { response ->
                         _uiState.update {
                             it.copy(
                                 isSearchLoading = false,
-                                searchSuggestions = response.map { result -> result.name }
+                                searchSuggestions = response.map { result -> result.name },
+                                isShowEmptyState = true
                             )
                         }
                     },
