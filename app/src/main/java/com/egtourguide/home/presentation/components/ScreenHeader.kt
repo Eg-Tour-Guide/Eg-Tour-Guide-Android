@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -37,9 +36,6 @@ private fun ScreenHeaderPreview() {
             ScreenHeader(
                 showLogo = true,
                 showSearch = true,
-                showNotifications = true,
-                showNotificationsBadge = true,
-                showActiveTour = true,
                 showCaptureObject = true,
                 modifier = Modifier.height(61.dp)
             )
@@ -68,17 +64,12 @@ fun ScreenHeader(
     modifier: Modifier = Modifier,
     showLogo: Boolean = false,
     showSearch: Boolean = false,
-    showNotifications: Boolean = false,
-    showNotificationsBadge: Boolean = false,
-    showActiveTour: Boolean = false,
     showCaptureObject: Boolean = false,
     showVrView: Boolean = false,
     showArView: Boolean = false,
     showBack: Boolean = false,
     onBackClicked: () -> Unit = {},
     onSearchClicked: () -> Unit = {},
-    onNotificationsClicked: () -> Unit = {},
-    onActiveTourClicked: () -> Unit = {},
     onCaptureObjectClicked: () -> Unit = {},
     onVrViewClicked: () -> Unit = {},
     onArViewClicked: () -> Unit = {}
@@ -122,31 +113,6 @@ fun ScreenHeader(
                     modifier = Modifier
                         .size(20.dp)
                         .clickable { onSearchClicked() }
-                )
-            }
-
-            if (showNotifications) {
-                Image(
-                    painter = painterResource(
-                        id = if (showNotificationsBadge) R.drawable.ic_notifications_with_badge
-                        else R.drawable.ic_notifications
-                    ),
-                    contentDescription = stringResource(id = R.string.go_to_notifications),
-                    modifier = Modifier
-                        .height(24.dp)
-                        .width(22.dp)
-                        .clickable { onNotificationsClicked() }
-                )
-            }
-
-            if (showActiveTour) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_active_tour),
-                    contentDescription = stringResource(id = R.string.got_to_active_tour),
-                    tint = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier
-                        .size(20.dp)
-                        .clickable { onActiveTourClicked() }
                 )
             }
 

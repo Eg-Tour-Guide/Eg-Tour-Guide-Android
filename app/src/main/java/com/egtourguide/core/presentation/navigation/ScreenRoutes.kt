@@ -13,7 +13,7 @@ object ScreenRoutes {
     const val HOME_SCREEN_ROUTE = "HOME_SCREEN_ROUTE"
 
     // Home Routes
-    const val EXPANDED_SCREEN_ROUTE = "EXPANDED_SCREEN_ROUTE/{id}/{isLandmark}"
+    const val EXPANDED_SCREEN_ROUTE = "EXPANDED_SCREEN_ROUTE/{id}/{expandedType}"
     const val LANDMARKS_LIST_SCREEN_ROUTE = "LANDMARKS_LIST_SCREEN_ROUTE?filters={filters}"
     const val ARTIFACTS_LIST_SCREEN_ROUTE = "ARTIFACTS_LIST_SCREEN_ROUTE"
     const val MORE_REVIEWS_ROUTE = "MORE_REVIEWS_ROUTE"

@@ -36,11 +36,9 @@ fun UserScreen(
 ) {
     Column {
         ScreenHeader(
-            showNotifications = true,
             showSearch = true,
             showLogo = true,
-            showCaptureObject = true,
-            showActiveTour = true
+            showCaptureObject = true
         )
 
         Column(

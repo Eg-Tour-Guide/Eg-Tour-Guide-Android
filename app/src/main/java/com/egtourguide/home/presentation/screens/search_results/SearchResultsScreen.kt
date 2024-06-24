@@ -63,7 +63,6 @@ fun SearchResultsScreen(
     query: String = "",
     selectedBottomBarItem: BottomBarScreens = BottomBarScreens.Home,
     onNavigateToSearch: () -> Unit = {},
-    onNavigateToNotification: () -> Unit = {},
     onNavigateToFilters: () -> Unit = {},
     onNavigateToSingleItem: (SearchResult) -> Unit = {},
     onNavigateToLandmarks: () -> Unit = {},
@@ -94,7 +93,6 @@ fun SearchResultsScreen(
         SearchResultsScreenContent(
             uiState = uiState,
             onSearchClicked = onNavigateToSearch,
-            onNotificationClicked = onNavigateToNotification,
             onFilterClicked = onNavigateToFilters,
             onResultClicked = onNavigateToSingleItem,
             onSaveClicked = viewModel::onSaveClicked
@@ -134,7 +132,6 @@ fun SearchResultsScreen(
 fun SearchResultsScreenContent(
     uiState: SearchResultsUIState,
     onSearchClicked: () -> Unit,
-    onNotificationClicked: () -> Unit,
     onFilterClicked: () -> Unit,
     onResultClicked: (SearchResult) -> Unit,
     onSaveClicked: (SearchResult) -> Unit
@@ -148,9 +145,7 @@ fun SearchResultsScreenContent(
         ScreenHeader(
             modifier = Modifier.height(62.dp),
             showLogo = true,
-            showNotifications = true,
             showSearch = true,
-            onNotificationsClicked = onNotificationClicked,
             onSearchClicked = onSearchClicked
         )
         Spacer(modifier = Modifier.height(18.dp))

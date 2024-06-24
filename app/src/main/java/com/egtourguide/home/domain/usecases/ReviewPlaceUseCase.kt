@@ -1,6 +1,6 @@
 package com.egtourguide.home.domain.usecases
 
-import com.egtourguide.home.data.body.ReviewRequestBody
+import com.egtourguide.home.data.dto.body.ReviewRequestBody
 import com.egtourguide.home.domain.repository.HomeRepository
 import javax.inject.Inject
 

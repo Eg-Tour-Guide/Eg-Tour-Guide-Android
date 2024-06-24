@@ -16,15 +16,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -60,14 +59,18 @@ import com.egtourguide.core.utils.Constants.AR_MODEL_LINK_PREFIX
 import com.egtourguide.core.utils.Constants.LANDMARK_IMAGE_LINK_PREFIX
 import com.egtourguide.core.utils.getLoremString
 import com.egtourguide.home.domain.model.AbstractedArtifact
+import com.egtourguide.home.domain.model.AbstractedTour
 import com.egtourguide.home.domain.model.Place
 import com.egtourguide.home.domain.model.Review
 import com.egtourguide.home.presentation.components.ArtifactItem
 import com.egtourguide.home.presentation.components.DataRow
+import com.egtourguide.home.presentation.components.LoadingState
 import com.egtourguide.home.presentation.components.PlaceItem
 import com.egtourguide.home.presentation.components.ReviewItem
 import com.egtourguide.home.presentation.components.ReviewsHeader
 import com.egtourguide.home.presentation.components.ScreenHeader
+import com.egtourguide.home.presentation.components.TourItem
+import com.egtourguide.home.presentation.utils.convertDate
 
 @Preview(showBackground = true, heightDp = 2000)
 @Composable
@@ -112,12 +115,14 @@ fun ExpandedScreenRoot(
     tourId: String,
     tourName: String,
     tourImage: String,
-    isLandmark: Boolean,
+    expandedType: String,
     onBackClicked: () -> Unit,
     onSeeMoreClicked: () -> Unit,
     onReviewClicked: () -> Unit,
     navigateToWebScreen: (String) -> Unit,
-    navigateToTours: () -> Unit
+    navigateToTours: () -> Unit,
+    goToTourPlan: (String) -> Unit,
+    navigateToSingleItem: (String, String) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -126,7 +131,7 @@ fun ExpandedScreenRoot(
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_CREATE && !uiState.callIsSent) {
-                viewModel.getData(id = id, isLandmark = isLandmark)
+                viewModel.getData(id = id, expandedType = expandedType)
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
@@ -144,6 +149,17 @@ fun ExpandedScreenRoot(
         uiState.errorMessage?.let {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
             viewModel.clearError()
+        }
+    }
+
+    LaunchedEffect(key1 = uiState.showAddSuccess) {
+        if (uiState.showAddSuccess) {
+            Toast.makeText(
+                context,
+                context.getString(R.string.added_successfully),
+                Toast.LENGTH_SHORT
+            ).show()
+            viewModel.clearSuccess()
         }
     }
 
@@ -175,8 +191,22 @@ fun ExpandedScreenRoot(
         }
     }
 
+    if (uiState.showLoadingDialog) {
+        Dialog(onDismissRequest = {}) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(MaterialTheme.colorScheme.background)
+                    .padding(24.dp)
+            ) {
+                LoadingState()
+            }
+        }
+    }
+
     ExpandedScreen(
-        isLandmark = isLandmark,
+        expandedType = expandedType,
         uiState = uiState,
         onBackClicked = onBackClicked,
         onVrViewClicked = {
@@ -201,15 +231,18 @@ fun ExpandedScreenRoot(
         onSaveClicked = viewModel::changeSavedState,
         onSavePlace = viewModel::changePlaceSavedState,
         onSaveArtifact = viewModel::changeArtifactSavedState,
+        onSaveTour = viewModel::changeTourSavedState,
         onAddClicked = viewModel::changeAddDialogVisibility,
         onSeeMoreClicked = onSeeMoreClicked,
-        onReviewClicked = onReviewClicked
+        onReviewClicked = onReviewClicked,
+        goToTourPlan = { goToTourPlan(uiState.id) },
+        navigateToSingleItem = navigateToSingleItem
     )
 }
 
 @Composable
 private fun ExpandedScreen(
-    isLandmark: Boolean = true,
+    expandedType: String = ExpandedType.LANDMARK.name,
     uiState: ExpandedScreenState,
     onBackClicked: () -> Unit = {},
     onArViewClicked: () -> Unit = {},
@@ -217,17 +250,20 @@ private fun ExpandedScreen(
     onSaveClicked: () -> Unit = {},
     onSavePlace: (Place) -> Unit = {},
     onSaveArtifact: (AbstractedArtifact) -> Unit = {},
+    onSaveTour: (AbstractedTour) -> Unit = {},
     onAddClicked: () -> Unit = {},
+    goToTourPlan: () -> Unit = {},
     onSeeMoreClicked: () -> Unit = {},
-    onReviewClicked: () -> Unit = {}
+    onReviewClicked: () -> Unit = {},
+    navigateToSingleItem: (String, String) -> Unit = { _, _ -> }
 ) {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
         ScreenHeader(
             showBack = true,
-            showArView = (!isLandmark && uiState.arModel.isNotEmpty()),
-            showVrView = (isLandmark && uiState.vrModel.isNotEmpty()),
+            showArView = (expandedType == ExpandedType.ARTIFACT.name && uiState.arModel.isNotEmpty()),
+            showVrView = (expandedType == ExpandedType.LANDMARK.name && uiState.vrModel.isNotEmpty()),
             onArViewClicked = onArViewClicked,
             onVrViewClicked = onVrViewClicked,
             onBackClicked = onBackClicked,
@@ -239,83 +275,116 @@ private fun ExpandedScreen(
                 modifier = Modifier.weight(1f)
             )
         } else {
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background)
-                    .verticalScroll(rememberScrollState())
+                    .background(MaterialTheme.colorScheme.background),
+                contentPadding = PaddingValues(bottom = 16.dp)
             ) {
-                ImagesSection(
-                    images = uiState.images,
-                    imageLinkPrefix = if (isLandmark) LANDMARK_IMAGE_LINK_PREFIX
-                    else ARTIFACT_IMAGE_LINK_PREFIX,
-                    title = uiState.title
-                )
-
-                TitleSection(
-                    isLandmark = isLandmark,
-                    title = uiState.title,
-                    isSaved = uiState.isSaved,
-                    onSaveClicked = onSaveClicked,
-                    onAddClicked = onAddClicked,
-                    location = uiState.location,
-                    reviewsAverage = uiState.reviewsAverage,
-                    reviewsCount = uiState.reviewsCount,
-                    tourismTypes = uiState.tourismTypes,
-                    artifactType = uiState.artifactType,
-                    artifactMaterials = uiState.artifactMaterials,
-                    modifier = Modifier.padding(top = 16.dp)
-                )
-
-                if (uiState.description.isNotEmpty()) {
-                    DescriptionSection(
-                        description = uiState.description,
-                        modifier = Modifier.padding(top = 24.dp, start = 16.dp, end = 16.dp)
+                item {
+                    ImagesSection(
+                        images = uiState.images,
+                        imageLinkPrefix = if (expandedType == ExpandedType.ARTIFACT.name) ARTIFACT_IMAGE_LINK_PREFIX
+                        else LANDMARK_IMAGE_LINK_PREFIX,
+                        title = uiState.title
                     )
                 }
 
-                if (isLandmark && uiState.latitute != 0.0 && uiState.longitude != 0.0) {
-                    LocationSection(
+                item {
+                    TitleSection(
+                        expandedType = expandedType,
                         title = uiState.title,
-                        latitude = uiState.latitute,
-                        longitude = uiState.longitude,
-                        modifier = Modifier.padding(top = 24.dp, start = 16.dp, end = 16.dp)
-                    )
-                }
-
-                if (isLandmark) {
-                    ReviewsSection(
+                        isSaved = uiState.isSaved,
+                        onSaveClicked = onSaveClicked,
+                        onAddClicked = onAddClicked,
+                        goToTourPlan = goToTourPlan,
+                        location = uiState.location,
                         reviewsAverage = uiState.reviewsAverage,
                         reviewsCount = uiState.reviewsCount,
-                        reviews = uiState.reviews,
-                        onSeeMoreClicked = onSeeMoreClicked,
-                        onReviewClicked = onReviewClicked,
-                        modifier = Modifier.padding(top = 24.dp, start = 16.dp, end = 16.dp)
+                        tourismTypes = uiState.tourismTypes,
+                        artifactType = uiState.artifactType,
+                        artifactMaterials = uiState.artifactMaterials,
+                        date = uiState.date,
+                        duration = uiState.duration,
+                        modifier = Modifier.padding(top = 16.dp)
                     )
+                }
+
+                if (uiState.description.isNotEmpty()) {
+                    item {
+                        DescriptionSection(
+                            description = uiState.description,
+                            modifier = Modifier.padding(top = 24.dp, start = 16.dp, end = 16.dp)
+                        )
+                    }
+                }
+
+                if (expandedType != ExpandedType.TOUR.name && expandedType != ExpandedType.CUSTOM_TOUR.name && uiState.latitute != 0.0 && uiState.longitude != 0.0) {
+                    item {
+                        LocationSection(
+                            title = uiState.title,
+                            latitude = uiState.latitute,
+                            longitude = uiState.longitude,
+                            modifier = Modifier.padding(top = 24.dp, start = 16.dp, end = 16.dp)
+                        )
+                    }
+                }
+
+                if (expandedType == ExpandedType.LANDMARK.name || expandedType == ExpandedType.TOUR.name) {
+                    item {
+                        ReviewsSection(
+                            reviewsAverage = uiState.reviewsAverage,
+                            reviewsCount = uiState.reviewsCount,
+                            reviews = uiState.reviews,
+                            onSeeMoreClicked = onSeeMoreClicked,
+                            onReviewClicked = onReviewClicked,
+                            modifier = Modifier.padding(top = 24.dp, start = 16.dp, end = 16.dp)
+                        )
+                    }
                 }
 
                 if (uiState.includedArtifacts.isNotEmpty()) {
-                    IncludedArtifactsSection(
-                        artifacts = uiState.includedArtifacts,
-                        onSaveClicked = onSaveArtifact,
-                        modifier = Modifier.padding(top = 24.dp)
-                    )
+                    item {
+                        IncludedArtifactsSection(
+                            artifacts = uiState.includedArtifacts,
+                            onArtifactClicked = navigateToSingleItem,
+                            onSaveClicked = onSaveArtifact,
+                            modifier = Modifier.padding(top = 24.dp)
+                        )
+                    }
                 }
 
                 if (uiState.relatedPlaces.isNotEmpty()) {
-                    RelatedPlacesSection(
-                        places = uiState.relatedPlaces,
-                        onSaveClicked = onSavePlace,
-                        modifier = Modifier.padding(top = 24.dp, bottom = 16.dp)
-                    )
+                    item {
+                        RelatedPlacesSection(
+                            places = uiState.relatedPlaces,
+                            onPlaceClicked = navigateToSingleItem,
+                            onSaveClicked = onSavePlace,
+                            modifier = Modifier.padding(top = 24.dp)
+                        )
+                    }
                 }
 
                 if (uiState.relatedArtifacts.isNotEmpty()) {
-                    RelatedArtifactsSection(
-                        artifacts = uiState.relatedArtifacts,
-                        onSaveClicked = onSaveArtifact,
-                        modifier = Modifier.padding(top = 24.dp, bottom = 16.dp)
-                    )
+                    item {
+                        RelatedArtifactsSection(
+                            artifacts = uiState.relatedArtifacts,
+                            onArtifactClicked = navigateToSingleItem,
+                            onSaveClicked = onSaveArtifact,
+                            modifier = Modifier.padding(top = 24.dp)
+                        )
+                    }
+                }
+
+                if (uiState.relatedTours.isNotEmpty()) {
+                    item {
+                        RelatedToursSection(
+                            artifacts = uiState.relatedTours,
+                            onArtifactClicked = navigateToSingleItem,
+                            onSaveClicked = onSaveTour,
+                            modifier = Modifier.padding(top = 24.dp)
+                        )
+                    }
                 }
             }
         }
@@ -387,12 +456,15 @@ private fun ImagesSection(
 
 @Composable
 private fun TitleSection(
-    isLandmark: Boolean,
+    expandedType: String,
     title: String,
     isSaved: Boolean,
     onSaveClicked: () -> Unit,
     onAddClicked: () -> Unit,
+    goToTourPlan: () -> Unit,
     location: String,
+    date: String,
+    duration: Int,
     reviewsAverage: Double,
     reviewsCount: Int,
     tourismTypes: String,
@@ -400,7 +472,6 @@ private fun TitleSection(
     artifactMaterials: String,
     modifier: Modifier = Modifier
 ) {
-    // TODO: Empty items!!
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
@@ -420,14 +491,38 @@ private fun TitleSection(
                     .weight(1f)
                     .padding(start = 16.dp, top = 8.dp)
             ) {
-                DataRow(
-                    icon = R.drawable.ic_location,
-                    iconDescription = stringResource(R.string.location),
-                    text = location,
-                    modifier = Modifier.fillMaxWidth()
-                )
+                if (location.isNotEmpty()) {
+                    DataRow(
+                        icon = R.drawable.ic_location,
+                        iconDescription = stringResource(R.string.location),
+                        text = location,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
 
-                if (isLandmark) {
+                if (expandedType == ExpandedType.EVENT.name && date.isNotEmpty()) {
+                    DataRow(
+                        icon = R.drawable.ic_calendar,
+                        iconDescription = stringResource(R.string.date),
+                        text = convertDate(inputDate = date),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp)
+                    )
+                }
+
+                if (expandedType != ExpandedType.LANDMARK.name && expandedType != ExpandedType.ARTIFACT.name && duration != 0) {
+                    DataRow(
+                        icon = R.drawable.ic_timesheet,
+                        iconDescription = stringResource(R.string.duration),
+                        text = stringResource(id = R.string.days, duration),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = if (expandedType == ExpandedType.EVENT.name) 8.dp else 0.dp)
+                    )
+                }
+
+                if (expandedType == ExpandedType.LANDMARK.name || expandedType == ExpandedType.TOUR.name) {
                     DataRow(
                         icon = R.drawable.ic_rating_star,
                         iconDescription = null,
@@ -477,33 +572,49 @@ private fun TitleSection(
                 }
             }
 
-            Column(
-                modifier = Modifier.padding(end = 17.dp, start = 4.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                IconButton(
-                    onClick = onSaveClicked,
-                    modifier = Modifier.size(31.dp)
+            if (expandedType != ExpandedType.EVENT.name) {
+                Column(
+                    modifier = Modifier.padding(end = 17.dp, start = 4.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Icon(
-                        painter = painterResource(id = if (isSaved) R.drawable.ic_saved else R.drawable.ic_save),
-                        contentDescription = stringResource(id = if (isSaved) R.string.unsave else R.string.save),
-                        tint = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-
-                if (isLandmark) {
                     IconButton(
-                        onClick = onAddClicked,
+                        onClick = onSaveClicked,
                         modifier = Modifier.size(31.dp)
                     ) {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_add_to_tour),
-                            contentDescription = stringResource(id = R.string.add_to_tour),
+                            painter = painterResource(id = if (isSaved) R.drawable.ic_saved else R.drawable.ic_save),
+                            contentDescription = stringResource(id = if (isSaved) R.string.unsave else R.string.save),
                             tint = MaterialTheme.colorScheme.onBackground,
                             modifier = Modifier.size(24.dp)
                         )
+                    }
+
+                    if (expandedType == ExpandedType.LANDMARK.name) {
+                        IconButton(
+                            onClick = onAddClicked,
+                            modifier = Modifier.size(31.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_add_to_tour),
+                                contentDescription = stringResource(id = R.string.add_to_tour),
+                                tint = MaterialTheme.colorScheme.onBackground,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    }
+
+                    if (expandedType == ExpandedType.TOUR.name || expandedType == ExpandedType.CUSTOM_TOUR.name) {
+                        IconButton(
+                            onClick = goToTourPlan,
+                            modifier = Modifier.size(31.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_timesheet),
+                                contentDescription = stringResource(id = R.string.tour_schedule),
+                                tint = MaterialTheme.colorScheme.onBackground,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -617,6 +728,7 @@ private fun ReviewsSection(
 private fun IncludedArtifactsSection(
     artifacts: List<AbstractedArtifact>,
     onSaveClicked: (AbstractedArtifact) -> Unit,
+    onArtifactClicked: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -629,7 +741,6 @@ private fun IncludedArtifactsSection(
             modifier = Modifier.padding(start = 16.dp)
         )
 
-        // TODO: Implement clicks!!
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -640,7 +751,9 @@ private fun IncludedArtifactsSection(
             items(items = artifacts, key = { it.id }) {
                 ArtifactItem(
                     artifact = it,
-                    onArtifactClicked = {},
+                    onArtifactClicked = { artifact ->
+                        onArtifactClicked(artifact.id, ExpandedType.ARTIFACT.name)
+                    },
                     onSaveClicked = onSaveClicked
                 )
             }
@@ -651,6 +764,7 @@ private fun IncludedArtifactsSection(
 @Composable
 private fun RelatedPlacesSection(
     places: List<Place>,
+    onPlaceClicked: (String, String) -> Unit,
     onSaveClicked: (Place) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -664,7 +778,6 @@ private fun RelatedPlacesSection(
             modifier = Modifier.padding(start = 16.dp)
         )
 
-        // TODO: Implement clicks!!
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -675,7 +788,9 @@ private fun RelatedPlacesSection(
             items(items = places, key = { it.id }) {
                 PlaceItem(
                     place = it,
-                    onPlaceClicked = {},
+                    onPlaceClicked = { place ->
+                        onPlaceClicked(place.id, ExpandedType.LANDMARK.name)
+                    },
                     onSaveClicked = onSaveClicked
                 )
             }
@@ -686,6 +801,7 @@ private fun RelatedPlacesSection(
 @Composable
 private fun RelatedArtifactsSection(
     artifacts: List<AbstractedArtifact>,
+    onArtifactClicked: (String, String) -> Unit,
     onSaveClicked: (AbstractedArtifact) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -699,7 +815,6 @@ private fun RelatedArtifactsSection(
             modifier = Modifier.padding(start = 16.dp)
         )
 
-        // TODO: Implement clicks!!
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -710,7 +825,46 @@ private fun RelatedArtifactsSection(
             items(items = artifacts, key = { it.id }) {
                 ArtifactItem(
                     artifact = it,
-                    onArtifactClicked = {},
+                    onArtifactClicked = { artifact ->
+                        onArtifactClicked(artifact.id, ExpandedType.ARTIFACT.name)
+                    },
+                    onSaveClicked = onSaveClicked
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun RelatedToursSection(
+    artifacts: List<AbstractedTour>,
+    onArtifactClicked: (String, String) -> Unit,
+    onSaveClicked: (AbstractedTour) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = stringResource(id = R.string.related_tours),
+            style = MaterialTheme.typography.displayMedium,
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.padding(start = 16.dp)
+        )
+
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp)
+        ) {
+            items(items = artifacts, key = { it.id }) {
+                TourItem(
+                    tour = it,
+                    onTourClicked = { tour ->
+                        onArtifactClicked(tour.id, ExpandedType.TOUR.name)
+                    },
                     onSaveClicked = onSaveClicked
                 )
             }

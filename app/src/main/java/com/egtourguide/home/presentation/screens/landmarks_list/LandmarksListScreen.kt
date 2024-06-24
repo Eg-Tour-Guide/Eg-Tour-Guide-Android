@@ -54,7 +54,6 @@ fun LandmarksListScreen(
     viewModel: LandmarksListViewModel = hiltViewModel(),
     filters: HashMap<*, *>? = null,
     onNavigateToSearch: () -> Unit = {},
-    onNavigateToNotification: () -> Unit = {},
     onNavigateToFilters: () -> Unit = {},
     onNavigateToSinglePlace: (Place) -> Unit = {},
     onNavigateToTours: () -> Unit = {},
@@ -85,7 +84,6 @@ fun LandmarksListScreen(
         LandmarksListScreenContent(
             uiState = uiState,
             onSearchClicked = onNavigateToSearch,
-            onNotificationClicked = onNavigateToNotification,
             onFilterClicked = onNavigateToFilters,
             onPlaceClicked = onNavigateToSinglePlace,
             onSaveClicked = viewModel::onSaveClicked
@@ -125,7 +123,6 @@ fun LandmarksListScreen(
 fun LandmarksListScreenContent(
     uiState: LandmarksListUIState,
     onSearchClicked: () -> Unit,
-    onNotificationClicked: () -> Unit,
     onFilterClicked: () -> Unit,
     onPlaceClicked: (Place) -> Unit,
     onSaveClicked: (Place) -> Unit
@@ -139,9 +136,7 @@ fun LandmarksListScreenContent(
         ScreenHeader(
             modifier = Modifier.height(62.dp),
             showLogo = true,
-            showNotifications = true,
             showSearch = true,
-            onNotificationsClicked = onNotificationClicked,
             onSearchClicked = onSearchClicked
         )
         Spacer(modifier = Modifier.height(18.dp))

@@ -4,11 +4,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.egtourguide.core.utils.onResponse
 import com.egtourguide.home.domain.model.AbstractedArtifact
+import com.egtourguide.home.domain.model.AbstractedTour
 import com.egtourguide.home.domain.model.Place
+import com.egtourguide.home.domain.usecases.AddPlaceToTourUseCase
 import com.egtourguide.home.domain.usecases.ChangeArtifactSavedStateUseCase
 import com.egtourguide.home.domain.usecases.ChangePlaceSavedStateUseCase
+import com.egtourguide.home.domain.usecases.ChangeTourSavedStateUseCase
 import com.egtourguide.home.domain.usecases.GetArtifactUseCase
+import com.egtourguide.home.domain.usecases.GetEventUseCase
 import com.egtourguide.home.domain.usecases.GetLandmarkUseCase
+import com.egtourguide.home.domain.usecases.GetTourUseCase
+import com.egtourguide.home.presentation.screens.expanded.ExpandedType.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,25 +25,63 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ExpandedViewModel @Inject constructor(
+    private val getEventUseCase: GetEventUseCase,
     private val getLandmarkUseCase: GetLandmarkUseCase,
     private val getArtifactUseCase: GetArtifactUseCase,
+    private val getTourUseCase: GetTourUseCase,
     private val changePlaceSavedStateUseCase: ChangePlaceSavedStateUseCase,
-    private val changeArtifactSavedStateUseCase: ChangeArtifactSavedStateUseCase
+    private val changeArtifactSavedStateUseCase: ChangeArtifactSavedStateUseCase,
+    private val changeTourSavedStateUseCase: ChangeTourSavedStateUseCase,
+    private val addPlaceToTourUseCase: AddPlaceToTourUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ExpandedScreenState())
     val uiState = _uiState.asStateFlow()
 
-    fun getData(id: String, isLandmark: Boolean) {
-        if (isLandmark) getLandmark(id = id)
-        else getArtifact(id = id)
+    fun getData(id: String, expandedType: String) {
+        when (expandedType) {
+            EVENT.name -> getEvent(id = id)
+            LANDMARK.name -> getLandmark(id = id)
+            ARTIFACT.name -> getArtifact(id = id)
+            else -> getTour(id = id)
+        }
+    }
+
+    private fun getEvent(id: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            getEventUseCase(eventId = id).onResponse(
+                onLoading = {
+                    _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+                },
+                onSuccess = { response ->
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            callIsSent = true,
+                            id = response.id,
+                            images = response.images,
+                            title = response.name,
+                            date = response.date,
+                            latitute = response.latitude,
+                            longitude = response.longitude,
+                            tourismTypes = response.category,
+                            description = response.description,
+                            location = response.placeName
+                        )
+                    }
+                },
+                onFailure = { message ->
+                    _uiState.update { it.copy(isLoading = false, errorMessage = message) }
+                }
+            )
+        }
     }
 
     private fun getLandmark(id: String) {
         viewModelScope.launch(Dispatchers.IO) {
             getLandmarkUseCase(id = id).onResponse(
                 onLoading = {
-                    _uiState.update { it.copy(isLoading = true, id = id, isLandmark = true) }
+                    _uiState.update { it.copy(isLoading = true, id = id) }
                 },
                 onSuccess = { response ->
                     _uiState.update {
@@ -72,7 +116,7 @@ class ExpandedViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             getArtifactUseCase(id = id).onResponse(
                 onLoading = {
-                    _uiState.update { it.copy(isLoading = true, id = id, isLandmark = false) }
+                    _uiState.update { it.copy(isLoading = true, id = id) }
                 },
                 onSuccess = { response ->
                     _uiState.update {
@@ -88,6 +132,38 @@ class ExpandedViewModel @Inject constructor(
                             artifactMaterials = response.material,
                             relatedArtifacts = response.relatedArtifacts,
                             arModel = response.arModel
+                        )
+                    }
+                },
+                onFailure = { message ->
+                    _uiState.update { it.copy(isLoading = false, errorMessage = message) }
+                }
+            )
+        }
+    }
+
+    private fun getTour(id: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            getTourUseCase(tourId = id).onResponse(
+                onLoading = {
+                    _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+                },
+                onSuccess = { response ->
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            callIsSent = true,
+                            id = response.id,
+                            images = response.images,
+                            title = response.name,
+                            reviewsAverage = response.ratingAverage,
+                            reviewsCount = response.ratingQuantity,
+                            reviews = response.reviews,
+                            tourismTypes = response.type,
+                            duration = response.duration,
+                            isSaved = response.saved,
+                            description = response.description,
+                            relatedTours = response.relatedTours
                         )
                     }
                 },
@@ -148,6 +224,23 @@ class ExpandedViewModel @Inject constructor(
         }
     }
 
+    fun changeTourSavedState(tour: AbstractedTour) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update { it.copy(isSaveCall = !tour.isSaved) }
+            tour.isSaved = !tour.isSaved
+
+            changeTourSavedStateUseCase(tourId = tour.id).onResponse(
+                onLoading = {},
+                onSuccess = {
+                    _uiState.update { it.copy(isSaveSuccess = true) }
+                },
+                onFailure = { message ->
+                    _uiState.update { it.copy(errorMessage = message) }
+                }
+            )
+        }
+    }
+
     fun clearError() {
         _uiState.update { it.copy(errorMessage = null) }
     }
@@ -179,7 +272,25 @@ class ExpandedViewModel @Inject constructor(
 
     fun addToTour(duration: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            // TODO: Implement this!!
+            addPlaceToTourUseCase(
+                tourId = _uiState.value.tourID,
+                placeId = _uiState.value.id,
+                time = duration
+            ).onResponse(
+                onLoading = {
+                    _uiState.update { it.copy(showLoadingDialog = true, errorMessage = null) }
+                },
+                onSuccess = {
+                    _uiState.update { it.copy(showLoadingDialog = false, showAddSuccess = true) }
+                },
+                onFailure = { message ->
+                    _uiState.update { it.copy(showLoadingDialog = false, errorMessage = message) }
+                }
+            )
         }
+    }
+
+    fun clearSuccess() {
+        _uiState.update { it.copy(showAddSuccess = false) }
     }
 }

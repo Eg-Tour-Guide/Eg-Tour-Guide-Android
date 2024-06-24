@@ -17,6 +17,7 @@ import com.egtourguide.home.presentation.components.BottomBarScreens
 import com.egtourguide.home.presentation.myTours.MyToursScreenRoot
 import com.egtourguide.home.presentation.screens.artifacts_list.ArtifactsListScreen
 import com.egtourguide.home.presentation.screens.expanded.ExpandedScreenRoot
+import com.egtourguide.home.presentation.screens.expanded.ExpandedType
 import com.egtourguide.home.presentation.screens.expanded.WebViewScreen
 import com.egtourguide.home.presentation.screens.home.HomeScreen
 import com.egtourguide.home.presentation.screens.landmarks_list.LandmarksListScreen
@@ -150,31 +151,31 @@ fun AppNavigation(
 
         /** Home Screens */
 
-        // TODO: Change to home screen!!
         composable(route = AppScreen.Home.route) {
             HomeScreen(
                 onNavigateToSearch = {
                     navController.navigate(route = AppScreen.Search.route)
                 },
-                onNavigateToNotification = {
-
-                },
                 onNavigateToSinglePlace = { place ->
                     navController.navigate(
                         route = AppScreen.Expanded.route
                             .replace("{id}", place.id)
-                            .replace("{isLandmark}", "true")
+                            .replace("{expandedType}", ExpandedType.LANDMARK.name)
                     )
                 },
                 onNavigateToDetectedArtifact = { artifact ->
                     navController.navigate(
                         route = AppScreen.Expanded.route
                             .replace("{id}", artifact.id)
-                            .replace("{isLandmark}", "false")
+                            .replace("{expandedType}", ExpandedType.ARTIFACT.name)
                     )
                 },
-                onNavigateToEvent = {
-
+                onNavigateToEvent = { event ->
+                    navController.navigate(
+                        route = AppScreen.Expanded.route
+                            .replace("{id}", event.id)
+                            .replace("{expandedType}", ExpandedType.EVENT.name)
+                    )
                 },
                 onNavigateToSingleCategory = {
 
@@ -202,7 +203,7 @@ fun AppNavigation(
 
         composable(route = AppScreen.Expanded.route) { entry ->
             val id = entry.arguments?.getString("id") ?: ""
-            val isLandmark = entry.arguments?.getString("isLandmark").toBoolean()
+            val expandedType = entry.arguments?.getString("expandedType") ?: ""
             val tourId = entry.savedStateHandle.get<String>(key = "tourId") ?: ""
             val tourName = entry.savedStateHandle.get<String>(key = "tourName") ?: ""
             val tourImage = entry.savedStateHandle.get<String>(key = "tourImage") ?:""
@@ -212,7 +213,7 @@ fun AppNavigation(
                 tourId = tourId,
                 tourName = tourName,
                 tourImage = tourImage,
-                isLandmark = isLandmark,
+                expandedType = expandedType,
                 onBackClicked = { navController.navigateUp() },
                 onSeeMoreClicked = {
                     navController.navigate(route = AppScreen.MoreReviews.route)
@@ -234,29 +235,21 @@ fun AppNavigation(
                     navController.navigate(
                         route = AppScreen.MyTours.route.replace("{isSelect}", "true")
                     )
+                },
+                goToTourPlan = { itemId ->
+                    navController.navigate(
+                        route = AppScreen.ToursPlan.route.replace("{tourId}", itemId)
+                    )
+                },
+                navigateToSingleItem = { itemId, expandedType2 ->
+                    navController.navigate(
+                        route = AppScreen.Expanded.route
+                            .replace("{id}", itemId)
+                            .replace("{expandedType}", expandedType2)
+                    )
                 }
             )
         }
-
-        /*composable(
-            route = AppScreen.LandmarksList.route,
-            arguments = listOf(
-                navArgument("filters") {
-                    type = NavType.StringType
-                    nullable = true
-                }
-            )
-        ) { backStackEntry ->
-            val filtersJson = backStackEntry.arguments?.getString("filters")
-            var filters: HashMap<*, *>? = null
-            filtersJson?.let {
-                Log.d("```TAG```", "AppNavigation: ${filtersJson.substringAfter('/')}")
-                filters = Gson().fromJson(
-                    filtersJson.substringAfter('/'),
-                    HashMap::class.java
-                )
-            }
-        }*/
 
         composable(route = AppScreen.WebView.route) { entry ->
             val modelUrl = entry.arguments?.getString("modelUrl") ?: ""
@@ -288,9 +281,6 @@ fun AppNavigation(
             }
             LandmarksListScreen(
                 filters = filters,
-                onNavigateToNotification = {
-
-                },
                 onNavigateToSearch = {
                     navController.navigate(
                         route = AppScreen.Search.route.replace(
@@ -306,7 +296,7 @@ fun AppNavigation(
                     navController.navigate(
                         route = AppScreen.Expanded.route
                             .replace("{id}", it.id)
-                            .replace("{isLandmark}", "true")
+                            .replace("{expandedType}", ExpandedType.LANDMARK.name)
                     )
                 },
                 onNavigateToHome = {
@@ -345,9 +335,6 @@ fun AppNavigation(
                         )
                     )
                 },
-                onNavigateToNotification = {
-
-                },
                 onNavigateToFilters = {
 
                 },
@@ -355,7 +342,7 @@ fun AppNavigation(
                     navController.navigate(
                         route = AppScreen.Expanded.route
                             .replace("{id}", it.id)
-                            .replace("{isLandmark}", "false")
+                            .replace("{expandedType}", ExpandedType.ARTIFACT.name)
                     )
                 },
                 onNavigateToHome = {
@@ -379,9 +366,6 @@ fun AppNavigation(
 
         composable(route = AppScreen.ToursList.route) {
             ToursListScreen(
-                onNavigateToNotification = {
-
-                },
                 onNavigateToSearch = {
                     navController.navigate(
                         route = AppScreen.Search.route.replace(
@@ -394,9 +378,10 @@ fun AppNavigation(
 
                 },
                 onNavigateToSingleTour = { tour ->
-                    // TODO: Remove this!!!
                     navController.navigate(
-                        route = AppScreen.ToursPlan.route.replace("{tourId}", tour.id)
+                        route = AppScreen.Expanded.route
+                            .replace("{id}", tour.id)
+                            .replace("{expandedType}", ExpandedType.TOUR.name)
                     )
                 },
                 onNavigateToHome = {
@@ -561,7 +546,7 @@ fun AppNavigation(
                     navController.navigate(
                         route = AppScreen.Expanded.route
                             .replace("{id}", landmarkId)
-                            .replace("{isLandmark}", "true")
+                            .replace("{expandedType}", ExpandedType.LANDMARK.name)
                     )
                 }
             )

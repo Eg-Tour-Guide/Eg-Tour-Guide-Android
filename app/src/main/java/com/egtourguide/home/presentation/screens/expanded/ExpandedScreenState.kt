@@ -1,12 +1,12 @@
 package com.egtourguide.home.presentation.screens.expanded
 
 import com.egtourguide.home.domain.model.AbstractedArtifact
+import com.egtourguide.home.domain.model.AbstractedTour
 import com.egtourguide.home.domain.model.Place
 import com.egtourguide.home.domain.model.Review
 
 data class ExpandedScreenState(
     val id: String = "",
-    val isLandmark: Boolean = true,
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val callIsSent: Boolean = false,
@@ -33,5 +33,10 @@ data class ExpandedScreenState(
     val showAddDialog: Boolean = false,
     val tourID: String = "",
     val tourName: String = "",
-    val tourImage: String = ""
+    val tourImage: String = "",
+    val duration: Int = 0,
+    val date: String = "",
+    val relatedTours: List<AbstractedTour> = emptyList(),
+    val showLoadingDialog: Boolean = false,
+    val showAddSuccess: Boolean = false
 )

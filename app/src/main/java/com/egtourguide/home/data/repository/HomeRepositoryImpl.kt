@@ -3,12 +3,11 @@ package com.egtourguide.home.data.repository
 import com.egtourguide.core.utils.ResultWrapper
 import com.egtourguide.core.utils.safeCall
 import com.egtourguide.home.data.HomeApi
-import com.egtourguide.home.data.body.ReviewRequestBody
-import com.egtourguide.home.domain.model.AbstractedArtifact
-import com.egtourguide.home.domain.model.AbstractedTour
-import com.egtourguide.home.domain.model.SearchResult
+import com.egtourguide.home.data.dto.body.AddPlaceBody
+import com.egtourguide.home.data.dto.body.ReviewRequestBody
 import com.egtourguide.home.data.dto.body.TourDetailsBody
 import com.egtourguide.home.domain.repository.HomeRepository
+import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody
 import javax.inject.Inject
 
@@ -90,5 +89,20 @@ class HomeRepositoryImpl @Inject constructor(private val homeApi: HomeApi) : Hom
         tourDetails: TourDetailsBody
     ) = safeCall {
         homeApi.updateTourDetails(tourId = tourId, tourDetails = tourDetails)
+    }
+
+    override suspend fun getTour(tourId: String) = safeCall {
+        homeApi.getTour(tourId = tourId).toTour()
+    }
+
+    override suspend fun getEvent(eventId: String) = safeCall {
+        homeApi.getEvent(eventId).toSingleEvent()
+    }
+
+    override suspend fun addPlaceToTour(
+        tourId: String,
+        addPlaceBody: AddPlaceBody
+    ) = safeCall {
+        homeApi.addPlaceToTour(tourId = tourId, place = addPlaceBody)
     }
 }

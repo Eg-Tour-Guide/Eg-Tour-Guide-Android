@@ -1,8 +1,9 @@
 package com.egtourguide.home.domain.repository
 
 import com.egtourguide.core.utils.ResultWrapper
+import com.egtourguide.home.data.dto.body.AddPlaceBody
 import com.egtourguide.home.data.dto.body.TourDetailsBody
-import com.egtourguide.home.data.body.ReviewRequestBody
+import com.egtourguide.home.data.dto.body.ReviewRequestBody
 import com.egtourguide.home.domain.model.AbstractedArtifact
 import com.egtourguide.home.domain.model.AbstractedTour
 import com.egtourguide.home.domain.model.Artifact
@@ -11,6 +12,8 @@ import com.egtourguide.home.domain.model.Home
 import com.egtourguide.home.domain.model.Landmark
 import com.egtourguide.home.domain.model.Place
 import com.egtourguide.home.domain.model.SearchResult
+import com.egtourguide.home.domain.model.SingleEvent
+import com.egtourguide.home.domain.model.SingleTour
 import com.egtourguide.home.domain.model.TourDetails
 import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody
@@ -59,4 +62,10 @@ interface HomeRepository {
         tourId: String,
         tourDetails: TourDetailsBody
     ): Flow<ResultWrapper<String>> // TODO: Change This!!
+
+    suspend fun getTour(tourId: String): Flow<ResultWrapper<SingleTour>>
+
+    suspend fun getEvent(eventId: String): Flow<ResultWrapper<SingleEvent>>
+
+    suspend fun addPlaceToTour(tourId: String, addPlaceBody: AddPlaceBody): Flow<ResultWrapper<Unit>>
 }

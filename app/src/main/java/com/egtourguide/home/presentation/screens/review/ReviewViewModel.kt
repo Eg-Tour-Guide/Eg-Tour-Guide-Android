@@ -3,7 +3,7 @@ package com.egtourguide.home.presentation.screens.review
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.egtourguide.core.utils.onResponse
-import com.egtourguide.home.data.body.ReviewRequestBody
+import com.egtourguide.home.data.dto.body.ReviewRequestBody
 import com.egtourguide.home.domain.usecases.ReviewPlaceUseCase
 import com.egtourguide.home.domain.usecases.ReviewTourUseCase
 import kotlinx.coroutines.Dispatchers

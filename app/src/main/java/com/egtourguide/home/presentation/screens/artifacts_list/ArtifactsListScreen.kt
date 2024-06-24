@@ -55,7 +55,6 @@ fun ArtifactsListScreen(
     viewModel: ArtifactsListViewModel = hiltViewModel(),
     filters: HashMap<*, *>? = null,
     onNavigateToSearch: () -> Unit = {},
-    onNavigateToNotification: () -> Unit = {},
     onNavigateToFilters: () -> Unit = {},
     onNavigateToSingleArtifact: (AbstractedArtifact) -> Unit = {},
     onNavigateToHome: () -> Unit = {},
@@ -85,7 +84,6 @@ fun ArtifactsListScreen(
         ArtifactsListScreenContent(
             uiState = uiState,
             onSearchClicked = onNavigateToSearch,
-            onNotificationClicked = onNavigateToNotification,
             onFilterClicked = onNavigateToFilters,
             onArtifactClicked = onNavigateToSingleArtifact,
             onSaveClicked = viewModel::onSaveClicked
@@ -125,7 +123,6 @@ fun ArtifactsListScreen(
 fun ArtifactsListScreenContent(
     uiState: ArtifactsListUIState,
     onSearchClicked: () -> Unit,
-    onNotificationClicked: () -> Unit,
     onFilterClicked: () -> Unit,
     onArtifactClicked: (AbstractedArtifact) -> Unit,
     onSaveClicked: (AbstractedArtifact) -> Unit
@@ -139,9 +136,7 @@ fun ArtifactsListScreenContent(
         ScreenHeader(
             modifier = Modifier.height(62.dp),
             showLogo = true,
-            showNotifications = true,
             showSearch = true,
-            onNotificationsClicked = onNotificationClicked,
             onSearchClicked = onSearchClicked
         )
         Spacer(modifier = Modifier.height(18.dp))

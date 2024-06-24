@@ -55,7 +55,6 @@ fun ToursListScreen(
     viewModel: ToursListViewModel = hiltViewModel(),
     filters: HashMap<*, *>? = null,
     onNavigateToSearch: () -> Unit = {},
-    onNavigateToNotification: () -> Unit = {},
     onNavigateToFilters: () -> Unit = {},
     onNavigateToSingleTour: (AbstractedTour) -> Unit = {},
     onNavigateToLandmarks: () -> Unit = {},
@@ -86,7 +85,6 @@ fun ToursListScreen(
         ToursListScreenContent(
             uiState = uiState,
             onSearchClicked = onNavigateToSearch,
-            onNotificationClicked = onNavigateToNotification,
             onFilterClicked = onNavigateToFilters,
             onTourClicked = onNavigateToSingleTour,
             onSaveClicked = viewModel::onSaveClicked
@@ -126,7 +124,6 @@ fun ToursListScreen(
 fun ToursListScreenContent(
     uiState: ToursListUIState,
     onSearchClicked: () -> Unit,
-    onNotificationClicked: () -> Unit,
     onFilterClicked: () -> Unit,
     onTourClicked: (AbstractedTour) -> Unit,
     onSaveClicked: (AbstractedTour) -> Unit
@@ -140,9 +137,7 @@ fun ToursListScreenContent(
         ScreenHeader(
             modifier = Modifier.height(62.dp),
             showLogo = true,
-            showNotifications = true,
             showSearch = true,
-            onNotificationsClicked = onNotificationClicked,
             onSearchClicked = onSearchClicked
         )
         Spacer(modifier = Modifier.height(18.dp))

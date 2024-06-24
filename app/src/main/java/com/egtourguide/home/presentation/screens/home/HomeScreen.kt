@@ -10,7 +10,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -66,6 +65,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import com.egtourguide.R
 import com.egtourguide.core.presentation.components.MainImage
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
+import com.egtourguide.core.utils.Constants.LANDMARK_IMAGE_LINK_PREFIX
 import com.egtourguide.home.domain.model.DetectedArtifact
 import com.egtourguide.home.domain.model.Event
 import com.egtourguide.home.domain.model.Place
@@ -81,7 +81,6 @@ import kotlinx.coroutines.delay
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onNavigateToSearch: () -> Unit = {},
-    onNavigateToNotification: () -> Unit = {},
     onNavigateToSinglePlace: (Place) -> Unit = {},
     onNavigateToDetectedArtifact: (DetectedArtifact) -> Unit = {},
     onNavigateToSingleCategory: (Section) -> Unit = {},
@@ -153,15 +152,9 @@ fun HomeScreen(
             ScreenHeader(
                 modifier = Modifier.height(62.dp),
                 showLogo = true,
-                showNotifications = true,
                 showSearch = true,
-                showActiveTour = true,
                 showCaptureObject = true,
-                onNotificationsClicked = onNavigateToNotification,
                 onSearchClicked = onNavigateToSearch,
-                onActiveTourClicked = {
-                    // TODO: Implement this!!
-                },
                 onCaptureObjectClicked = {
                     isArtifactDetectionDialogShown = true
                 }
@@ -398,7 +391,7 @@ private fun UpcomingEventsSection(
                     ) {
                         onEventClicked(events[pos])
                     },
-                data = "placeImages/${events[pos].images.firstOrNull()}"
+                data = "$LANDMARK_IMAGE_LINK_PREFIX/${events[pos].images.firstOrNull()}"
             )
         }
     }

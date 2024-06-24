@@ -7,5 +7,5 @@ data class AbstractedTour(
     val duration: Int,
     val rating: Float,
     val ratingCount: Int,
-    val isSaved: Boolean
+    var isSaved: Boolean
 )
