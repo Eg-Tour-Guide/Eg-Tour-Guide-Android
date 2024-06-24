@@ -69,7 +69,7 @@ fun BottomBar(
                 onItemSelected(BottomBarScreens.Artifacts)
             }
         )
-        BottomBarItem(
+       /* BottomBarItem(
             iconSelected = R.drawable.ic_user_selected,
             iconUnselected = R.drawable.ic_user_unselected,
             title = "User",
@@ -77,7 +77,7 @@ fun BottomBar(
             onItemClicked = {
                 onItemSelected(BottomBarScreens.User)
             }
-        )
+        )*/
     }
 }
 

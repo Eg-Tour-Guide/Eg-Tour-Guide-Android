@@ -1,6 +1,5 @@
 package com.egtourguide.home.data
 
-import com.egtourguide.home.data.body.ReviewRequestBody
 import com.egtourguide.home.data.dto.response.ArtifactDetectionDto
 import com.egtourguide.home.data.dto.body.ReviewRequestBody
 import com.egtourguide.home.data.dto.body.AddPlaceBody

@@ -5,7 +5,6 @@ import com.egtourguide.core.utils.safeCall
 import com.egtourguide.home.data.HomeApi
 import com.egtourguide.home.data.dto.body.AddPlaceBody
 import com.egtourguide.home.data.dto.body.ReviewRequestBody
-import com.egtourguide.home.data.body.ReviewRequestBody
 import com.egtourguide.home.domain.model.AbstractedArtifact
 import com.egtourguide.home.domain.model.AbstractedTour
 import com.egtourguide.home.domain.model.SavedItem

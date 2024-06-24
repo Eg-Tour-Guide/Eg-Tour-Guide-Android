@@ -529,8 +529,7 @@ fun AppNavigation(
 
             ReviewScreen(
                 id = itemId,
-                isPlace = source == "place",
-                isTour = source == "tour",
+                source = source,
                 onNavigateBack = {
                     navController.navigate(
                         route = AppScreen.Expanded.route
