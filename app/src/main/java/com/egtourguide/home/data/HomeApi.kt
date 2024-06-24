@@ -15,6 +15,7 @@ import com.egtourguide.home.data.dto.response.SingleArtifactDto
 import com.egtourguide.home.data.dto.response.SingleLandmarkDto
 import com.egtourguide.home.data.dto.response.TourDetailsDto
 import com.egtourguide.home.data.dto.body.TourDetailsBody
+import com.egtourguide.home.data.dto.response.MyToursDto
 import com.egtourguide.home.data.dto.response.SavedItemsDto
 import retrofit2.http.GET
 import retrofit2.http.Multipart
@@ -41,6 +42,7 @@ interface HomeApi {
         @Path("tourId") tourId: String,
         @Body requestBody: ReviewRequestBody
     )
+
     @POST("api/v1/reviews/add-Preview/{placeId}")
     suspend fun reviewPlace(
         @Path("placeId") placeId: String,
@@ -104,4 +106,7 @@ interface HomeApi {
 
     @GET("api/v1/favorite/my-fav")
     suspend fun getSavedItems(): SavedItemsDto
+
+    @GET("/api/v1/tours/user-Tours")
+    suspend fun getMyTours(): MyToursDto
 }

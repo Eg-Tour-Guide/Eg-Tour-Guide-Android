@@ -155,13 +155,9 @@ fun HomeScreen(
                 showLogo = true,
                 showNotifications = true,
                 showSearch = true,
-                showActiveTour = true,
                 showCaptureObject = true,
                 onNotificationsClicked = onNavigateToNotification,
                 onSearchClicked = onNavigateToSearch,
-                onActiveTourClicked = {
-                    // TODO: Implement this!!
-                },
                 onCaptureObjectClicked = {
                     isArtifactDetectionDialogShown = true
                 }

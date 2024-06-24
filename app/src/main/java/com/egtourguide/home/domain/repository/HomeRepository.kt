@@ -62,4 +62,5 @@ interface HomeRepository {
         tourDetails: TourDetailsBody
     ): Flow<ResultWrapper<String>> // TODO: Change This!!
 
+    suspend fun getMyTours(): Flow<ResultWrapper<List<AbstractedTour>>>
 }

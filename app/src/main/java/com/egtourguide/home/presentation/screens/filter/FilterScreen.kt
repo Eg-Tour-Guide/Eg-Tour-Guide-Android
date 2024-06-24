@@ -56,11 +56,13 @@ fun FilterScreen(
     var isLandmarks = false
     var isTours = false
 
+    Log.d("````TAG````", "FilterScreen: $query")
+
     when (source) {
         "artifact" -> isArtifacts = true
         "tour" -> isTours = true
         "landmark" -> isLandmarks = true
-        "saved" -> isLandmarks = true
+        "saved" -> isSearch = true
         "search" -> isSearch = true
         "my_tours" -> isTours = true
     }

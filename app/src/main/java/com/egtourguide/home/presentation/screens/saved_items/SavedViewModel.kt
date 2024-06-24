@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.egtourguide.core.utils.onResponse
 import com.egtourguide.home.domain.model.SavedItem
-import com.egtourguide.home.domain.model.SearchResult
 import com.egtourguide.home.domain.usecases.ChangeArtifactSavedStateUseCase
 import com.egtourguide.home.domain.usecases.ChangePlaceSavedStateUseCase
 import com.egtourguide.home.domain.usecases.ChangeTourSavedStateUseCase
@@ -112,12 +111,14 @@ class SavedViewModel @Inject constructor(
 
             when (filterKey) {
                 "Category" -> {
-                    resultedList = resultedList.filter { item ->
-                        when (filterValue) {
-                            "Tours" -> item.isTour
-                            "Landmarks" -> !item.isArtifact
-                            "Artifacts" -> item.isArtifact
-                            else -> true
+                    if(filterValue.isNotEmpty()){
+                        resultedList = resultedList.filter { item ->
+                            when (filterValue.first()) {
+                                "Tours" -> item.isTour
+                                "Landmarks" -> !item.isArtifact && !item.isTour
+                                "Artifacts" -> item.isArtifact
+                                else -> true
+                            }
                         }
                     }
                 }

@@ -1,5 +1,6 @@
 package com.egtourguide.home.presentation.screens.search_results
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.egtourguide.core.utils.onResponse
@@ -30,6 +31,7 @@ class SearchResultsViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             var searchQuery = query
             if (searchQuery.isEmpty()) {
+                Log.d("```TAG```", "getSearchResults: $filters")
                 val filterQuery = filters?.get("Query") as List<String>
                 searchQuery = filterQuery.first()
             }
@@ -95,8 +97,14 @@ class SearchResultsViewModel @Inject constructor(
 
             when (filterKey) {
                 "Category" -> {
-                    resultedList = resultedList.filter { item ->
-                        filterValue.contains(item.category)
+                    if(filterValue.isNotEmpty()){
+                        resultedList = resultedList.filter { item ->
+                            when (filterValue) {
+                                "Landmarks" -> !item.isArtifact
+                                "Artifacts" -> item.isArtifact
+                                else -> true
+                            }
+                        }
                     }
                 }
             }
