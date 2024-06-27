@@ -1,6 +1,5 @@
-package com.egtourguide.home.presentation.screens.landmarks_list
+package com.egtourguide.home.presentation.screens.main.screens.landmarks_list
 
-import android.media.Rating
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -84,7 +83,7 @@ class LandmarksListViewModel @Inject constructor(
             filterValue as List<String>
             when (filterKey) {
                 "Tourism Type" -> {
-                    if(filterValue.isNotEmpty()){
+                    if (filterValue.isNotEmpty()) {
                         resultedList = resultedList.filter { item ->
                             filterValue.contains(item.category)
                         }
@@ -92,7 +91,7 @@ class LandmarksListViewModel @Inject constructor(
                 }
 
                 "Location" -> {
-                    if(filterValue.isNotEmpty()){
+                    if (filterValue.isNotEmpty()) {
                         resultedList = resultedList.filter { item ->
                             filterValue.contains(item.location)
                         }
@@ -100,7 +99,7 @@ class LandmarksListViewModel @Inject constructor(
                 }
 
                 "Rating" -> {
-                    if(filterValue.isNotEmpty()){
+                    if (filterValue.isNotEmpty()) {
                         val ratingValue = filterValue.first().toInt()
                         resultedList = resultedList.filter { item ->
                             item.rating >= ratingValue
@@ -109,7 +108,7 @@ class LandmarksListViewModel @Inject constructor(
                 }
 
                 "Sort By" -> {
-                    if(filterValue.isNotEmpty()){
+                    if (filterValue.isNotEmpty()) {
                         val sortType = filterValue.first().toInt()
                         resultedList = if (sortType == 0) {
                             resultedList.sortedBy { item -> item.rating }

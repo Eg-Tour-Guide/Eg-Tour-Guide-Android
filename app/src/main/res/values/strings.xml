@@ -125,4 +125,8 @@
     <string name="related_tours">Related Tours</string>
     <string name="added_successfully">Added Successfully</string>
     <string name="add_icon">add icon</string>
+    <string name="home">Home</string>
+    <string name="landmarks">Landmarks</string>
+    <string name="artifacts">Artifacts</string>
+    <string name="tours">Tours</string>
 </resources>

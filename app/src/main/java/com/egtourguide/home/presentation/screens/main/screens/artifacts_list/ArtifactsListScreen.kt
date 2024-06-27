@@ -1,6 +1,5 @@
-package com.egtourguide.home.presentation.screens.landmarks_list
+package com.egtourguide.home.presentation.screens.main.screens.artifacts_list
 
-import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -21,7 +20,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -41,60 +39,38 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.egtourguide.R
-import com.egtourguide.home.domain.model.Place
-import com.egtourguide.home.presentation.components.BottomBar
-import com.egtourguide.home.presentation.components.BottomBarScreens
+import com.egtourguide.home.domain.model.AbstractedArtifact
+import com.egtourguide.home.presentation.components.ArtifactItem
 import com.egtourguide.home.presentation.components.EmptyState
 import com.egtourguide.home.presentation.components.LoadingState
-import com.egtourguide.home.presentation.components.PlaceItem
 import com.egtourguide.home.presentation.components.ScreenHeader
+import java.util.HashMap
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun LandmarksListScreen(
-    viewModel: LandmarksListViewModel = hiltViewModel(),
+fun ArtifactsListScreen(
+    viewModel: ArtifactsListViewModel = hiltViewModel(),
     filters: HashMap<*, *>? = null,
     onNavigateToSearch: () -> Unit = {},
     onNavigateToFilters: () -> Unit = {},
-    onNavigateToSinglePlace: (Place) -> Unit = {},
-    onNavigateToTours: () -> Unit = {},
-    onNavigateToHome: () -> Unit = {},
-    onNavigateToArtifacts: () -> Unit = {},
-    onNavigateToUser: () -> Unit = {},
+    onNavigateToSingleArtifact: (AbstractedArtifact) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
     viewModel.filters = filters
 
-    Scaffold(
-        bottomBar = {
-            BottomBar(
-                selectedScreen = BottomBarScreens.Landmarks
-            ) { selectedScreen ->
-                when (selectedScreen) {
-                    BottomBarScreens.Home -> onNavigateToHome()
-                    BottomBarScreens.Tours -> onNavigateToTours()
-                    BottomBarScreens.Landmarks -> {}
-                    BottomBarScreens.Artifacts -> onNavigateToArtifacts()
-                    BottomBarScreens.User -> onNavigateToUser()
-                }
-            }
-        }
-    ) {
-        LandmarksListScreenContent(
-            uiState = uiState,
-            onSearchClicked = onNavigateToSearch,
-            onFilterClicked = onNavigateToFilters,
-            onPlaceClicked = onNavigateToSinglePlace,
-            onSaveClicked = viewModel::onSaveClicked
-        )
-    }
+    ArtifactsListScreenContent(
+        uiState = uiState,
+        onSearchClicked = onNavigateToSearch,
+        onFilterClicked = onNavigateToFilters,
+        onArtifactClicked = onNavigateToSingleArtifact,
+        onSaveClicked = viewModel::onSaveClicked
+    )
 
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_CREATE) {
-                viewModel.getLandmarksList()
+                viewModel.getArtifactsList()
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
@@ -112,7 +88,7 @@ fun LandmarksListScreen(
         } else if (uiState.saveError != null) {
             Toast.makeText(
                 context,
-                "There are a problem in saving the place, try again later",
+                "There are a problem in saving the artifact, try again later",
                 Toast.LENGTH_SHORT
             ).show()
             viewModel.clearSaveError()
@@ -121,16 +97,15 @@ fun LandmarksListScreen(
 }
 
 @Composable
-fun LandmarksListScreenContent(
-    uiState: LandmarksListUIState,
+fun ArtifactsListScreenContent(
+    uiState: ArtifactsListUIState,
     onSearchClicked: () -> Unit,
     onFilterClicked: () -> Unit,
-    onPlaceClicked: (Place) -> Unit,
-    onSaveClicked: (Place) -> Unit
+    onArtifactClicked: (AbstractedArtifact) -> Unit,
+    onSaveClicked: (AbstractedArtifact) -> Unit
 ) {
     Column(
         Modifier
-            .padding(bottom = 60.dp)
             .fillMaxSize()
             .background(color = MaterialTheme.colorScheme.background)
     ) {
@@ -141,8 +116,8 @@ fun LandmarksListScreenContent(
             onSearchClicked = onSearchClicked
         )
         Spacer(modifier = Modifier.height(18.dp))
-        PlacesHeader(
-            placesCount = uiState.landmarks.size,
+        ArtifactsHeader(
+            artifactsCount = uiState.artifacts.size,
             onFilterClicked = onFilterClicked
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -154,20 +129,20 @@ fun LandmarksListScreenContent(
             LoadingState(modifier = Modifier.fillMaxSize())
         }
         AnimatedVisibility(
-            visible = uiState.isShowEmptyState && uiState.landmarks.isEmpty(),
+            visible = uiState.isShowEmptyState && uiState.artifacts.isEmpty(),
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            EmptyState(modifier = Modifier.fillMaxSize(), message = "No Landmarks Found")
+            EmptyState(modifier = Modifier.fillMaxSize(), message = "No Artifacts Found")
         }
         AnimatedVisibility(
             visible = !uiState.isLoading,
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            PlacesSection(
-                places = uiState.landmarks,
-                onPlaceClicked = onPlaceClicked,
+            ArtifactsSection(
+                artifacts = uiState.artifacts,
+                onArtifactClicked = onArtifactClicked,
                 onSaveClicked = onSaveClicked
             )
         }
@@ -175,8 +150,8 @@ fun LandmarksListScreenContent(
 }
 
 @Composable
-private fun PlacesHeader(
-    placesCount: Int,
+private fun ArtifactsHeader(
+    artifactsCount: Int,
     onFilterClicked: () -> Unit
 ) {
     Row(
@@ -187,7 +162,7 @@ private fun PlacesHeader(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "$placesCount Landmarks",
+            text = "$artifactsCount Artifact",
             style = MaterialTheme.typography.displaySmall,
             color = MaterialTheme.colorScheme.onBackground
         )
@@ -206,10 +181,10 @@ private fun PlacesHeader(
 }
 
 @Composable
-private fun PlacesSection(
-    places: List<Place>,
-    onPlaceClicked: (Place) -> Unit,
-    onSaveClicked: (Place) -> Unit
+private fun ArtifactsSection(
+    artifacts: List<AbstractedArtifact>,
+    onArtifactClicked: (AbstractedArtifact) -> Unit,
+    onSaveClicked: (AbstractedArtifact) -> Unit
 ) {
     LazyVerticalGrid(
         modifier = Modifier
@@ -219,10 +194,10 @@ private fun PlacesSection(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        items(items = places) { place ->
-            PlaceItem(
-                place = place,
-                onPlaceClicked = onPlaceClicked,
+        items(items = artifacts) { artifact ->
+            ArtifactItem(
+                artifact = artifact,
+                onArtifactClicked = onArtifactClicked,
                 onSaveClicked = onSaveClicked
             )
         }
@@ -231,6 +206,6 @@ private fun PlacesSection(
 
 @Preview
 @Composable
-private fun LandmarksScreenPreview() {
-    LandmarksListScreen()
+private fun ArtifactsScreenPreview() {
+    ArtifactsListScreen()
 }

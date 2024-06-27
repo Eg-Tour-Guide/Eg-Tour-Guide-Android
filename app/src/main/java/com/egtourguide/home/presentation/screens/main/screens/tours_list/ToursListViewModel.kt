@@ -1,4 +1,4 @@
-package com.egtourguide.home.presentation.screens.tours_list
+package com.egtourguide.home.presentation.screens.main.screens.tours_list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -92,7 +92,7 @@ class ToursListViewModel @Inject constructor(
                 }*/
 
                 "Rating" -> {
-                    if(filterValue.isNotEmpty()){
+                    if (filterValue.isNotEmpty()) {
                         val ratingValue = filterValue.first().toInt()
                         resultedList = resultedList.filter { item ->
                             item.rating >= ratingValue
@@ -101,7 +101,7 @@ class ToursListViewModel @Inject constructor(
                 }
 
                 "Duration" -> {
-                    if(filterValue.size==2){
+                    if (filterValue.size == 2) {
                         val minDays = filterValue.first().toInt()
                         val maxDays = filterValue.last().toInt()
                         resultedList = resultedList.filter { item ->
@@ -111,7 +111,7 @@ class ToursListViewModel @Inject constructor(
                 }
 
                 "Sort By" -> {
-                    if(filterValue.isNotEmpty()){
+                    if (filterValue.isNotEmpty()) {
                         val sortType = filterValue.first().toInt()
                         resultedList = if (sortType == 0) {
                             resultedList.sortedBy { item -> item.rating }

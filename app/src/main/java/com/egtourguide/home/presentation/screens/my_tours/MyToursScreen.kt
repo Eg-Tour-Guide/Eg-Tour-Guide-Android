@@ -1,6 +1,5 @@
 package com.egtourguide.home.presentation.screens.my_tours
 
-
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
@@ -22,7 +21,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -43,14 +41,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.egtourguide.R
 import com.egtourguide.home.domain.model.AbstractedTour
-import com.egtourguide.home.presentation.components.BottomBar
-import com.egtourguide.home.presentation.components.BottomBarScreens
 import com.egtourguide.home.presentation.components.EmptyState
 import com.egtourguide.home.presentation.components.LoadingState
 import com.egtourguide.home.presentation.components.ScreenHeader
 import com.egtourguide.home.presentation.components.TourItem
-import com.egtourguide.home.presentation.screens.tours_list.ToursListUIState
-import com.egtourguide.home.presentation.screens.tours_list.ToursListViewModel
 import java.util.HashMap
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

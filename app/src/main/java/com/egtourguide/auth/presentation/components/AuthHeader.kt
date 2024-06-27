@@ -42,6 +42,7 @@ fun AuthHeader(
             painter = painterResource(id = R.drawable.ic_logo),
             contentDescription = stringResource(id = R.string.logo),
             modifier = Modifier
+                .padding(top = 16.dp)
                 .height(150.dp)
                 .width(110.dp)
         )

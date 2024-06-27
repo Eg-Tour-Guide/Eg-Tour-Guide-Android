@@ -1,7 +1,5 @@
 package com.egtourguide.home.presentation.screens.search_results
 
-
-import android.annotation.SuppressLint
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
@@ -27,7 +25,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -54,27 +51,18 @@ import androidx.lifecycle.LifecycleEventObserver
 import com.egtourguide.R
 import com.egtourguide.core.presentation.components.MainImage
 import com.egtourguide.home.domain.model.SearchResult
-import com.egtourguide.home.presentation.components.BottomBar
-import com.egtourguide.home.presentation.components.BottomBarScreens
 import com.egtourguide.home.presentation.components.EmptyState
 import com.egtourguide.home.presentation.components.LoadingState
 import com.egtourguide.home.presentation.components.ScreenHeader
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun SearchResultsScreen(
     viewModel: SearchResultsViewModel = hiltViewModel(),
     query: String = "",
     filters: HashMap<*, *>? = null,
-    selectedBottomBarItem: BottomBarScreens = BottomBarScreens.Home,
     onNavigateToSearch: () -> Unit = {},
     onNavigateToFilters: () -> Unit = {},
-    onNavigateToSingleItem: (SearchResult) -> Unit = {},
-    onNavigateToLandmarks: () -> Unit = {},
-    onNavigateToTours: () -> Unit = {},
-    onNavigateToHome: () -> Unit = {},
-    onNavigateToArtifacts: () -> Unit = {},
-    onNavigateToUser: () -> Unit = {},
+    onNavigateToSingleItem: (SearchResult) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -82,29 +70,13 @@ fun SearchResultsScreen(
     Log.d("````TAG````", "filters in screen: $filters")
     viewModel.filters = filters
 
-    Scaffold(
-        bottomBar = {
-            BottomBar(
-                selectedScreen = selectedBottomBarItem
-            ) { selectedScreen ->
-                when (selectedScreen) {
-                    BottomBarScreens.Home -> onNavigateToHome()
-                    BottomBarScreens.Tours -> onNavigateToTours()
-                    BottomBarScreens.Landmarks -> onNavigateToLandmarks()
-                    BottomBarScreens.Artifacts -> onNavigateToArtifacts()
-                    BottomBarScreens.User -> onNavigateToUser()
-                }
-            }
-        }
-    ) {
-        SearchResultsScreenContent(
-            uiState = uiState,
-            onSearchClicked = onNavigateToSearch,
-            onFilterClicked = onNavigateToFilters,
-            onResultClicked = onNavigateToSingleItem,
-            onSaveClicked = viewModel::onSaveClicked
-        )
-    }
+    SearchResultsScreenContent(
+        uiState = uiState,
+        onSearchClicked = onNavigateToSearch,
+        onFilterClicked = onNavigateToFilters,
+        onResultClicked = onNavigateToSingleItem,
+        onSaveClicked = viewModel::onSaveClicked
+    )
 
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -145,7 +117,6 @@ fun SearchResultsScreenContent(
 ) {
     Column(
         Modifier
-            .padding(bottom = 60.dp)
             .fillMaxSize()
             .background(color = MaterialTheme.colorScheme.background)
     ) {

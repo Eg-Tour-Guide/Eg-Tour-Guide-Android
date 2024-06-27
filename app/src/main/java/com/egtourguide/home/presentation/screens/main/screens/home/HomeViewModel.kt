@@ -1,11 +1,10 @@
-package com.egtourguide.home.presentation.screens.home
+package com.egtourguide.home.presentation.screens.main.screens.home
 
 import android.content.ContentResolver
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.egtourguide.core.utils.onResponse

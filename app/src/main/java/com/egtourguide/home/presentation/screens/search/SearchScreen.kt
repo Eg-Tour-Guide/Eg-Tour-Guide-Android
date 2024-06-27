@@ -1,7 +1,5 @@
 package com.egtourguide.home.presentation.screens.search
 
-import android.annotation.SuppressLint
-import android.widget.Space
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -10,7 +8,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
@@ -27,7 +23,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -50,48 +45,25 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.egtourguide.R
 import com.egtourguide.core.presentation.components.MainTextField
-import com.egtourguide.home.presentation.components.BottomBar
-import com.egtourguide.home.presentation.components.BottomBarScreens
 import com.egtourguide.home.presentation.components.EmptyState
 import com.egtourguide.home.presentation.components.LoadingState
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel = hiltViewModel(),
-    bottomBarSelectedScreen: BottomBarScreens,
-    onNavigateToHome: () -> Unit,
-    onNavigateToTours: () -> Unit,
-    onNavigateToLandmarks: () -> Unit,
-    onNavigateToArtifacts: () -> Unit,
-    onNavigateToUser: () -> Unit,
     onNavigateToSearchResults: (String) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
 
-    Scaffold(
-        bottomBar = {
-            BottomBar(selectedScreen = bottomBarSelectedScreen) { clickedScreen ->
-                when (clickedScreen) {
-                    BottomBarScreens.Home -> onNavigateToHome()
-                    BottomBarScreens.Tours -> onNavigateToTours()
-                    BottomBarScreens.Landmarks -> onNavigateToLandmarks()
-                    BottomBarScreens.Artifacts -> onNavigateToArtifacts()
-                    BottomBarScreens.User -> onNavigateToUser()
-                }
-            }
-        }
-    ) {
-        SearchScreenContent(
-            uiState = uiState,
-            onQueryChanged = viewModel::updateSearchQuery,
-            onSearchClicked = viewModel::getSearchSuggestions,
-            onClearHistoryClicked = viewModel::clearHistory,
-            onSearchItemClicked = onNavigateToSearchResults
-        )
-    }
+    SearchScreenContent(
+        uiState = uiState,
+        onQueryChanged = viewModel::updateSearchQuery,
+        onSearchClicked = viewModel::getSearchSuggestions,
+        onClearHistoryClicked = viewModel::clearHistory,
+        onSearchItemClicked = onNavigateToSearchResults
+    )
 
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -123,7 +95,7 @@ private fun SearchScreenContent(
 ) {
     Column(
         Modifier
-            .padding(bottom = 60.dp, top = 24.dp, start = 24.dp, end = 24.dp)
+            .padding(top = 24.dp, start = 24.dp, end = 24.dp)
             .fillMaxSize()
     ) {
         SearchBar(

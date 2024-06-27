@@ -1,7 +1,6 @@
-package com.egtourguide.home.presentation.screens.home
+package com.egtourguide.home.presentation.screens.main.screens.home
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
@@ -34,7 +33,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -69,14 +67,11 @@ import com.egtourguide.core.utils.Constants.LANDMARK_IMAGE_LINK_PREFIX
 import com.egtourguide.home.domain.model.DetectedArtifact
 import com.egtourguide.home.domain.model.Event
 import com.egtourguide.home.domain.model.Place
-import com.egtourguide.home.presentation.components.BottomBar
-import com.egtourguide.home.presentation.components.BottomBarScreens
 import com.egtourguide.home.presentation.components.LoadingState
 import com.egtourguide.home.presentation.components.PlaceItem
 import com.egtourguide.home.presentation.components.ScreenHeader
 import kotlinx.coroutines.delay
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
@@ -84,11 +79,7 @@ fun HomeScreen(
     onNavigateToSinglePlace: (Place) -> Unit = {},
     onNavigateToDetectedArtifact: (DetectedArtifact) -> Unit = {},
     onNavigateToSingleCategory: (Section) -> Unit = {},
-    onNavigateToEvent: (Event) -> Unit = {},
-    onNavigateToTours: () -> Unit = {},
-    onNavigateToLandmarks: () -> Unit = {},
-    onNavigateToArtifacts: () -> Unit = {},
-    onNavigateToUser: () -> Unit = {},
+    onNavigateToEvent: (Event) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -128,65 +119,48 @@ fun HomeScreen(
         }
     }
 
-    Scaffold(
-        bottomBar = {
-            BottomBar(
-                selectedScreen = BottomBarScreens.Home
-            ) { selectedScreen ->
-                when (selectedScreen) {
-                    BottomBarScreens.Home -> {}
-                    BottomBarScreens.Tours -> onNavigateToTours()
-                    BottomBarScreens.Landmarks -> onNavigateToLandmarks()
-                    BottomBarScreens.Artifacts -> onNavigateToArtifacts()
-                    BottomBarScreens.User -> onNavigateToUser()
-                }
-            }
-        }
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.background)
     ) {
-        Column(
-            Modifier
-                .padding(bottom = 60.dp)
-                .fillMaxSize()
-                .background(color = MaterialTheme.colorScheme.background)
+        ScreenHeader(
+            modifier = Modifier.height(62.dp),
+            showLogo = true,
+            showSearch = true,
+            showCaptureObject = true,
+            onSearchClicked = onNavigateToSearch,
+            onCaptureObjectClicked = {
+                isArtifactDetectionDialogShown = true
+            }
+        )
+
+        AnimatedVisibility(
+            visible = uiState.isLoading,
+            enter = fadeIn(),
+            exit = fadeOut()
         ) {
-            ScreenHeader(
-                modifier = Modifier.height(62.dp),
-                showLogo = true,
-                showSearch = true,
-                showCaptureObject = true,
-                onSearchClicked = onNavigateToSearch,
-                onCaptureObjectClicked = {
-                    isArtifactDetectionDialogShown = true
-                }
+            LoadingState(modifier = Modifier.fillMaxSize())
+        }
+
+        AnimatedVisibility(
+            visible = !uiState.isLoading,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            HomeScreenContent(
+                events = uiState.events,
+                suggestedPlaces = uiState.suggestedPlaces,
+                topRatedPlaces = uiState.topRatedPlaces,
+                explorePlaces = uiState.explorePlaces,
+                recentlyAddedPlaces = uiState.recentlyAddedPlaces,
+                mightLikePlaces = uiState.mightLikePlaces,
+                recentlyViewedPlaces = uiState.recentlyViewedPlaces,
+                onPlaceClicked = onNavigateToSinglePlace,
+                onMoreClicked = onNavigateToSingleCategory,
+                onEventClicked = onNavigateToEvent,
+                onSaveClicked = viewModel::onSaveClicked
             )
-
-            AnimatedVisibility(
-                visible = uiState.isLoading,
-                enter = fadeIn(),
-                exit = fadeOut()
-            ) {
-                LoadingState(modifier = Modifier.fillMaxSize())
-            }
-
-            AnimatedVisibility(
-                visible = !uiState.isLoading,
-                enter = fadeIn(),
-                exit = fadeOut()
-            ) {
-                HomeScreenContent(
-                    events = uiState.events,
-                    suggestedPlaces = uiState.suggestedPlaces,
-                    topRatedPlaces = uiState.topRatedPlaces,
-                    explorePlaces = uiState.explorePlaces,
-                    recentlyAddedPlaces = uiState.recentlyAddedPlaces,
-                    mightLikePlaces = uiState.mightLikePlaces,
-                    recentlyViewedPlaces = uiState.recentlyViewedPlaces,
-                    onPlaceClicked = onNavigateToSinglePlace,
-                    onMoreClicked = onNavigateToSingleCategory,
-                    onEventClicked = onNavigateToEvent,
-                    onSaveClicked = viewModel::onSaveClicked
-                )
-            }
         }
     }
 
@@ -320,7 +294,7 @@ private fun HomeScreenContent(
         Spacer(modifier = Modifier.height(16.dp))
 
         //Recently Viewed
-        if(recentlyAddedPlaces.isNotEmpty()){
+        if (recentlyAddedPlaces.isNotEmpty()) {
             HomeSection(
                 sectionTitle = stringResource(R.string.recently_viewed),
                 sectionPlaces = recentlyViewedPlaces,
@@ -480,9 +454,9 @@ private fun ArtifactDetectionDialog(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            if(isDetectionLoading){
+            if (isDetectionLoading) {
                 LoadingState()
-            }else{
+            } else {
                 ArtifactDetectionDialogOption(
                     icon = R.drawable.ic_camera,
                     title = "Camera",

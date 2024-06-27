@@ -1,4 +1,4 @@
-package com.egtourguide.home.presentation.screens.artifacts_list
+package com.egtourguide.home.presentation.screens.main.screens.artifacts_list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -74,7 +74,7 @@ class ArtifactsListViewModel @Inject constructor(
 
             when (filterKey) {
                 "Artifact Type" -> {
-                    if(filterValue.isNotEmpty()){
+                    if (filterValue.isNotEmpty()) {
                         resultedList = resultedList.filter { item ->
                             filterValue.contains(item.type)
                         }
@@ -82,7 +82,7 @@ class ArtifactsListViewModel @Inject constructor(
                 }
 
                 "Location" -> {
-                    if(filterValue.isNotEmpty()){
+                    if (filterValue.isNotEmpty()) {
                         resultedList = resultedList.filter { item ->
                             filterValue.contains(item.museumName)
                         }
@@ -90,7 +90,7 @@ class ArtifactsListViewModel @Inject constructor(
                 }
 
                 "Material" -> {
-                    if(filterValue.isNotEmpty()){
+                    if (filterValue.isNotEmpty()) {
                         resultedList = resultedList.filter { item ->
                             filterValue.contains(item.material)
                         }

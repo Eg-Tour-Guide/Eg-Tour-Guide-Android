@@ -1,6 +1,5 @@
-package com.egtourguide.home.presentation.screens.artifacts_list
+package com.egtourguide.home.presentation.screens.main.screens.tours_list
 
-import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -21,7 +20,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -41,61 +39,38 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.egtourguide.R
-import com.egtourguide.home.domain.model.AbstractedArtifact
-import com.egtourguide.home.presentation.components.ArtifactItem
-import com.egtourguide.home.presentation.components.BottomBar
-import com.egtourguide.home.presentation.components.BottomBarScreens
+import com.egtourguide.home.domain.model.AbstractedTour
 import com.egtourguide.home.presentation.components.EmptyState
 import com.egtourguide.home.presentation.components.LoadingState
 import com.egtourguide.home.presentation.components.ScreenHeader
+import com.egtourguide.home.presentation.components.TourItem
 import java.util.HashMap
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun ArtifactsListScreen(
-    viewModel: ArtifactsListViewModel = hiltViewModel(),
+fun ToursListScreen(
+    viewModel: ToursListViewModel = hiltViewModel(),
     filters: HashMap<*, *>? = null,
     onNavigateToSearch: () -> Unit = {},
     onNavigateToFilters: () -> Unit = {},
-    onNavigateToSingleArtifact: (AbstractedArtifact) -> Unit = {},
-    onNavigateToHome: () -> Unit = {},
-    onNavigateToTours: () -> Unit = {},
-    onNavigateToLandmarks: () -> Unit = {},
-    onNavigateToUser: () -> Unit = {},
+    onNavigateToSingleTour: (AbstractedTour) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
-    viewModel.filters=filters
+    viewModel.filters = filters
 
-    Scaffold(
-        bottomBar = {
-            BottomBar(
-                selectedScreen = BottomBarScreens.Artifacts
-            ) { selectedScreen ->
-                when (selectedScreen) {
-                    BottomBarScreens.Home -> onNavigateToHome()
-                    BottomBarScreens.Tours -> onNavigateToTours()
-                    BottomBarScreens.Landmarks -> onNavigateToLandmarks()
-                    BottomBarScreens.Artifacts -> {}
-                    BottomBarScreens.User -> onNavigateToUser()
-                }
-            }
-        }
-    ) {
-        ArtifactsListScreenContent(
-            uiState = uiState,
-            onSearchClicked = onNavigateToSearch,
-            onFilterClicked = onNavigateToFilters,
-            onArtifactClicked = onNavigateToSingleArtifact,
-            onSaveClicked = viewModel::onSaveClicked
-        )
-    }
+    ToursListScreenContent(
+        uiState = uiState,
+        onSearchClicked = onNavigateToSearch,
+        onFilterClicked = onNavigateToFilters,
+        onTourClicked = onNavigateToSingleTour,
+        onSaveClicked = viewModel::onSaveClicked
+    )
 
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_CREATE) {
-                viewModel.getArtifactsList()
+                viewModel.getToursList()
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
@@ -106,14 +81,14 @@ fun ArtifactsListScreen(
 
     LaunchedEffect(key1 = uiState.isSaveSuccess, key2 = uiState.saveError) {
         val successMsg =
-            if (uiState.isSave) R.string.saved_successfully else R.string.unsaved_successfully
+            if (uiState.isSave) "Tour Saved Successfully" else "Tour Unsaved Successfully"
         if (uiState.isSaveSuccess) {
             Toast.makeText(context, successMsg, Toast.LENGTH_SHORT).show()
             viewModel.clearSaveSuccess()
         } else if (uiState.saveError != null) {
             Toast.makeText(
                 context,
-                "There are a problem in saving the artifact, try again later",
+                "There are a problem in saving the Tour, try again later",
                 Toast.LENGTH_SHORT
             ).show()
             viewModel.clearSaveError()
@@ -122,16 +97,15 @@ fun ArtifactsListScreen(
 }
 
 @Composable
-fun ArtifactsListScreenContent(
-    uiState: ArtifactsListUIState,
+fun ToursListScreenContent(
+    uiState: ToursListUIState,
     onSearchClicked: () -> Unit,
     onFilterClicked: () -> Unit,
-    onArtifactClicked: (AbstractedArtifact) -> Unit,
-    onSaveClicked: (AbstractedArtifact) -> Unit
+    onTourClicked: (AbstractedTour) -> Unit,
+    onSaveClicked: (AbstractedTour) -> Unit
 ) {
     Column(
         Modifier
-            .padding(bottom = 60.dp)
             .fillMaxSize()
             .background(color = MaterialTheme.colorScheme.background)
     ) {
@@ -142,8 +116,8 @@ fun ArtifactsListScreenContent(
             onSearchClicked = onSearchClicked
         )
         Spacer(modifier = Modifier.height(18.dp))
-        ArtifactsHeader(
-            artifactsCount = uiState.artifacts.size,
+        ToursHeader(
+            toursCount = uiState.tours.size,
             onFilterClicked = onFilterClicked
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -155,20 +129,20 @@ fun ArtifactsListScreenContent(
             LoadingState(modifier = Modifier.fillMaxSize())
         }
         AnimatedVisibility(
-            visible = uiState.isShowEmptyState && uiState.artifacts.isEmpty(),
+            visible = uiState.isShowEmptyState && uiState.tours.isEmpty(),
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            EmptyState(modifier = Modifier.fillMaxSize(), message = "No Artifacts Found")
+            EmptyState(modifier = Modifier.fillMaxSize(), message = "No Tours Found")
         }
         AnimatedVisibility(
             visible = !uiState.isLoading,
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            ArtifactsSection(
-                artifacts = uiState.artifacts,
-                onArtifactClicked = onArtifactClicked,
+            ToursSection(
+                tours = uiState.tours,
+                onTourClicked = onTourClicked,
                 onSaveClicked = onSaveClicked
             )
         }
@@ -176,8 +150,8 @@ fun ArtifactsListScreenContent(
 }
 
 @Composable
-private fun ArtifactsHeader(
-    artifactsCount: Int,
+private fun ToursHeader(
+    toursCount: Int,
     onFilterClicked: () -> Unit
 ) {
     Row(
@@ -188,7 +162,7 @@ private fun ArtifactsHeader(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "$artifactsCount Artifact",
+            text = "$toursCount Tours",
             style = MaterialTheme.typography.displaySmall,
             color = MaterialTheme.colorScheme.onBackground
         )
@@ -207,10 +181,10 @@ private fun ArtifactsHeader(
 }
 
 @Composable
-private fun ArtifactsSection(
-    artifacts: List<AbstractedArtifact>,
-    onArtifactClicked: (AbstractedArtifact) -> Unit,
-    onSaveClicked: (AbstractedArtifact) -> Unit
+private fun ToursSection(
+    tours: List<AbstractedTour>,
+    onTourClicked: (AbstractedTour) -> Unit,
+    onSaveClicked: (AbstractedTour) -> Unit
 ) {
     LazyVerticalGrid(
         modifier = Modifier
@@ -220,10 +194,10 @@ private fun ArtifactsSection(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        items(items = artifacts) { artifact ->
-            ArtifactItem(
-                artifact = artifact,
-                onArtifactClicked = onArtifactClicked,
+        items(items = tours) { tour ->
+            TourItem(
+                tour = tour,
+                onTourClicked = onTourClicked,
                 onSaveClicked = onSaveClicked
             )
         }
@@ -232,6 +206,6 @@ private fun ArtifactsSection(
 
 @Preview
 @Composable
-private fun ArtifactsScreenPreview() {
-    ArtifactsListScreen()
+private fun ToursScreenPreview() {
+    ToursListScreen()
 }

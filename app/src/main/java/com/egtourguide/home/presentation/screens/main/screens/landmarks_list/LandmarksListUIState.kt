@@ -1,10 +1,10 @@
-package com.egtourguide.home.presentation.screens.tours_list
+package com.egtourguide.home.presentation.screens.main.screens.landmarks_list
 
-import com.egtourguide.home.domain.model.AbstractedTour
+import com.egtourguide.home.domain.model.Place
 
-data class ToursListUIState(
+data class LandmarksListUIState(
     val isLoading: Boolean = true,
-    val tours: List<AbstractedTour> = emptyList(),
+    val landmarks: List<Place> = emptyList(),
     val error: String? = null,
     val isSaveSuccess: Boolean = false,
     val isShowEmptyState: Boolean = false,

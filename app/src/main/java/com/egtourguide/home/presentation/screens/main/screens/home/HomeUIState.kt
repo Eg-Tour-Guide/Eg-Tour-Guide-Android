@@ -1,4 +1,4 @@
-package com.egtourguide.home.presentation.screens.home
+package com.egtourguide.home.presentation.screens.main.screens.home
 
 import com.egtourguide.home.domain.model.DetectedArtifact
 import com.egtourguide.home.domain.model.Event
