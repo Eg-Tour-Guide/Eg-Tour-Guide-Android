@@ -1,4 +1,4 @@
-package com.egtourguide.home.presentation.screens.review
+package com.egtourguide.detailsAndReviews.review
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

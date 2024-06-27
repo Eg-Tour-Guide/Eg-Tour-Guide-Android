@@ -1,4 +1,4 @@
-package com.egtourguide.home.presentation.screens.expanded
+package com.egtourguide.detailsAndReviews.expanded
 
 import android.annotation.SuppressLint
 import android.util.Log

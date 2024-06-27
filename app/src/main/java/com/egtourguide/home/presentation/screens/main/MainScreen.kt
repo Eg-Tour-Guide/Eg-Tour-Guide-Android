@@ -11,16 +11,16 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.egtourguide.core.presentation.navigation.AppScreen
 import com.egtourguide.core.presentation.navigation.MainNavGraph
 
-@Preview
 @Composable
-fun MainScreen() {
+fun MainScreen(
+    navigateToExpanded: (String, String) -> Unit
+) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination?.route ?: AppScreen.Home.route
@@ -50,7 +50,8 @@ fun MainScreen() {
     ) { padding ->
         Box(modifier = Modifier.padding(padding)) {
             MainNavGraph(
-                navController = navController
+                navController = navController,
+                navigateToExpanded = navigateToExpanded
             )
         }
     }

@@ -5,6 +5,7 @@ object Routes {
     // Graphs
     const val AUTH_GRAPH_ROUTE = "AUTH_GRAPH_ROUTE"
     const val MAIN_GRAPH_ROUTE = "MAIN_GRAPH_ROUTE"
+    const val EXPANDED_GRAPH_ROUTE = "EXPANDED_GRAPH_ROUTE/{id}/{expandedType}"
 
     // Auth Routes
     const val WELCOME_SCREEN_ROUTE = "WELCOME_SCREEN_ROUTE"
@@ -18,7 +19,7 @@ object Routes {
 
     // Home Routes
     const val FILTER_SCREEN_ROUTE = "FILTER_SCREEN_ROUTE/{SOURCE}/{QUERY}"
-    const val EXPANDED_SCREEN_ROUTE = "EXPANDED_SCREEN_ROUTE/{id}/{expandedType}"
+    const val EXPANDED_SCREEN_ROUTE = "EXPANDED_SCREEN_ROUTE"
     const val LANDMARKS_LIST_SCREEN_ROUTE = "LANDMARKS_LIST_SCREEN_ROUTE?filters={filters}"
     const val ARTIFACTS_LIST_SCREEN_ROUTE = "ARTIFACTS_LIST_SCREEN_ROUTE?filters={filters}"
     const val MORE_REVIEWS_ROUTE = "MORE_REVIEWS_ROUTE"

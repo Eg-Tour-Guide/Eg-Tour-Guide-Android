@@ -1,4 +1,4 @@
-package com.egtourguide.home.presentation.screens.expanded
+package com.egtourguide.detailsAndReviews.expanded
 
 import com.egtourguide.home.domain.model.AbstractedArtifact
 import com.egtourguide.home.domain.model.AbstractedTour

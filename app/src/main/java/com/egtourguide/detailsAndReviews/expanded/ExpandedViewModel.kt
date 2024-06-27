@@ -1,4 +1,4 @@
-package com.egtourguide.home.presentation.screens.expanded
+package com.egtourguide.detailsAndReviews.expanded
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,7 +14,7 @@ import com.egtourguide.home.domain.usecases.GetArtifactUseCase
 import com.egtourguide.home.domain.usecases.GetEventUseCase
 import com.egtourguide.home.domain.usecases.GetLandmarkUseCase
 import com.egtourguide.home.domain.usecases.GetTourUseCase
-import com.egtourguide.home.presentation.screens.expanded.ExpandedType.*
+import com.egtourguide.detailsAndReviews.expanded.ExpandedType.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

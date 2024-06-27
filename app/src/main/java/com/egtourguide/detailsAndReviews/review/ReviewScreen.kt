@@ -1,4 +1,4 @@
-package com.egtourguide.home.presentation.screens.review
+package com.egtourguide.detailsAndReviews.review
 
 import android.widget.Toast
 import androidx.compose.foundation.background

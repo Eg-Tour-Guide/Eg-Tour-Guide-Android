@@ -1,4 +1,4 @@
-package com.egtourguide.home.presentation.screens.moreReviews
+package com.egtourguide.detailsAndReviews.moreReviews
 
 import com.egtourguide.home.domain.model.Review
 

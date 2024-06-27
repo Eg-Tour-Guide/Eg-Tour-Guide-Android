@@ -1,4 +1,4 @@
-package com.egtourguide.home.presentation.screens.expanded
+package com.egtourguide.detailsAndReviews.expanded
 
 enum class ExpandedType {
     EVENT,

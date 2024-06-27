@@ -1,4 +1,4 @@
-package com.egtourguide.home.presentation.screens.review
+package com.egtourguide.detailsAndReviews.review
 
 data class ReviewState(
     val rating: Float = 0.0f,
