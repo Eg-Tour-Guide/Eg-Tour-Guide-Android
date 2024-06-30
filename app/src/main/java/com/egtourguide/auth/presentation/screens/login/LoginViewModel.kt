@@ -1,5 +1,4 @@
-package com.egtourguide.auth.presentation.login
-
+package com.egtourguide.auth.presentation.screens.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -23,6 +22,7 @@ class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
     private val saveInDataStoreUseCase: SaveInDataStoreUseCase
 ) : ViewModel() {
+
     private val _uiState = MutableStateFlow(LoginState())
     val uiState = _uiState.asStateFlow()
 
@@ -54,14 +54,13 @@ class LoginViewModel @Inject constructor(
             ).onResponse(
                 onLoading = {
                     _uiState.update {
-                        it.copy(isLoading = true)
+                        it.copy(isLoading = true, error = null)
                     }
                 },
                 onFailure = { msg ->
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            isError = true,
                             error = msg
                         )
                     }
@@ -88,6 +87,7 @@ class LoginViewModel @Inject constructor(
                 passwordError = false
             )
         }
+
         if (AuthValidation.validateEmail(email = _uiState.value.email)) {
             if (AuthValidation.validatePassword(password = _uiState.value.password)) {
                 login()
@@ -97,7 +97,6 @@ class LoginViewModel @Inject constructor(
         } else {
             _uiState.update { it.copy(emailError = true) }
         }
-
     }
 
     private fun saveData(token: String) {
@@ -107,4 +106,3 @@ class LoginViewModel @Inject constructor(
         }
     }
 }
-

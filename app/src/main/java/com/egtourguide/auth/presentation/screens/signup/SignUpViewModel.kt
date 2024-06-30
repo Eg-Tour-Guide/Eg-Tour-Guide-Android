@@ -1,12 +1,10 @@
-package com.egtourguide.auth.presentation.signup
+package com.egtourguide.auth.presentation.screens.signup
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.egtourguide.auth.domain.usecases.SendCodeUseCase
 import com.egtourguide.auth.domain.validation.AuthValidation
 import com.egtourguide.auth.domain.validation.ValidationCases
-import com.egtourguide.core.utils.Constants.TAG
 import com.egtourguide.core.utils.onResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

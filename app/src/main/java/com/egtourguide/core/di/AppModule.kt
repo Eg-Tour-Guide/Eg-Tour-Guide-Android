@@ -10,7 +10,12 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.runBlocking
+import okhttp3.Authenticator
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import okhttp3.Route
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -23,23 +28,22 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideHTTPClient(token: String): OkHttpClient {
+    fun provideHTTPClient(
+        tokenInterceptor: TokenInterceptor,
+        tokenAuthenticator: TokenAuthenticator
+    ): OkHttpClient {
         val httpClientLoggingInterceptor = HttpLoggingInterceptor { msg ->
             Log.i(NETWORK_TAG, "Interceptor : $msg")
         }
         httpClientLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
 
         return OkHttpClient().newBuilder().apply {
-            addInterceptor { chain ->
-                val newRequest = chain.request().newBuilder()
-                newRequest.addHeader("Accept", "application/json")
-                newRequest.addHeader("Authorization", "Bearer $token")
-                chain.proceed(newRequest.build())
-            }
+            addInterceptor(tokenInterceptor)
+            authenticator(tokenAuthenticator)
             addInterceptor(httpClientLoggingInterceptor)
-            readTimeout(5,TimeUnit.MINUTES)
-            writeTimeout(5,TimeUnit.MINUTES)
-            callTimeout(5,TimeUnit.MINUTES)
+            readTimeout(5, TimeUnit.MINUTES)
+            writeTimeout(5, TimeUnit.MINUTES)
+            callTimeout(5, TimeUnit.MINUTES)
         }.build()
     }
 
@@ -55,7 +59,44 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideUserToken(getFromDataStoreUseCase: GetFromDataStoreUseCase): String {
-        return runBlocking { getFromDataStoreUseCase(key = TOKEN_KEY) ?: "" }
+    fun provideTokenInterceptor(getFromDataStoreUseCase: GetFromDataStoreUseCase): TokenInterceptor {
+        return TokenInterceptor { getFromDataStoreUseCase(TOKEN_KEY) }
+    }
+
+    @Provides
+    @Singleton
+    fun provideTokenAuthenticator(
+        getFromDataStoreUseCase: GetFromDataStoreUseCase
+    ): TokenAuthenticator {
+        return TokenAuthenticator(
+            getToken = { getFromDataStoreUseCase(TOKEN_KEY) }
+        )
+    }
+}
+
+class TokenInterceptor(private val getToken: suspend () -> String?) : Interceptor {
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val token = runBlocking { getToken() }
+        val newRequest = chain.request().newBuilder().apply {
+            addHeader("Accept", "application/json")
+            token?.let { addHeader("Authorization", "Bearer $it") }
+        }.build()
+        return chain.proceed(newRequest)
+    }
+}
+
+class TokenAuthenticator(
+    private val getToken: suspend () -> String?
+) : Authenticator {
+    override fun authenticate(route: Route?, response: Response): Request? {
+        val newToken = runBlocking { getToken() }
+
+        return if (newToken != null) {
+            response.request.newBuilder()
+                .header("Authorization", "Bearer $newToken")
+                .build()
+        } else {
+            null
+        }
     }
 }

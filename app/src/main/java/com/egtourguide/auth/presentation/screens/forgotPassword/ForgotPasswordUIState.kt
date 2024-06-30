@@ -1,4 +1,4 @@
-package com.egtourguide.auth.presentation.forgotPassword
+package com.egtourguide.auth.presentation.screens.forgotPassword
 
 import com.egtourguide.auth.domain.validation.ValidationCases
 

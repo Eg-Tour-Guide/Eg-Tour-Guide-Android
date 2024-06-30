@@ -78,7 +78,6 @@ fun HomeScreen(
     onNavigateToSearch: () -> Unit = {},
     onNavigateToSinglePlace: (Place) -> Unit = {},
     onNavigateToDetectedArtifact: (DetectedArtifact) -> Unit = {},
-    onNavigateToSingleCategory: (Section) -> Unit = {},
     onNavigateToEvent: (Event) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -157,7 +156,6 @@ fun HomeScreen(
                 mightLikePlaces = uiState.mightLikePlaces,
                 recentlyViewedPlaces = uiState.recentlyViewedPlaces,
                 onPlaceClicked = onNavigateToSinglePlace,
-                onMoreClicked = onNavigateToSingleCategory,
                 onEventClicked = onNavigateToEvent,
                 onSaveClicked = viewModel::onSaveClicked
             )
@@ -217,7 +215,6 @@ fun HomeScreen(
             }
         )
     }
-
 }
 
 @Composable
@@ -231,8 +228,7 @@ private fun HomeScreenContent(
     recentlyViewedPlaces: List<Place> = emptyList(),
     onEventClicked: (Event) -> Unit = {},
     onPlaceClicked: (Place) -> Unit = {},
-    onSaveClicked: (Place) -> Unit = {},
-    onMoreClicked: (Section) -> Unit = {}
+    onSaveClicked: (Place) -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -242,55 +238,57 @@ private fun HomeScreenContent(
             events = events,
             onEventClicked = onEventClicked
         )
+
         Spacer(modifier = Modifier.height(16.dp))
 
-        //Suggested Places
+        // Suggested Places
         HomeSection(
             sectionTitle = stringResource(id = R.string.suggested_for_you),
             sectionPlaces = suggestedPlaces,
             onPlaceClicked = onPlaceClicked,
             onSaveClicked = onSaveClicked
         )
+
         Spacer(modifier = Modifier.height(16.dp))
 
-        //Top Rated Places
+        // Top Rated Places
         HomeSection(
             sectionTitle = stringResource(id = R.string.top_rated_places),
             sectionPlaces = topRatedPlaces,
             onPlaceClicked = onPlaceClicked,
             onSaveClicked = onSaveClicked
         )
+
         Spacer(modifier = Modifier.height(16.dp))
 
-        //LandMarks
+        // LandMarks
         HomeSection(
             sectionTitle = stringResource(R.string.explore_egypt_s_landmarks),
             sectionPlaces = explorePlaces,
             onPlaceClicked = onPlaceClicked,
-            isMore = true,
-            onMoreClicked = { onMoreClicked(Section.LandMarks) },
             onSaveClicked = onSaveClicked
         )
+
         Spacer(modifier = Modifier.height(16.dp))
 
-        //Recently Added
+        // Recently Added
         HomeSection(
             sectionTitle = stringResource(R.string.recently_added),
             sectionPlaces = recentlyAddedPlaces,
             onPlaceClicked = onPlaceClicked,
             onSaveClicked = onSaveClicked
         )
+
         Spacer(modifier = Modifier.height(16.dp))
 
-        //Might Like Places
+        // Might Like Places
         HomeSection(
             sectionTitle = stringResource(R.string.you_might_also_like),
             sectionPlaces = mightLikePlaces,
-            isMore = true,
             onPlaceClicked = onPlaceClicked,
-            onMoreClicked = { onMoreClicked(Section.MightLike) },
             onSaveClicked = onSaveClicked
         )
+
         Spacer(modifier = Modifier.height(16.dp))
 
         //Recently Viewed
@@ -377,8 +375,6 @@ private fun UpcomingEventsSection(
 private fun HomeSection(
     sectionTitle: String,
     sectionPlaces: List<Place>,
-    isMore: Boolean = false,
-    onMoreClicked: () -> Unit = {},
     onPlaceClicked: (Place) -> Unit,
     onSaveClicked: (Place) -> Unit
 ) {
@@ -387,33 +383,15 @@ private fun HomeSection(
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
     ) {
-        Row(
-            Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                modifier = Modifier.fillMaxWidth(0.85f),
-                text = sectionTitle,
-                style = MaterialTheme.typography.displayMedium,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-            if (isMore) {
-                Text(
-                    modifier = Modifier
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null
-                        ) {
-                            onMoreClicked()
-                        },
-                    text = stringResource(R.string.more),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.outlineVariant
-                )
-            }
-        }
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = sectionTitle,
+            style = MaterialTheme.typography.displayMedium,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+
         Spacer(modifier = Modifier.height(8.dp))
+
         LazyRow(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -462,7 +440,9 @@ private fun ArtifactDetectionDialog(
                     title = "Camera",
                     onClick = { onCameraClicked() }
                 )
+
                 Spacer(modifier = Modifier.width(16.dp))
+
                 ArtifactDetectionDialogOption(
                     icon = R.drawable.ic_gallery,
                     title = "Gallery",
@@ -486,13 +466,13 @@ private fun ArtifactDetectionDialogOption(
                 color = MaterialTheme.colorScheme.primaryContainer,
                 shape = RoundedCornerShape(4.dp)
             )
-            .padding(vertical = 16.dp, horizontal = 42.dp)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null
             ) {
                 onClick()
-            },
+            }
+            .padding(vertical = 16.dp, horizontal = 42.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -501,7 +481,9 @@ private fun ArtifactDetectionDialogOption(
             tint = Color.Unspecified,
             contentDescription = null
         )
+
         Spacer(modifier = Modifier.height(6.dp))
+
         Text(
             text = title,
             style = MaterialTheme.typography.titleMedium,
@@ -509,12 +491,6 @@ private fun ArtifactDetectionDialogOption(
         )
     }
 }
-
-enum class Section {
-    LandMarks,
-    MightLike
-}
-
 
 @Preview(showBackground = true)
 @Composable

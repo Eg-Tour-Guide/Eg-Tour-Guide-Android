@@ -1,4 +1,4 @@
-package com.egtourguide.auth.presentation.forgotPassword
+package com.egtourguide.auth.presentation.screens.forgotPassword
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -42,7 +42,7 @@ import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 fun ForgotPasswordScreen(
     viewModel: ForgotPasswordViewModel = hiltViewModel(),
     onNavigateUp: () -> Unit = {},
-    onNavigateToOTP: (String) -> Unit = {}
+    onNavigateToOTP: (String, String) -> Unit = { _, _ -> }
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -63,7 +63,10 @@ fun ForgotPasswordScreen(
 
     LaunchedEffect(key1 = uiState.isCodeSentSuccessfully) {
         if (uiState.isCodeSentSuccessfully) {
-            onNavigateToOTP(uiState.code)
+            uiState.successMessage?.let {
+                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            }
+            onNavigateToOTP(uiState.code, uiState.email)
             viewModel.clearSuccess()
         }
     }
@@ -153,13 +156,33 @@ private fun ForgotPasswordFooter(
         withStyle(
             style = SpanStyle(color = MaterialTheme.colorScheme.onBackground)
         ) {
-            append("Back To Login?")
+            append(stringResource(id = R.string.remembered_your_password))
         }
+
+        append(" ")
+
+        pushStringAnnotation(tag = "login", annotation = "login")
+
+        withStyle(
+            style = SpanStyle(color = MaterialTheme.colorScheme.outlineVariant)
+        ) {
+            append(stringResource(id = R.string.login_now))
+        }
+
+        pop()
     }
 
     ClickableText(
         text = annotatedString,
-        onClick = { onBackToLoginClicked() },
+        onClick = { offset ->
+            annotatedString.getStringAnnotations(
+                tag = "login",
+                start = offset,
+                end = offset
+            ).firstOrNull()?.let {
+                onBackToLoginClicked()
+            }
+        },
         style = MaterialTheme.typography.titleMedium
     )
 

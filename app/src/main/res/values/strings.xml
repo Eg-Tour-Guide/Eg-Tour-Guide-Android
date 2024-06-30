@@ -129,4 +129,6 @@
     <string name="landmarks">Landmarks</string>
     <string name="artifacts">Artifacts</string>
     <string name="tours">Tours</string>
+    <string name="logged_in_successfully">Logged in successfully</string>
+    <string name="remembered_your_password">Remembered Your Password?</string>
 </resources>

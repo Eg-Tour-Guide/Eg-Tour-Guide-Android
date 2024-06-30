@@ -1,4 +1,4 @@
-package com.egtourguide.auth.presentation.welcome
+package com.egtourguide.auth.presentation.screens.welcome
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -46,7 +46,6 @@ fun WelcomeScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(183.dp)
                 .align(Alignment.BottomCenter)
                 .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
                 .background(MaterialTheme.colorScheme.background)

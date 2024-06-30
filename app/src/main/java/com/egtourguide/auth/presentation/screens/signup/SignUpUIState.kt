@@ -1,4 +1,4 @@
-package com.egtourguide.auth.presentation.signup
+package com.egtourguide.auth.presentation.screens.signup
 
 import com.egtourguide.auth.domain.validation.ValidationCases
 

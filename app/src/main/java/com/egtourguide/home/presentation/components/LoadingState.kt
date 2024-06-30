@@ -1,6 +1,6 @@
 package com.egtourguide.home.presentation.components
 
-import android.widget.Space
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,8 +12,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -37,21 +35,25 @@ fun LoadingState(
         "Just a second more...",
         "Getting everything ready..."
     )
+
     LaunchedEffect(key1 = Unit) {
         loadingTextList.forEach { text ->
             delay(2000)
             currentLoadingText = text
         }
     }
+
     Column(
-        modifier = modifier,
+        modifier = modifier.background(MaterialTheme.colorScheme.background),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         CircularProgressIndicator(
             modifier = Modifier.size(indicatorSize),
         )
+
         Spacer(modifier = Modifier.height(12.dp))
+
         Text(
             text = currentLoadingText,
             style = MaterialTheme.typography.titleMedium,

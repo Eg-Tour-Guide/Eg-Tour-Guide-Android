@@ -1,4 +1,4 @@
-package com.egtourguide.auth.presentation.resetPassword
+package com.egtourguide.auth.presentation.screens.resetPassword
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -1,4 +1,4 @@
-package com.egtourguide.auth.presentation.otp
+package com.egtourguide.auth.presentation.screens.otp
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -15,6 +15,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -22,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -31,6 +33,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import com.egtourguide.R
 import com.egtourguide.auth.domain.validation.ValidationCases
 import com.egtourguide.auth.presentation.components.AuthHeader
@@ -62,19 +66,40 @@ fun OtpScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     OtpContent(
         uiState = uiState,
         onCodeChanged = viewModel::changeCode,
-        onVerifyClicked = { viewModel.onVerifyClicked(sentCode = code) }
+        onVerifyClicked = viewModel::onVerifyClicked,
+        onResendClicked = viewModel::resendCode
     )
+
+    DisposableEffect(key1 = lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_CREATE) {
+                viewModel.saveData(
+                    name = name,
+                    email = email,
+                    phone = phone,
+                    password = password,
+                    sentCode = code
+                )
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     LaunchedEffect(key1 = uiState.isVerifiedSuccessfully) {
         if (uiState.isVerifiedSuccessfully) {
             viewModel.clearVerifySuccess()
 
             if (fromSignup) {
-                viewModel.signup(name, email, phone, password)
+                viewModel.signup()
             } else {
                 onNavigateToResetPassword(code)
             }
@@ -99,7 +124,8 @@ fun OtpScreen(
 private fun OtpContent(
     uiState: OtpUIState,
     onCodeChanged: (String) -> Unit = {},
-    onVerifyClicked: () -> Unit = {}
+    onVerifyClicked: () -> Unit = {},
+    onResendClicked: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
 
@@ -125,6 +151,7 @@ private fun OtpContent(
 
         OtpFooter(
             onVerifyClicked = onVerifyClicked,
+            onResendClicked = onResendClicked,
             isLoading = uiState.isLoading
         )
     }
@@ -170,10 +197,10 @@ private fun OtpDataSection(
 @Composable
 private fun OtpFooter(
     onVerifyClicked: () -> Unit,
+    onResendClicked: () -> Unit,
     isLoading: Boolean
 ) {
     val focusManager = LocalFocusManager.current
-    val context = LocalContext.current
 
     val annotatedString = buildAnnotatedString {
         withStyle(
@@ -203,11 +230,7 @@ private fun OtpFooter(
                 start = offset,
                 end = offset
             ).firstOrNull()?.let {
-                Toast.makeText(
-                    context,
-                    context.getString(R.string.we_sent_new_code),
-                    Toast.LENGTH_SHORT
-                ).show()
+                onResendClicked()
             }
         },
         style = MaterialTheme.typography.titleMedium

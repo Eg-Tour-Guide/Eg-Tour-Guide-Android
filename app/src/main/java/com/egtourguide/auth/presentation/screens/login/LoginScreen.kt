@@ -1,5 +1,4 @@
-package com.egtourguide.auth.presentation.login
-
+package com.egtourguide.auth.presentation.screens.login
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -54,17 +53,25 @@ fun LoginScreen(
         onPasswordChange = viewModel::changePassword,
         onLoginClicked = viewModel::onLoginClicked,
         onNavigateToSignUp = onNavigateToSignUp,
-        onNavigateToForgetPassword = onNavigateToForgetPassword,
+        onNavigateToForgetPassword = onNavigateToForgetPassword
+    )
 
-        )
-
-    LaunchedEffect(key1 = uiState.isSuccess, key2 = uiState.isError) {
+    LaunchedEffect(key1 = uiState.isSuccess) {
         if (uiState.isSuccess) {
-            Toast.makeText(context, "Logged in successfully", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                context.getString(R.string.logged_in_successfully),
+                Toast.LENGTH_SHORT
+            ).show()
+
             viewModel.clearSuccess()
             onNavigateToHome()
-        } else if (uiState.isError) {
-            Toast.makeText(context, "wrong email or password", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    LaunchedEffect(key1 = uiState.error) {
+        uiState.error?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
             viewModel.clearError()
         }
     }
@@ -81,6 +88,7 @@ fun LoginContent(
 ) {
     val scrollState = rememberScrollState()
     val focusManager = LocalFocusManager.current
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -216,12 +224,15 @@ private fun LoginFooter(onNavigateToSignUp: () -> Unit) {
 
 @Preview(showBackground = true)
 @Composable
-private fun SignUpScreenPreview() {
+private fun LoginScreenPreview() {
     EGTourGuideTheme {
-        LoginScreen(
+        LoginContent(
+            uiState = LoginState(),
+            onEmailChange = {},
+            onPasswordChange = {},
+            onLoginClicked = {},
             onNavigateToSignUp = {},
-            onNavigateToForgetPassword = {},
-            onNavigateToHome = {}
+            onNavigateToForgetPassword = {}
         )
     }
 }

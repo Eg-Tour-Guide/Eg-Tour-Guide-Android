@@ -1,7 +1,8 @@
-package com.egtourguide.auth.presentation.otp
+package com.egtourguide.auth.presentation.screens.otp
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.egtourguide.auth.domain.usecases.SendCodeUseCase
 import com.egtourguide.auth.domain.usecases.SignupUseCase
 import com.egtourguide.auth.domain.validation.AuthValidation
 import com.egtourguide.auth.domain.validation.ValidationCases
@@ -19,7 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class OtpViewModel @Inject constructor(
     private val signupUseCase: SignupUseCase,
-    private val saveInDataStoreUseCase: SaveInDataStoreUseCase
+    private val saveInDataStoreUseCase: SaveInDataStoreUseCase,
+    private val sendCodeUseCase: SendCodeUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(OtpUIState())
@@ -37,39 +39,54 @@ class OtpViewModel @Inject constructor(
         _uiState.update { it.copy(isSignedSuccessfully = false) }
     }
 
-    fun onVerifyClicked(sentCode: String) {
-        if (checkCode(sentCode = sentCode)) {
+    fun resendCode() {
+        viewModelScope.launch(Dispatchers.IO) {
+            sendCodeUseCase(email = _uiState.value.email).onResponse(
+                onLoading = {
+                    _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+                },
+                onSuccess = { response ->
+                    _uiState.update { it.copy(isLoading = false, sentCode = response.code) }
+                },
+                onFailure = { message ->
+                    _uiState.update { it.copy(isLoading = false, errorMessage = message) }
+                }
+            )
+        }
+    }
+
+    fun onVerifyClicked() {
+        if (checkCode()) {
             _uiState.update { it.copy(isVerifiedSuccessfully = true) }
         }
     }
 
-    private fun checkCode(sentCode: String): Boolean {
+    private fun checkCode(): Boolean {
         _uiState.update { it.copy(codeError = ValidationCases.CORRECT) }
 
-        val isCodeCorrect =
-            AuthValidation.validateCode(sentCode = sentCode, code = _uiState.value.code)
+        val isCodeCorrect = AuthValidation.validateCode(
+            sentCode = _uiState.value.sentCode,
+            code = _uiState.value.code
+        )
+
         _uiState.update { it.copy(codeError = isCodeCorrect) }
+
         return isCodeCorrect == ValidationCases.CORRECT
     }
 
-    fun signup(
-        name: String,
-        email: String,
-        phone: String,
-        password: String
-    ) {
+    fun signup() {
         viewModelScope.launch(Dispatchers.IO) {
             signupUseCase(
-                name = name,
-                email = email,
-                phone = phone,
-                password = password
+                name = _uiState.value.name,
+                email = _uiState.value.email,
+                phone = _uiState.value.phone,
+                password = _uiState.value.password
             ).onResponse(
                 onLoading = {
                     _uiState.update { it.copy(isLoading = true, errorMessage = null) }
                 },
                 onSuccess = { response ->
-                    saveData(token = response.token)
+                    saveToken(token = response.token)
                     _uiState.update { it.copy(isLoading = false, isSignedSuccessfully = true) }
                 },
                 onFailure = { msg ->
@@ -79,7 +96,25 @@ class OtpViewModel @Inject constructor(
         }
     }
 
-    private fun saveData(token: String) {
+    fun saveData(
+        name: String,
+        email: String,
+        phone: String,
+        password: String,
+        sentCode: String
+    ) {
+        _uiState.update {
+            it.copy(
+                name = name,
+                email = email,
+                phone = phone,
+                password = password,
+                sentCode = sentCode
+            )
+        }
+    }
+
+    private fun saveToken(token: String) {
         viewModelScope.launch(Dispatchers.IO) {
             saveInDataStoreUseCase(key = DataStoreKeys.TOKEN_KEY, value = token)
             saveInDataStoreUseCase(key = DataStoreKeys.IS_LOGGED_KEY, value = true)

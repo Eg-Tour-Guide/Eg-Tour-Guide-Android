@@ -1,4 +1,4 @@
-package com.egtourguide.auth.presentation.signup
+package com.egtourguide.auth.presentation.screens.signup
 
 import android.widget.Toast
 import androidx.compose.foundation.background

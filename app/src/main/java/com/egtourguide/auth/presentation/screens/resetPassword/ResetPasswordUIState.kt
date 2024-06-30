@@ -1,4 +1,4 @@
-package com.egtourguide.auth.presentation.resetPassword
+package com.egtourguide.auth.presentation.screens.resetPassword
 
 import com.egtourguide.auth.domain.validation.ValidationCases
 

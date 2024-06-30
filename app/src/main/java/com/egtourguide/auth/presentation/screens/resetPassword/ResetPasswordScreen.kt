@@ -1,4 +1,4 @@
-package com.egtourguide.auth.presentation.resetPassword
+package com.egtourguide.auth.presentation.screens.resetPassword
 
 import android.widget.Toast
 import androidx.compose.foundation.background

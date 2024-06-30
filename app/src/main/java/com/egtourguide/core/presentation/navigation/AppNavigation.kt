@@ -12,12 +12,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
-import com.egtourguide.auth.presentation.forgotPassword.ForgotPasswordScreen
-import com.egtourguide.auth.presentation.login.LoginScreen
-import com.egtourguide.auth.presentation.otp.OtpScreen
-import com.egtourguide.auth.presentation.resetPassword.ResetPasswordScreen
-import com.egtourguide.auth.presentation.signup.SignUpScreen
-import com.egtourguide.auth.presentation.welcome.WelcomeScreen
+import com.egtourguide.auth.presentation.screens.forgotPassword.ForgotPasswordScreen
+import com.egtourguide.auth.presentation.screens.login.LoginScreen
+import com.egtourguide.auth.presentation.screens.otp.OtpScreen
+import com.egtourguide.auth.presentation.screens.resetPassword.ResetPasswordScreen
+import com.egtourguide.auth.presentation.screens.signup.SignUpScreen
+import com.egtourguide.auth.presentation.screens.welcome.WelcomeScreen
 import com.egtourguide.home.presentation.screens.main.screens.artifacts_list.ArtifactsListScreen
 import com.egtourguide.detailsAndReviews.expanded.ExpandedScreenRoot
 import com.egtourguide.detailsAndReviews.expanded.ExpandedType
@@ -167,9 +167,11 @@ fun NavGraphBuilder.authGraph(navController: NavHostController) {
                 onNavigateUp = {
                     navController.navigateUp()
                 },
-                onNavigateToOTP = { code ->
+                onNavigateToOTP = { code, email ->
                     navController.navigate(
-                        route = AppScreen.OTP.route.replace("{code}", code)
+                        route = AppScreen.OTP.route
+                            .replace("{code}", code)
+                            .replace("{email}", email)
                     ) {
                         popUpTo(route = AppScreen.Login.route)
                     }
@@ -229,9 +231,6 @@ fun MainNavGraph(
                 },
                 onNavigateToEvent = { event ->
                     navigateToExpanded(event.id, ExpandedType.EVENT.name)
-                },
-                onNavigateToSingleCategory = {
-                    // TODO: Check about this!!
                 }
             )
         }
