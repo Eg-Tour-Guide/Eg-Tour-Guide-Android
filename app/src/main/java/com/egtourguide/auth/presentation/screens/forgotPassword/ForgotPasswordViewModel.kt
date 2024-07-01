@@ -74,7 +74,7 @@ class ForgotPasswordViewModel @Inject constructor(
     }
 
     private fun checkData(): Boolean {
-        val emailErrorState = AuthValidation.validateEmail2(_uiState.value.email)
+        val emailErrorState = AuthValidation.validateEmail(_uiState.value.email)
         _uiState.update {
             it.copy(emailError = emailErrorState)
         }

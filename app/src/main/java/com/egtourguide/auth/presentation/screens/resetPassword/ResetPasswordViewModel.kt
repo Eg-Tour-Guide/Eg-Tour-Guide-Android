@@ -31,15 +31,11 @@ class ResetPasswordViewModel @Inject constructor(
         _uiState.update { it.copy(confirmPassword = confirmPassword) }
     }
 
-    fun resetPassword(
-        code: String
-    ) {
+    fun resetPassword(code: String) {
         val requestBody = ResetPasswordRequestBody(password = uiState.value.password)
+
         viewModelScope.launch(Dispatchers.IO) {
-            resetPasswordUseCase(
-                code = code,
-                requestBody = requestBody
-            ).onResponse(
+            resetPasswordUseCase(code = code, requestBody = requestBody).onResponse(
                 onLoading = {
                     _uiState.update {
                         it.copy(isLoading = true)
@@ -59,9 +55,7 @@ class ResetPasswordViewModel @Inject constructor(
         }
     }
 
-    fun onResetClicked(
-        code: String
-    ) {
+    fun onResetClicked(code: String) {
         _uiState.update {
             it.copy(
                 passwordError = ValidationCases.CORRECT,
@@ -75,11 +69,12 @@ class ResetPasswordViewModel @Inject constructor(
     }
 
     private fun checkData(): Boolean {
-        val passwordErrorState = AuthValidation.validatePassword2(_uiState.value.password)
-        val confirmPasswordErrorState = AuthValidation.validateConfirmPassword2(
+        val passwordErrorState = AuthValidation.validatePassword(_uiState.value.password)
+        val confirmPasswordErrorState = AuthValidation.validateConfirmPassword(
             _uiState.value.password,
             _uiState.value.confirmPassword
         )
+
         _uiState.update {
             it.copy(
                 passwordError = passwordErrorState,
@@ -97,5 +92,4 @@ class ResetPasswordViewModel @Inject constructor(
     fun clearError() {
         _uiState.update { it.copy(error = null) }
     }
-
 }

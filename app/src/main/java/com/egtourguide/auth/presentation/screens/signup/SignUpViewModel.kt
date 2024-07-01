@@ -68,10 +68,10 @@ class SignUpViewModel @Inject constructor(
 
     private fun checkData(): Boolean {
         val nameErrorState = AuthValidation.validateName(_uiState.value.name)
-        val emailErrorState = AuthValidation.validateEmail2(_uiState.value.email)
+        val emailErrorState = AuthValidation.validateEmail(_uiState.value.email)
         val phoneErrorState = AuthValidation.validatePhone(_uiState.value.phone)
-        val passwordErrorState = AuthValidation.validatePassword2(_uiState.value.password)
-        val confirmPasswordErrorState = AuthValidation.validateConfirmPassword2(
+        val passwordErrorState = AuthValidation.validatePassword(_uiState.value.password)
+        val confirmPasswordErrorState = AuthValidation.validateConfirmPassword(
             _uiState.value.password,
             _uiState.value.confirmPassword
         )

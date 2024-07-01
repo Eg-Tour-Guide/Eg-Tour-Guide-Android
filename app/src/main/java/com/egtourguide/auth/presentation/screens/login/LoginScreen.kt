@@ -32,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.egtourguide.R
+import com.egtourguide.auth.domain.validation.ValidationCases
 import com.egtourguide.auth.presentation.components.AuthHeader
 import com.egtourguide.core.presentation.components.MainButton
 import com.egtourguide.core.presentation.components.MainTextField
@@ -107,8 +108,8 @@ fun LoginContent(
             email = uiState.email,
             password = uiState.password,
             isLoading = uiState.isLoading,
-            emailError = if (uiState.emailError) stringResource(id = R.string.email_error_msg) else null,
-            passwordError = if (uiState.passwordError) stringResource(id = R.string.password_error_msg) else null,
+            emailError = uiState.emailError,
+            passwordError = uiState.passwordError,
             onEmailChange = onEmailChange,
             onPasswordChange = onPasswordChange,
             onLoginClicked = onLoginClicked,
@@ -124,8 +125,8 @@ private fun LoginDataSection(
     focusManager: FocusManager,
     email: String,
     password: String,
-    emailError: String?,
-    passwordError: String?,
+    emailError: ValidationCases,
+    passwordError: ValidationCases,
     isLoading: Boolean,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
@@ -137,7 +138,11 @@ private fun LoginDataSection(
         value = email,
         onValueChanged = onEmailChange,
         labelText = stringResource(id = R.string.email),
-        errorText = emailError,
+        errorText = when (emailError) {
+            ValidationCases.EMPTY -> stringResource(id = R.string.email_empty_error)
+            ValidationCases.ERROR -> stringResource(id = R.string.email_form_error)
+            else -> null
+        },
         placeholderText = stringResource(id = R.string.enter_your_email),
         keyboardType = KeyboardType.Email
     )
@@ -149,7 +154,11 @@ private fun LoginDataSection(
         labelText = stringResource(id = R.string.password),
         placeholderText = stringResource(id = R.string.enter_your_password),
         keyboardType = KeyboardType.Password,
-        errorText = passwordError,
+        errorText = when (passwordError) {
+            ValidationCases.EMPTY -> stringResource(id = R.string.password_empty_error)
+            ValidationCases.ERROR -> stringResource(id = R.string.password_form_error)
+            else -> null
+        },
         isPassword = true,
         imeAction = ImeAction.Done,
         keyboardActions = KeyboardActions(

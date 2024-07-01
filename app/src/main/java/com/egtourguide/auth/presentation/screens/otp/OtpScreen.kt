@@ -230,6 +230,7 @@ private fun OtpFooter(
                 start = offset,
                 end = offset
             ).firstOrNull()?.let {
+                // TODO: Check about this with others!!
                 onResendClicked()
             }
         },

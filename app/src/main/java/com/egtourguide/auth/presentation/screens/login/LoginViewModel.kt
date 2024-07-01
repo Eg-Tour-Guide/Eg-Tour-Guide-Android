@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.egtourguide.auth.data.dto.body.LoginRequestBody
 import com.egtourguide.auth.domain.usecases.LoginUseCase
 import com.egtourguide.auth.domain.validation.AuthValidation
+import com.egtourguide.auth.domain.validation.ValidationCases
 import com.egtourguide.core.domain.usecases.SaveInDataStoreUseCase
 import com.egtourguide.core.utils.DataStoreKeys.IS_LOGGED_KEY
 import com.egtourguide.core.utils.DataStoreKeys.TOKEN_KEY
@@ -39,7 +40,7 @@ class LoginViewModel @Inject constructor(
     }
 
     fun clearError() {
-        _uiState.update { it.copy(isError = false) }
+        _uiState.update { it.copy(error = null) }
     }
 
     fun login() {
@@ -83,20 +84,29 @@ class LoginViewModel @Inject constructor(
         _uiState.update {
             it.copy(
                 email = _uiState.value.email.trim(),
-                emailError = false,
-                passwordError = false
+                emailError = ValidationCases.CORRECT,
+                passwordError = ValidationCases.CORRECT
             )
         }
 
-        if (AuthValidation.validateEmail(email = _uiState.value.email)) {
-            if (AuthValidation.validatePassword(password = _uiState.value.password)) {
-                login()
-            } else {
-                _uiState.update { it.copy(passwordError = true) }
-            }
-        } else {
-            _uiState.update { it.copy(emailError = true) }
+        if (checkData()) {
+            login()
         }
+    }
+
+    private fun checkData(): Boolean {
+        val emailErrorState = AuthValidation.validateEmail(_uiState.value.email)
+        val passwordErrorState = AuthValidation.validatePassword(_uiState.value.password)
+
+        _uiState.update {
+            it.copy(
+                emailError = emailErrorState,
+                passwordError = passwordErrorState
+            )
+        }
+
+        return emailErrorState == ValidationCases.CORRECT &&
+                passwordErrorState == ValidationCases.CORRECT
     }
 
     private fun saveData(token: String) {
