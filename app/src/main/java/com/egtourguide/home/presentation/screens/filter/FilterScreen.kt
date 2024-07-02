@@ -95,7 +95,9 @@ fun FilterScreen(
 
     Column {
         ScreenHeader(
-            showBack = true, onBackClicked = onNavigateBack
+            showBack = true,
+            onBackClicked = onNavigateBack,
+            modifier = Modifier.height(52.dp)
         )
 
         ScreenContent(

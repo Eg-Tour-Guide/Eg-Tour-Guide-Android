@@ -120,7 +120,7 @@ fun SavedScreenContent(
             .background(color = MaterialTheme.colorScheme.background)
     ) {
         ScreenHeader(
-            modifier = Modifier.height(62.dp),
+            modifier = Modifier.height(61.dp),
             showBack = true,
             onBackClicked = onBackClicked
         )

@@ -5,6 +5,7 @@ import com.egtourguide.home.domain.model.Event
 import com.egtourguide.home.domain.model.Place
 
 data class HomeUIState(
+    val callIsSent: Boolean = false,
     val isLoading: Boolean = true,
     val isDetectionLoading: Boolean = false,
     val detectedArtifact: DetectedArtifact? = null,
@@ -17,6 +18,5 @@ data class HomeUIState(
     val topRatedPlaces: List<Place> = emptyList(),
     val explorePlaces: List<Place> = emptyList(),
     val recentlyAddedPlaces: List<Place> = emptyList(),
-    val mightLikePlaces: List<Place> = emptyList(),
     val recentlyViewedPlaces: List<Place> = emptyList()
 )

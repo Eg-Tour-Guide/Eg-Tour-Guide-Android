@@ -28,15 +28,15 @@ class ToursListViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             getToursListUseCase().onResponse(
                 onLoading = {
-                    _uiState.update { it.copy(isLoading = true, isShowEmptyState = false) }
+                    _uiState.update { it.copy(isLoading = true, error = null) }
                 },
                 onSuccess = { response ->
                     val tours = filterTours(tours = response, filters = filters)
                     _uiState.update {
                         it.copy(
+                            callIsSent = true,
                             isLoading = false,
-                            tours = tours,
-                            isShowEmptyState = true
+                            tours = tours
                         )
                     }
                 },

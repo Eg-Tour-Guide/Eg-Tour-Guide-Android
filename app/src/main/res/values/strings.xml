@@ -131,4 +131,7 @@
     <string name="tours">Tours</string>
     <string name="logged_in_successfully">Logged in successfully</string>
     <string name="remembered_your_password">Remembered Your Password?</string>
+    <string name="no_artifacts_found">No Artifacts Found</string>
+    <string name="no_landmarks_found">No Landmarks Found</string>
+    <string name="no_tours_found">No Tours Found</string>
 </resources>

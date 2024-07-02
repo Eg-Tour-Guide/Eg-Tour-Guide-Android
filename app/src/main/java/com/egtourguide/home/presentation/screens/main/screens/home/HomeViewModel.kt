@@ -28,6 +28,7 @@ class HomeViewModel @Inject constructor(
     private val changePlaceSavedStateUseCase: ChangePlaceSavedStateUseCase,
     private val detectArtifactUseCase: DetectArtifactUseCase
 ) : ViewModel() {
+
     private val _uiState = MutableStateFlow(HomeUIState())
     val uiState = _uiState.asStateFlow()
 
@@ -44,12 +45,12 @@ class HomeViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             isLoading = false,
+                            callIsSent = true,
                             events = response.event,
                             suggestedPlaces = response.suggestedForYou,
                             topRatedPlaces = response.topRated,
                             explorePlaces = response.explore,
                             recentlyAddedPlaces = response.recentlyAdded,
-                            mightLikePlaces = response.suggestedForYou,
                             recentlyViewedPlaces = response.recentlyViewed
                         )
                     }

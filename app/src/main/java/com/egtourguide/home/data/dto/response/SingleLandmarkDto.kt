@@ -4,7 +4,6 @@ import com.egtourguide.home.domain.model.Landmark
 import com.egtourguide.home.domain.model.Place
 import com.egtourguide.home.domain.model.Review
 
-// TODO: Add included artifacts!!
 data class SingleLandmarkDto(
     val status: String,
     val place: LandmarkDto,
@@ -62,7 +61,7 @@ data class ReviewDto(
         id = _id,
         rating = rating,
         authorName = user.username,
-        authorImage = user.photo,
+        authorImage = user.photo ?: "",
         description = review,
     )
 }
@@ -70,7 +69,7 @@ data class ReviewDto(
 data class UserDto(
     val _id: String,
     val username: String,
-    val photo: String
+    val photo: String?
 )
 
 data class RelatedPlaceDto(

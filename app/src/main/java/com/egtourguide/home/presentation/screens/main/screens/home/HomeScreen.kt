@@ -17,6 +17,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,6 +25,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
@@ -101,8 +103,7 @@ fun HomeScreen(
     }
 
     val galleryImageLauncher = rememberLauncherForActivityResult(
-        contract =
-        ActivityResultContracts.GetContent()
+        contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let {
             val image = viewModel.getBitmapFromUri(context = context, uri = uri)
@@ -124,13 +125,23 @@ fun HomeScreen(
             .background(color = MaterialTheme.colorScheme.background)
     ) {
         ScreenHeader(
-            modifier = Modifier.height(62.dp),
+            modifier = Modifier.height(61.dp),
             showLogo = true,
             showSearch = true,
+            showNotifications = true,
+            // TODO: Implement notifications & active tour logic!!
+//            showNotificationsBadge = true,
+            showActiveTour = true,
             showCaptureObject = true,
             onSearchClicked = onNavigateToSearch,
             onCaptureObjectClicked = {
                 isArtifactDetectionDialogShown = true
+            },
+            onNotificationsClicked = {
+                // TODO: Here!!
+            },
+            onActiveTourClicked = {
+                // TODO: And here!!
             }
         )
 
@@ -153,7 +164,6 @@ fun HomeScreen(
                 topRatedPlaces = uiState.topRatedPlaces,
                 explorePlaces = uiState.explorePlaces,
                 recentlyAddedPlaces = uiState.recentlyAddedPlaces,
-                mightLikePlaces = uiState.mightLikePlaces,
                 recentlyViewedPlaces = uiState.recentlyViewedPlaces,
                 onPlaceClicked = onNavigateToSinglePlace,
                 onEventClicked = onNavigateToEvent,
@@ -164,16 +174,18 @@ fun HomeScreen(
 
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_CREATE) {
+            if (event == Lifecycle.Event.ON_CREATE && !uiState.callIsSent) {
                 viewModel.getHome()
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
+
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
 
+    // TODO: Check this!!
     LaunchedEffect(key1 = uiState.isSaveSuccess, key2 = uiState.saveError) {
         val successMsg =
             if (uiState.isSave) R.string.saved_successfully else R.string.unsaved_successfully
@@ -190,6 +202,7 @@ fun HomeScreen(
         }
     }
 
+    // TODO: Check this!!
     LaunchedEffect(key1 = uiState.detectedArtifact) {
         if (uiState.detectedArtifact != null) {
             isArtifactDetectionDialogShown = false
@@ -199,6 +212,7 @@ fun HomeScreen(
         }
     }
 
+    // TODO: Check this!!
     if (isArtifactDetectionDialogShown) {
         ArtifactDetectionDialog(
             isDetectionLoading = uiState.isDetectionLoading,
@@ -224,81 +238,92 @@ private fun HomeScreenContent(
     topRatedPlaces: List<Place> = emptyList(),
     explorePlaces: List<Place> = emptyList(),
     recentlyAddedPlaces: List<Place> = emptyList(),
-    mightLikePlaces: List<Place> = emptyList(),
     recentlyViewedPlaces: List<Place> = emptyList(),
     onEventClicked: (Event) -> Unit = {},
     onPlaceClicked: (Place) -> Unit = {},
     onSaveClicked: (Place) -> Unit = {}
 ) {
-    val scrollState = rememberScrollState()
-    Column(
-        Modifier.verticalScroll(state = scrollState)
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(bottom = 16.dp)
     ) {
-        UpcomingEventsSection(
-            events = events,
-            onEventClicked = onEventClicked
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
+        if (events.isNotEmpty()) {
+            item {
+                UpcomingEventsSection(
+                    events = events,
+                    onEventClicked = onEventClicked
+                )
+            }
+        }
 
         // Suggested Places
-        HomeSection(
-            sectionTitle = stringResource(id = R.string.suggested_for_you),
-            sectionPlaces = suggestedPlaces,
-            onPlaceClicked = onPlaceClicked,
-            onSaveClicked = onSaveClicked
-        )
+        if (suggestedPlaces.isNotEmpty()) {
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
 
-        Spacer(modifier = Modifier.height(16.dp))
+                HomeSection(
+                    sectionTitle = stringResource(id = R.string.suggested_for_you),
+                    sectionPlaces = suggestedPlaces,
+                    onPlaceClicked = onPlaceClicked,
+                    onSaveClicked = onSaveClicked
+                )
+            }
+        }
 
         // Top Rated Places
-        HomeSection(
-            sectionTitle = stringResource(id = R.string.top_rated_places),
-            sectionPlaces = topRatedPlaces,
-            onPlaceClicked = onPlaceClicked,
-            onSaveClicked = onSaveClicked
-        )
+        if (topRatedPlaces.isNotEmpty()) {
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
 
-        Spacer(modifier = Modifier.height(16.dp))
+                HomeSection(
+                    sectionTitle = stringResource(id = R.string.top_rated_places),
+                    sectionPlaces = topRatedPlaces,
+                    onPlaceClicked = onPlaceClicked,
+                    onSaveClicked = onSaveClicked
+                )
+            }
+        }
 
         // LandMarks
-        HomeSection(
-            sectionTitle = stringResource(R.string.explore_egypt_s_landmarks),
-            sectionPlaces = explorePlaces,
-            onPlaceClicked = onPlaceClicked,
-            onSaveClicked = onSaveClicked
-        )
+        if (explorePlaces.isNotEmpty()) {
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
 
-        Spacer(modifier = Modifier.height(16.dp))
+                HomeSection(
+                    sectionTitle = stringResource(R.string.explore_egypt_s_landmarks),
+                    sectionPlaces = explorePlaces,
+                    onPlaceClicked = onPlaceClicked,
+                    onSaveClicked = onSaveClicked
+                )
+            }
+        }
 
         // Recently Added
-        HomeSection(
-            sectionTitle = stringResource(R.string.recently_added),
-            sectionPlaces = recentlyAddedPlaces,
-            onPlaceClicked = onPlaceClicked,
-            onSaveClicked = onSaveClicked
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Might Like Places
-        HomeSection(
-            sectionTitle = stringResource(R.string.you_might_also_like),
-            sectionPlaces = mightLikePlaces,
-            onPlaceClicked = onPlaceClicked,
-            onSaveClicked = onSaveClicked
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        //Recently Viewed
         if (recentlyAddedPlaces.isNotEmpty()) {
-            HomeSection(
-                sectionTitle = stringResource(R.string.recently_viewed),
-                sectionPlaces = recentlyViewedPlaces,
-                onPlaceClicked = onPlaceClicked,
-                onSaveClicked = onSaveClicked
-            )
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+
+                HomeSection(
+                    sectionTitle = stringResource(R.string.recently_added),
+                    sectionPlaces = recentlyAddedPlaces,
+                    onPlaceClicked = onPlaceClicked,
+                    onSaveClicked = onSaveClicked
+                )
+            }
+        }
+
+        // Recently Viewed
+        if (recentlyViewedPlaces.isNotEmpty()) {
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+
+                HomeSection(
+                    sectionTitle = stringResource(R.string.recently_viewed),
+                    sectionPlaces = recentlyViewedPlaces,
+                    onPlaceClicked = onPlaceClicked,
+                    onSaveClicked = onSaveClicked
+                )
+            }
         }
     }
 }
@@ -311,25 +336,21 @@ private fun UpcomingEventsSection(
     onEventClicked: (Event) -> Unit
 ) {
     Column(
-        Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+        Modifier.fillMaxWidth()
     ) {
         val pagerState = rememberPagerState(pageCount = { events.size })
         var currentPage by remember { mutableIntStateOf(0) }
 
-        if (events.isNotEmpty()) {
-            LaunchedEffect(key1 = currentPage) {
-                pagerState.animateScrollToPage(currentPage)
-                delay(5000)
-                if (currentPage + 1 > events.size - 1) {
-                    currentPage = 0
+        LaunchedEffect(key1 = currentPage) {
+            pagerState.animateScrollToPage(currentPage)
+            delay(3000)
+            if (currentPage + 1 > events.size - 1) {
+                currentPage = 0
+            } else {
+                if (currentPage != pagerState.currentPage) {
+                    currentPage = pagerState.currentPage
                 } else {
-                    if (currentPage != pagerState.currentPage) {
-                        currentPage = pagerState.currentPage
-                    } else {
-                        currentPage += 1
-                    }
+                    currentPage += 1
                 }
             }
         }
@@ -337,13 +358,15 @@ private fun UpcomingEventsSection(
         Text(
             text = stringResource(R.string.upcoming_events),
             style = MaterialTheme.typography.displayMedium,
-            color = MaterialTheme.colorScheme.onBackground
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.padding(horizontal = 16.dp)
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         HorizontalPager(
-            state = pagerState
+            state = pagerState,
+            contentPadding = PaddingValues(horizontal = 16.dp)
         ) { pos ->
             val imageScale = animateFloatAsState(
                 targetValue = if (pos == pagerState.currentPage) 1f else 0.75f,
@@ -379,12 +402,12 @@ private fun HomeSection(
     onSaveClicked: (Place) -> Unit
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+        modifier = Modifier.fillMaxWidth()
     ) {
         Text(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
             text = sectionTitle,
             style = MaterialTheme.typography.displayMedium,
             color = MaterialTheme.colorScheme.onBackground
@@ -393,10 +416,11 @@ private fun HomeSection(
         Spacer(modifier = Modifier.height(8.dp))
 
         LazyRow(
-            Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp)
         ) {
-            items(items = sectionPlaces) { place ->
+            items(items = sectionPlaces, key = { it.id }) { place ->
                 PlaceItem(
                     place = place,
                     onPlaceClicked = onPlaceClicked,
@@ -492,10 +516,89 @@ private fun ArtifactDetectionDialogOption(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, heightDp = 1600)
 @Composable
 private fun HomePreview() {
     EGTourGuideTheme {
-        HomeScreenContent()
+        Column(
+            Modifier
+                .fillMaxSize()
+                .background(color = MaterialTheme.colorScheme.background)
+        ) {
+            ScreenHeader(
+                modifier = Modifier.height(61.dp),
+                showLogo = true,
+                showSearch = true,
+                showNotifications = true,
+                showNotificationsBadge = true,
+                showActiveTour = true,
+                showCaptureObject = true,
+                onSearchClicked = {},
+                onCaptureObjectClicked = {}
+            )
+
+            HomeScreenContent(
+                events = listOf(
+                    Event(
+                        id = "nominavi", images = listOf(), name = "Belinda Rodgers"
+                    )
+                ),
+                suggestedPlaces = (0..5).map {
+                    Place(
+                        id = "$it",
+                        name = "Terrence Kane",
+                        image = "pro",
+                        location = "affert",
+                        isSaved = false,
+                        rating = 2.3f,
+                        ratingCount = 6748
+                    )
+                },
+                topRatedPlaces = (0..5).map {
+                    Place(
+                        id = "$it",
+                        name = "Terrence Kane",
+                        image = "pro",
+                        location = "affert",
+                        isSaved = false,
+                        rating = 2.3f,
+                        ratingCount = 6748
+                    )
+                },
+                explorePlaces = (0..5).map {
+                    Place(
+                        id = "$it",
+                        name = "Terrence Kane",
+                        image = "pro",
+                        location = "affert",
+                        isSaved = false,
+                        rating = 2.3f,
+                        ratingCount = 6748
+                    )
+                },
+                recentlyAddedPlaces = (0..5).map {
+                    Place(
+                        id = "$it",
+                        name = "Terrence Kane",
+                        image = "pro",
+                        location = "affert",
+                        isSaved = false,
+                        rating = 2.3f,
+                        ratingCount = 6748
+                    )
+                },
+                recentlyViewedPlaces = (0..5).map {
+                    Place(
+                        id = "$it",
+                        name = "Terrence Kane",
+                        image = "pro",
+                        location = "affert",
+                        isSaved = false,
+                        rating = 2.3f,
+                        ratingCount = 6748
+                    )
+                }
+            )
+        }
     }
 }

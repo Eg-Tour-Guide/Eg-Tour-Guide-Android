@@ -128,5 +128,5 @@ interface HomeApi {
     suspend fun addPlaceToTour(
         @Path("tourId") tourId: String,
         @Body place: AddPlaceBody
-    ): Unit
+    )
 }

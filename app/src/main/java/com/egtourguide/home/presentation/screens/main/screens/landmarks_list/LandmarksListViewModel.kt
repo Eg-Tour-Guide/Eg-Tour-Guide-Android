@@ -45,7 +45,7 @@ class LandmarksListViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             getLandmarksListUseCase().onResponse(
                 onLoading = {
-                    _uiState.update { it.copy(isLoading = true, isShowEmptyState = false) }
+                    _uiState.update { it.copy(isLoading = true, error = null) }
                 },
                 onFailure = { error ->
                     _uiState.update { it.copy(isLoading = false, error = error) }
@@ -54,9 +54,9 @@ class LandmarksListViewModel @Inject constructor(
                     val landmarks = filterLandmarks(landMarks = response, filters = filters)
                     _uiState.update {
                         it.copy(
+                            callIsSent = true,
                             isLoading = false,
-                            landmarks = landmarks,
-                            isShowEmptyState = true
+                            landmarks = landmarks
                         )
                     }
                 }

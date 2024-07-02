@@ -10,6 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -121,7 +122,7 @@ fun SearchResultsScreenContent(
             .background(color = MaterialTheme.colorScheme.background)
     ) {
         ScreenHeader(
-            modifier = Modifier.height(62.dp),
+            modifier = Modifier.height(61.dp),
             showLogo = true,
             showSearch = true,
             onSearchClicked = onSearchClicked
@@ -200,12 +201,11 @@ private fun ResultsSection(
     onSaveClicked: (SearchResult) -> Unit
 ) {
     LazyVerticalGrid(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+        modifier = Modifier.fillMaxWidth(),
         columns = GridCells.Fixed(2),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        contentPadding = PaddingValues(bottom = 16.dp, start = 16.dp, end = 16.dp)
     ) {
         items(items = results) { result ->
             ResultItem(

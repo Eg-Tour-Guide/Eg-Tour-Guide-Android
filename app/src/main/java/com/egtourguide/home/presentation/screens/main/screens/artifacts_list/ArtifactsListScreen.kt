@@ -9,6 +9,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,12 +34,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.egtourguide.R
+import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 import com.egtourguide.home.domain.model.AbstractedArtifact
 import com.egtourguide.home.presentation.components.ArtifactItem
 import com.egtourguide.home.presentation.components.EmptyState
@@ -69,7 +72,7 @@ fun ArtifactsListScreen(
 
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_CREATE) {
+            if (event == Lifecycle.Event.ON_CREATE && !uiState.callIsSent) {
                 viewModel.getArtifactsList()
             }
         }
@@ -110,17 +113,26 @@ fun ArtifactsListScreenContent(
             .background(color = MaterialTheme.colorScheme.background)
     ) {
         ScreenHeader(
-            modifier = Modifier.height(62.dp),
+            modifier = Modifier.height(61.dp),
             showLogo = true,
             showSearch = true,
-            onSearchClicked = onSearchClicked
+            showNotifications = true,
+            // TODO: Implement notifications, active tour, and active tour logic!!
+//            showNotificationsBadge = true,
+            showActiveTour = true,
+            showCaptureObject = true,
+            onSearchClicked = onSearchClicked,
+            onCaptureObjectClicked = {
+                // TODO: Here!!
+            },
+            onNotificationsClicked = {
+                // TODO: Here!!
+            },
+            onActiveTourClicked = {
+                // TODO: And here!!
+            }
         )
-        Spacer(modifier = Modifier.height(18.dp))
-        ArtifactsHeader(
-            artifactsCount = uiState.artifacts.size,
-            onFilterClicked = onFilterClicked
-        )
-        Spacer(modifier = Modifier.height(16.dp))
+
         AnimatedVisibility(
             visible = uiState.isLoading,
             enter = fadeIn(),
@@ -128,23 +140,39 @@ fun ArtifactsListScreenContent(
         ) {
             LoadingState(modifier = Modifier.fillMaxSize())
         }
+
         AnimatedVisibility(
-            visible = uiState.isShowEmptyState && uiState.artifacts.isEmpty(),
+            visible = !uiState.isLoading && uiState.artifacts.isEmpty(),
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            EmptyState(modifier = Modifier.fillMaxSize(), message = "No Artifacts Found")
-        }
-        AnimatedVisibility(
-            visible = !uiState.isLoading,
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
-            ArtifactsSection(
-                artifacts = uiState.artifacts,
-                onArtifactClicked = onArtifactClicked,
-                onSaveClicked = onSaveClicked
+            EmptyState(
+                modifier = Modifier.fillMaxSize(),
+                message = stringResource(id = R.string.no_artifacts_found)
             )
+        }
+
+        AnimatedVisibility(
+            visible = !uiState.isLoading && uiState.artifacts.isNotEmpty(),
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            Column {
+                Spacer(modifier = Modifier.height(16.dp))
+
+                ArtifactsHeader(
+                    artifactsCount = uiState.artifacts.size,
+                    onFilterClicked = onFilterClicked
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                ArtifactsSection(
+                    artifacts = uiState.artifacts,
+                    onArtifactClicked = onArtifactClicked,
+                    onSaveClicked = onSaveClicked
+                )
+            }
         }
     }
 }
@@ -187,14 +215,13 @@ private fun ArtifactsSection(
     onSaveClicked: (AbstractedArtifact) -> Unit
 ) {
     LazyVerticalGrid(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+        modifier = Modifier.fillMaxWidth(),
         columns = GridCells.Fixed(2),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        contentPadding = PaddingValues(bottom = 16.dp, start = 16.dp, end = 16.dp)
     ) {
-        items(items = artifacts) { artifact ->
+        items(items = artifacts, key = { it.id }) { artifact ->
             ArtifactItem(
                 artifact = artifact,
                 onArtifactClicked = onArtifactClicked,
@@ -207,5 +234,26 @@ private fun ArtifactsSection(
 @Preview
 @Composable
 private fun ArtifactsScreenPreview() {
-    ArtifactsListScreen()
+    EGTourGuideTheme {
+        ArtifactsListScreenContent(
+            uiState = ArtifactsListUIState(
+                isLoading = false,
+                artifacts = (0..9).map {
+                    AbstractedArtifact(
+                        id = "$it",
+                        name = "Yolanda Koch",
+                        image = "habemus",
+                        isSaved = false,
+                        type = "eam",
+                        material = "patrioque",
+                        museumName = "Jeanie Norris"
+                    )
+                }
+            ),
+            onSearchClicked = {},
+            onFilterClicked = {},
+            onArtifactClicked = {},
+            onSaveClicked = {}
+        )
+    }
 }
