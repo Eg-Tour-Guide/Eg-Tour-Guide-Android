@@ -1,6 +1,6 @@
 package com.egtourguide.home.data.dto.response
 
-import com.egtourguide.home.domain.model.Place
+import com.egtourguide.home.domain.model.AbstractedLandmark
 
 data class LandmarksListDto(
     val places: List<PlaceDto>,
@@ -16,8 +16,8 @@ data class LandmarksListDto(
         val ratingQuantity: Int,
         val saved: Boolean
     ) {
-        fun toDomainPlace(): Place {
-            return Place(
+        fun toDomainPlace(): AbstractedLandmark {
+            return AbstractedLandmark(
                 id = _id,
                 name = name,
                 location = govName,

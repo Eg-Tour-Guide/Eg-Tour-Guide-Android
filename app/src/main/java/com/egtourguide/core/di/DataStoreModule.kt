@@ -3,7 +3,7 @@ package com.egtourguide.core.di
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import com.egtourguide.core.data.DataStoreRepositoryImpl
+import com.egtourguide.core.data.repository.DataStoreRepositoryImpl
 import com.egtourguide.core.domain.repository.DataStoreRepository
 import com.egtourguide.core.utils.dataStore
 import dagger.Module

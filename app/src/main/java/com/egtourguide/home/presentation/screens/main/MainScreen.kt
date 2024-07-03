@@ -19,7 +19,8 @@ import com.egtourguide.core.presentation.navigation.MainNavGraph
 
 @Composable
 fun MainScreen(
-    navigateToExpanded: (String, String) -> Unit
+    navigateToExpanded: (String, String) -> Unit,
+    navigateToMyTours: () -> Unit
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -51,7 +52,8 @@ fun MainScreen(
         Box(modifier = Modifier.padding(padding)) {
             MainNavGraph(
                 navController = navController,
-                navigateToExpanded = navigateToExpanded
+                navigateToExpanded = navigateToExpanded,
+                navigateToMyTours = navigateToMyTours
             )
         }
     }

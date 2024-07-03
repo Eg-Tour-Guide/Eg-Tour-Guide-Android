@@ -1,8 +1,8 @@
 package com.egtourguide.home.data.dto.response
 
-import com.egtourguide.home.domain.model.Event
-import com.egtourguide.home.domain.model.Home
-import com.egtourguide.home.domain.model.Place
+import com.egtourguide.home.domain.model.AbstractedEvent
+import com.egtourguide.home.domain.model.HomeResponse
+import com.egtourguide.home.domain.model.AbstractedLandmark
 
 data class HomeDto(
     val event: List<ResponseEvent>,
@@ -16,9 +16,9 @@ data class HomeDto(
         val _id: String,
         val images: List<Any>,
         val name: String
-    ){
-        fun toDomainEvent():Event{
-            return Event(
+    ) {
+        fun toDomainEvent(): AbstractedEvent {
+            return AbstractedEvent(
                 id = _id,
                 images = images,
                 name = name
@@ -34,9 +34,9 @@ data class HomeDto(
         val ratingAverage: Int,
         val ratingQuantity: Int,
         val saved: Boolean
-    ){
-        fun toPlace():Place{
-            return Place(
+    ) {
+        fun toPlace(): AbstractedLandmark {
+            return AbstractedLandmark(
                 id = _id,
                 name = name,
                 image = image,
@@ -56,9 +56,9 @@ data class HomeDto(
         val ratingAverage: Int,
         val ratingQuantity: Int,
         val saved: Boolean
-    ){
-        fun toPlace():Place{
-            return Place(
+    ) {
+        fun toPlace(): AbstractedLandmark {
+            return AbstractedLandmark(
                 id = _id,
                 name = name,
                 image = image,
@@ -78,9 +78,9 @@ data class HomeDto(
         val ratingAverage: Int,
         val ratingQuantity: Int,
         val saved: Boolean
-    ){
-        fun toPlace():Place{
-            return Place(
+    ) {
+        fun toPlace(): AbstractedLandmark {
+            return AbstractedLandmark(
                 id = _id,
                 name = name,
                 image = image,
@@ -100,9 +100,9 @@ data class HomeDto(
         val ratingAverage: Int,
         val ratingQuantity: Int,
         val saved: Boolean
-    ){
-        fun toPlace():Place{
-            return Place(
+    ) {
+        fun toPlace(): AbstractedLandmark {
+            return AbstractedLandmark(
                 id = _id,
                 name = name,
                 image = image,
@@ -122,9 +122,9 @@ data class HomeDto(
         val ratingAverage: Int,
         val ratingQuantity: Int,
         val saved: Boolean
-    ){
-        fun toPlace():Place{
-            return Place(
+    ) {
+        fun toPlace(): AbstractedLandmark {
+            return AbstractedLandmark(
                 id = _id,
                 name = name,
                 image = image,
@@ -136,10 +136,10 @@ data class HomeDto(
         }
     }
 
-    fun toDomainHome():Home{
-        return Home(
+    fun toDomainHome(): HomeResponse {
+        return HomeResponse(
             event = event.map { it.toDomainEvent() },
-            explore = explore.map{ it.toPlace() },
+            explore = explore.map { it.toPlace() },
             recentlyAdded = recentlyAdded.map { it.toPlace() },
             recentlyViewed = recentlyViewed.map { it.toPlace() },
             suggestedForYou = suggestedForYou.map { it.toPlace() },

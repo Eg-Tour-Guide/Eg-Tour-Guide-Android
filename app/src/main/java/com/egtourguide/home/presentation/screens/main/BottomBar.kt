@@ -23,6 +23,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.egtourguide.R
+import com.egtourguide.core.presentation.navigation.AppGraph
 import com.egtourguide.core.presentation.navigation.AppScreen
 
 @Composable
@@ -113,7 +114,7 @@ enum class BottomBarScreen(
         selectedIcon = R.drawable.ic_artifacts_selected
     ),
     User(
-        route = AppScreen.User.route,
+        route = AppGraph.User.route,
         title = R.string.user,
         unselectedIcon = R.drawable.ic_user_unselected,
         selectedIcon = R.drawable.ic_user_selected

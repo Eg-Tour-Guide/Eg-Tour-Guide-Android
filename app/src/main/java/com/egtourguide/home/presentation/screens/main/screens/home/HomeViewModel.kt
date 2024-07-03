@@ -8,8 +8,8 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.egtourguide.core.utils.onResponse
-import com.egtourguide.home.domain.model.Place
-import com.egtourguide.home.domain.usecases.ChangePlaceSavedStateUseCase
+import com.egtourguide.home.domain.model.AbstractedLandmark
+import com.egtourguide.core.domain.usecases.ChangeLandmarkSavedStateUseCase
 import com.egtourguide.home.domain.usecases.DetectArtifactUseCase
 import com.egtourguide.home.domain.usecases.GetHomeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,7 +25,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getHomeUseCase: GetHomeUseCase,
-    private val changePlaceSavedStateUseCase: ChangePlaceSavedStateUseCase,
+    private val changeLandmarkSavedStateUseCase: ChangeLandmarkSavedStateUseCase,
     private val detectArtifactUseCase: DetectArtifactUseCase
 ) : ViewModel() {
 
@@ -36,7 +36,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             getHomeUseCase().onResponse(
                 onLoading = {
-                    _uiState.update { it.copy(isLoading = true) }
+                    _uiState.update { it.copy(isLoading = true, callIsSent = true, error = null) }
                 },
                 onFailure = { error ->
                     _uiState.update { it.copy(isLoading = false, error = error) }
@@ -45,7 +45,6 @@ class HomeViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            callIsSent = true,
                             events = response.event,
                             suggestedPlaces = response.suggestedForYou,
                             topRatedPlaces = response.topRated,
@@ -59,10 +58,10 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun onSaveClicked(place: Place) {
+    fun onSaveClicked(place: AbstractedLandmark) {
         viewModelScope.launch(Dispatchers.IO) {
             place.isSaved = !place.isSaved
-            changePlaceSavedStateUseCase(placeId = place.id).onResponse(
+            changeLandmarkSavedStateUseCase(placeId = place.id).onResponse(
                 onLoading = {},
                 onSuccess = {
                     _uiState.update { it.copy(isSaveSuccess = true, isSave = place.isSaved) }

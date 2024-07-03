@@ -52,9 +52,9 @@ import androidx.lifecycle.LifecycleEventObserver
 import com.egtourguide.R
 import com.egtourguide.core.presentation.components.MainImage
 import com.egtourguide.home.domain.model.SearchResult
-import com.egtourguide.home.presentation.components.EmptyState
-import com.egtourguide.home.presentation.components.LoadingState
-import com.egtourguide.home.presentation.components.ScreenHeader
+import com.egtourguide.core.presentation.components.EmptyState
+import com.egtourguide.core.presentation.components.LoadingState
+import com.egtourguide.core.presentation.components.ScreenHeader
 
 @Composable
 fun SearchResultsScreen(

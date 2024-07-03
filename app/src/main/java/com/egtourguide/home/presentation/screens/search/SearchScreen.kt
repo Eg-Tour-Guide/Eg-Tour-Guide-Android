@@ -45,8 +45,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.egtourguide.R
 import com.egtourguide.core.presentation.components.MainTextField
-import com.egtourguide.home.presentation.components.EmptyState
-import com.egtourguide.home.presentation.components.LoadingState
+import com.egtourguide.core.presentation.components.EmptyState
+import com.egtourguide.core.presentation.components.LoadingState
 
 @Composable
 fun SearchScreen(

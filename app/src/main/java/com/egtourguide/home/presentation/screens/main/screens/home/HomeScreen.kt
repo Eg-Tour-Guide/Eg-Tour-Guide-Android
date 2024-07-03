@@ -30,9 +30,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -67,20 +65,20 @@ import com.egtourguide.core.presentation.components.MainImage
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 import com.egtourguide.core.utils.Constants.LANDMARK_IMAGE_LINK_PREFIX
 import com.egtourguide.home.domain.model.DetectedArtifact
-import com.egtourguide.home.domain.model.Event
-import com.egtourguide.home.domain.model.Place
-import com.egtourguide.home.presentation.components.LoadingState
-import com.egtourguide.home.presentation.components.PlaceItem
-import com.egtourguide.home.presentation.components.ScreenHeader
+import com.egtourguide.home.domain.model.AbstractedEvent
+import com.egtourguide.home.domain.model.AbstractedLandmark
+import com.egtourguide.core.presentation.components.LoadingState
+import com.egtourguide.core.presentation.components.LandmarkItem
+import com.egtourguide.core.presentation.components.ScreenHeader
 import kotlinx.coroutines.delay
 
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onNavigateToSearch: () -> Unit = {},
-    onNavigateToSinglePlace: (Place) -> Unit = {},
+    onNavigateToSinglePlace: (AbstractedLandmark) -> Unit = {},
     onNavigateToDetectedArtifact: (DetectedArtifact) -> Unit = {},
-    onNavigateToEvent: (Event) -> Unit = {}
+    onNavigateToEvent: (AbstractedEvent) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -233,15 +231,15 @@ fun HomeScreen(
 
 @Composable
 private fun HomeScreenContent(
-    events: List<Event> = emptyList(),
-    suggestedPlaces: List<Place> = emptyList(),
-    topRatedPlaces: List<Place> = emptyList(),
-    explorePlaces: List<Place> = emptyList(),
-    recentlyAddedPlaces: List<Place> = emptyList(),
-    recentlyViewedPlaces: List<Place> = emptyList(),
-    onEventClicked: (Event) -> Unit = {},
-    onPlaceClicked: (Place) -> Unit = {},
-    onSaveClicked: (Place) -> Unit = {}
+    events: List<AbstractedEvent> = emptyList(),
+    suggestedPlaces: List<AbstractedLandmark> = emptyList(),
+    topRatedPlaces: List<AbstractedLandmark> = emptyList(),
+    explorePlaces: List<AbstractedLandmark> = emptyList(),
+    recentlyAddedPlaces: List<AbstractedLandmark> = emptyList(),
+    recentlyViewedPlaces: List<AbstractedLandmark> = emptyList(),
+    onEventClicked: (AbstractedEvent) -> Unit = {},
+    onPlaceClicked: (AbstractedLandmark) -> Unit = {},
+    onSaveClicked: (AbstractedLandmark) -> Unit = {}
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -332,8 +330,8 @@ private fun HomeScreenContent(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun UpcomingEventsSection(
-    events: List<Event>,
-    onEventClicked: (Event) -> Unit
+    events: List<AbstractedEvent>,
+    onEventClicked: (AbstractedEvent) -> Unit
 ) {
     Column(
         Modifier.fillMaxWidth()
@@ -397,9 +395,9 @@ private fun UpcomingEventsSection(
 @Composable
 private fun HomeSection(
     sectionTitle: String,
-    sectionPlaces: List<Place>,
-    onPlaceClicked: (Place) -> Unit,
-    onSaveClicked: (Place) -> Unit
+    sectionPlaces: List<AbstractedLandmark>,
+    onPlaceClicked: (AbstractedLandmark) -> Unit,
+    onSaveClicked: (AbstractedLandmark) -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxWidth()
@@ -421,7 +419,7 @@ private fun HomeSection(
             contentPadding = PaddingValues(horizontal = 16.dp)
         ) {
             items(items = sectionPlaces, key = { it.id }) { place ->
-                PlaceItem(
+                LandmarkItem(
                     place = place,
                     onPlaceClicked = onPlaceClicked,
                     onSaveClicked = onSaveClicked
@@ -539,12 +537,12 @@ private fun HomePreview() {
 
             HomeScreenContent(
                 events = listOf(
-                    Event(
+                    AbstractedEvent(
                         id = "nominavi", images = listOf(), name = "Belinda Rodgers"
                     )
                 ),
                 suggestedPlaces = (0..5).map {
-                    Place(
+                    AbstractedLandmark(
                         id = "$it",
                         name = "Terrence Kane",
                         image = "pro",
@@ -555,7 +553,7 @@ private fun HomePreview() {
                     )
                 },
                 topRatedPlaces = (0..5).map {
-                    Place(
+                    AbstractedLandmark(
                         id = "$it",
                         name = "Terrence Kane",
                         image = "pro",
@@ -566,7 +564,7 @@ private fun HomePreview() {
                     )
                 },
                 explorePlaces = (0..5).map {
-                    Place(
+                    AbstractedLandmark(
                         id = "$it",
                         name = "Terrence Kane",
                         image = "pro",
@@ -577,7 +575,7 @@ private fun HomePreview() {
                     )
                 },
                 recentlyAddedPlaces = (0..5).map {
-                    Place(
+                    AbstractedLandmark(
                         id = "$it",
                         name = "Terrence Kane",
                         image = "pro",
@@ -588,7 +586,7 @@ private fun HomePreview() {
                     )
                 },
                 recentlyViewedPlaces = (0..5).map {
-                    Place(
+                    AbstractedLandmark(
                         id = "$it",
                         name = "Terrence Kane",
                         image = "pro",

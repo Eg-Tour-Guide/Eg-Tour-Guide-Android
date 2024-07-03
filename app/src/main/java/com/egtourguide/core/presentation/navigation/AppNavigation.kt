@@ -18,23 +18,27 @@ import com.egtourguide.auth.presentation.screens.otp.OtpScreen
 import com.egtourguide.auth.presentation.screens.resetPassword.ResetPasswordScreen
 import com.egtourguide.auth.presentation.screens.signup.SignUpScreen
 import com.egtourguide.auth.presentation.screens.welcome.WelcomeScreen
-import com.egtourguide.home.presentation.screens.main.screens.artifacts_list.ArtifactsListScreen
-import com.egtourguide.detailsAndReviews.expanded.ExpandedScreenRoot
-import com.egtourguide.detailsAndReviews.expanded.ExpandedType
-import com.egtourguide.detailsAndReviews.expanded.WebViewScreen
+import com.egtourguide.customTours.presentation.createTour.CreateTourScreenRoot
+import com.egtourguide.home.presentation.screens.main.screens.artifactsList.ArtifactsListScreen
+import com.egtourguide.expanded.presentation.screens.expanded.ExpandedScreenRoot
+import com.egtourguide.expanded.presentation.screens.expanded.ExpandedType
+import com.egtourguide.expanded.presentation.screens.expanded.WebViewScreen
 import com.egtourguide.home.presentation.screens.filter.FilterScreen
 import com.egtourguide.home.presentation.screens.main.MainScreen
 import com.egtourguide.home.presentation.screens.main.screens.home.HomeScreen
-import com.egtourguide.home.presentation.screens.main.screens.landmarks_list.LandmarksListScreen
-import com.egtourguide.detailsAndReviews.moreReviews.MoreReviewsScreenRoot
-import com.egtourguide.home.presentation.screens.my_tours.MyToursScreen
-import com.egtourguide.detailsAndReviews.review.ReviewScreen
-import com.egtourguide.home.presentation.screens.saved_items.SavedScreen
+import com.egtourguide.home.presentation.screens.main.screens.landmarksList.LandmarksListScreen
+import com.egtourguide.expanded.presentation.screens.moreReviews.MoreReviewsScreenRoot
+import com.egtourguide.customTours.presentation.myTours.MyToursScreen
+import com.egtourguide.expanded.presentation.screens.review.ReviewScreen
+import com.egtourguide.user.presentation.savedItems.SavedScreen
 import com.egtourguide.home.presentation.screens.search.SearchScreen
 import com.egtourguide.home.presentation.screens.search_results.SearchResultsScreen
-import com.egtourguide.home.presentation.screens.toursPlan.ToursPlanScreenRoot
-import com.egtourguide.home.presentation.screens.main.screens.tours_list.ToursListScreen
-import com.egtourguide.home.presentation.screens.main.screens.user.UserScreen
+import com.egtourguide.expanded.presentation.screens.toursPlan.ToursPlanScreenRoot
+import com.egtourguide.home.presentation.screens.main.screens.toursList.ToursListScreen
+import com.egtourguide.user.presentation.changePassword.ChangePasswordScreenRoot
+import com.egtourguide.user.presentation.editProfile.EditProfileScreenRoot
+import com.egtourguide.user.presentation.settings.SettingsScreenRoot
+import com.egtourguide.user.presentation.user.UserScreenRoot
 import com.google.gson.Gson
 
 @Composable
@@ -68,11 +72,16 @@ fun AppNavigation(
                             .replace("{id}", id)
                             .replace("{expandedType}", expandedType)
                     )
+                },
+                navigateToMyTours = {
+                    navController.navigate(route = AppGraph.CustomTours.route)
                 }
             )
         }
 
         expandedGraph(navController = navController)
+
+        customToursGraph(navController = navController)
     }
 }
 
@@ -195,11 +204,11 @@ fun NavGraphBuilder.authGraph(navController: NavHostController) {
     }
 }
 
-// TODO: Split it to multiple graphs!!
 @Composable
 fun MainNavGraph(
     navController: NavHostController,
-    navigateToExpanded: (String, String) -> Unit
+    navigateToExpanded: (String, String) -> Unit,
+    navigateToMyTours: () -> Unit
 ) {
     NavHost(
         navController = navController,
@@ -330,11 +339,11 @@ fun MainNavGraph(
             )
         }
 
-        composable(route = AppScreen.User.route) {
-            UserScreen()
-        }
+        userGraph(
+            navController = navController,
+            navigateToMyTours = navigateToMyTours
+        )
 
-        // TODO here
         composable(route = AppScreen.Filter.route) { it ->
             val source = it.arguments?.getString("SOURCE")
             val query = it.arguments?.getString("QUERY")
@@ -450,98 +459,6 @@ fun MainNavGraph(
                 }
             )
         }
-
-        composable(route = AppScreen.ToursPlan.route) { entry ->
-            val tourID = entry.arguments?.getString("tourId") ?: ""
-
-            ToursPlanScreenRoot(
-                tourId = tourID,
-                onBackClicked = {
-                    navController.navigateUp()
-                },
-                navigateToLandmark = { landmarkId ->
-                    navigateToExpanded(landmarkId, ExpandedType.LANDMARK.name)
-                }
-            )
-        }
-
-        composable(route = AppScreen.Saved.route) { backStackEntry ->
-            val filtersJson = backStackEntry.arguments?.getString("filters")
-            var filters: HashMap<*, *>? = null
-
-            filtersJson?.let {
-                filters = Gson().fromJson(
-                    filtersJson.substringAfter('/'),
-                    HashMap::class.java
-                )
-            }
-
-            SavedScreen(
-                filters = filters,
-                onNavigateBack = {
-                    navController.navigateUp()
-                },
-                onNavigateToSingleItem = { _ ->
-                    //TODO handel navigation here
-                },
-                onNavigateToFilters = {
-                    navController.navigate(
-                        route = AppScreen.Filter.route
-                            .replace("{SOURCE}", "saved")
-                            .replace("{QUERY}", "null")
-                    )
-                }
-            )
-        }
-
-        composable(route = AppScreen.MyTours.route) { backStackEntry ->
-            val isSelected = backStackEntry.arguments?.getBoolean("isSelect") ?: false
-            val filtersJson = backStackEntry.arguments?.getString("filters")
-            var filters: HashMap<*, *>? = null
-
-            filtersJson?.let {
-                filters = Gson().fromJson(
-                    filtersJson.substringAfter('/'),
-                    HashMap::class.java
-                )
-            }
-
-            MyToursScreen(
-                filters = filters,
-                onNavigateToSingleTour = { tour ->
-                    if (isSelected) {
-                        navController.previousBackStackEntry?.savedStateHandle?.set(
-                            "tourId",
-                            tour.id
-                        )
-                        navController.previousBackStackEntry?.savedStateHandle?.set(
-                            "tourName",
-                            tour.title
-                        )
-                        navController.previousBackStackEntry?.savedStateHandle?.set(
-                            "tourImage",
-                            tour.image
-                        )
-                        navController.navigateUp()
-                    } else {
-                        // TODO: Navigate!!
-                    }
-                },
-                onNavigateToFilters = {
-                    navController.navigate(
-                        route = AppScreen.Filter.route
-                            .replace("{SOURCE}", "my_tours")
-                            .replace("{QUERY}", "null")
-                    )
-                },
-                onNavigateToCreateTour = {
-                    //TODO navigate to create tour screen
-                },
-                onNavigateBack = {
-                    navController.navigateUp()
-                }
-            )
-        }
     }
 }
 
@@ -594,7 +511,7 @@ fun NavGraphBuilder.expandedGraph(navController: NavHostController) {
                 },
                 navigateToTours = {
                     navController.navigate(
-                        route = AppScreen.MyTours.route.replace("{isSelect}", "true")
+                        route = AppGraph.CustomTours.route.replace("{isSelect}", "true")
                     )
                 },
                 goToTourPlan = { itemId ->
@@ -653,6 +570,157 @@ fun NavGraphBuilder.expandedGraph(navController: NavHostController) {
                     }
                 }
             )
+        }
+
+        composable(route = AppScreen.ToursPlan.route) { entry ->
+            val tourID = entry.arguments?.getString("tourId") ?: ""
+
+            ToursPlanScreenRoot(
+                tourId = tourID,
+                onBackClicked = {
+                    navController.navigateUp()
+                },
+                navigateToLandmark = { landmarkId ->
+                    navController.navigate(
+                        route = AppGraph.Expanded.route
+                            .replace("{id}", landmarkId)
+                            .replace("{expandedType}", ExpandedType.LANDMARK.name)
+                    )
+                }
+            )
+        }
+    }
+}
+
+fun NavGraphBuilder.userGraph(
+    navController: NavHostController,
+    navigateToMyTours: () -> Unit
+) {
+    navigation(
+        route = AppGraph.User.route,
+        startDestination = AppScreen.User.route
+    ) {
+        composable(route = AppScreen.User.route) {
+            UserScreenRoot(
+                navigateToEditProfile = {
+                    navController.navigate(route = AppScreen.EditProfile.route)
+                },
+                navigateToSaved = {
+                    navController.navigate(route = AppScreen.Saved.route)
+                },
+                navigateToMyTours = navigateToMyTours,
+                navigateToChangePassword = {
+                    navController.navigate(route = AppScreen.ChangePassword.route)
+                },
+                navigateToSettings = {
+                    navController.navigate(route = AppScreen.Settings.route)
+                }
+            )
+        }
+
+        composable(route = AppScreen.EditProfile.route) {
+            EditProfileScreenRoot()
+        }
+
+        composable(route = AppScreen.ChangePassword.route) {
+            ChangePasswordScreenRoot()
+        }
+
+        composable(route = AppScreen.Settings.route) {
+            SettingsScreenRoot()
+        }
+
+        composable(route = AppScreen.Saved.route) { backStackEntry ->
+            val filtersJson = backStackEntry.arguments?.getString("filters")
+            var filters: HashMap<*, *>? = null
+
+            filtersJson?.let {
+                filters = Gson().fromJson(
+                    filtersJson.substringAfter('/'),
+                    HashMap::class.java
+                )
+            }
+
+            SavedScreen(
+                filters = filters,
+                onNavigateBack = {
+                    navController.navigateUp()
+                },
+                onNavigateToSingleItem = { _ ->
+                    //TODO handel navigation here
+                },
+                onNavigateToFilters = {
+                    navController.navigate(
+                        route = AppScreen.Filter.route
+                            .replace("{SOURCE}", "saved")
+                            .replace("{QUERY}", "null")
+                    )
+                }
+            )
+        }
+    }
+}
+
+fun NavGraphBuilder.customToursGraph(navController: NavHostController) {
+    navigation(
+        route = AppGraph.CustomTours.route,
+        startDestination = AppScreen.MyTours.route
+    ) {
+        composable(route = AppScreen.MyTours.route) { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry(route = AppGraph.CustomTours.route)
+            }
+
+            val isSelected = parentEntry.arguments?.getBoolean("isSelect") ?: false
+            val filtersJson = backStackEntry.arguments?.getString("filters")
+            var filters: HashMap<*, *>? = null
+
+            filtersJson?.let {
+                filters = Gson().fromJson(
+                    filtersJson.substringAfter('/'),
+                    HashMap::class.java
+                )
+            }
+
+            MyToursScreen(
+                filters = filters,
+                onNavigateToSingleTour = { tour ->
+                    if (isSelected) {
+                        navController.previousBackStackEntry?.savedStateHandle?.set(
+                            "tourId",
+                            tour.id
+                        )
+                        navController.previousBackStackEntry?.savedStateHandle?.set(
+                            "tourName",
+                            tour.title
+                        )
+                        navController.previousBackStackEntry?.savedStateHandle?.set(
+                            "tourImage",
+                            tour.image
+                        )
+                        navController.navigateUp()
+                    } else {
+                        // TODO: Navigate to expanded!!
+                    }
+                },
+                onNavigateToFilters = {
+                    navController.navigate(
+                        route = AppScreen.Filter.route
+                            .replace("{SOURCE}", "my_tours")
+                            .replace("{QUERY}", "null")
+                    )
+                },
+                onNavigateToCreateTour = {
+                    navController.navigate(route = AppScreen.CreateTour.route)
+                },
+                onNavigateBack = {
+                    navController.navigateUp()
+                }
+            )
+        }
+
+        composable(route = AppScreen.CreateTour.route) {
+            CreateTourScreenRoot()
         }
     }
 }

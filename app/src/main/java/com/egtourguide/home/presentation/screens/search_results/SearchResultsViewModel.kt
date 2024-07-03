@@ -4,10 +4,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.egtourguide.core.utils.onResponse
-import com.egtourguide.home.domain.model.Place
 import com.egtourguide.home.domain.model.SearchResult
-import com.egtourguide.home.domain.usecases.ChangeArtifactSavedStateUseCase
-import com.egtourguide.home.domain.usecases.ChangePlaceSavedStateUseCase
+import com.egtourguide.core.domain.usecases.ChangeArtifactSavedStateUseCase
+import com.egtourguide.core.domain.usecases.ChangeLandmarkSavedStateUseCase
 import com.egtourguide.home.domain.usecases.SearchUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -20,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SearchResultsViewModel @Inject constructor(
     private val searchUseCase: SearchUseCase,
-    private val changePlaceSavedStateUseCase: ChangePlaceSavedStateUseCase,
+    private val changeLandmarkSavedStateUseCase: ChangeLandmarkSavedStateUseCase,
     private val changeArtifactSavedStateUseCase: ChangeArtifactSavedStateUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(SearchResultsUIState())
@@ -73,7 +72,7 @@ class SearchResultsViewModel @Inject constructor(
                 )
             } else {
                 item.isSaved = !item.isSaved
-                changePlaceSavedStateUseCase(item.id).onResponse(
+                changeLandmarkSavedStateUseCase(item.id).onResponse(
                     onLoading = {},
                     onSuccess = {
                         _uiState.update { it.copy(isSaveSuccess = true, isSave = item.isSaved) }
@@ -97,7 +96,7 @@ class SearchResultsViewModel @Inject constructor(
 
             when (filterKey) {
                 "Category" -> {
-                    if(filterValue.isNotEmpty()){
+                    if (filterValue.isNotEmpty()) {
                         resultedList = resultedList.filter { item ->
                             when (filterValue) {
                                 "Landmarks" -> !item.isArtifact

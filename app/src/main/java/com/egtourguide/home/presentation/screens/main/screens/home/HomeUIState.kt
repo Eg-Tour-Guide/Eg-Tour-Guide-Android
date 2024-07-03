@@ -1,8 +1,8 @@
 package com.egtourguide.home.presentation.screens.main.screens.home
 
 import com.egtourguide.home.domain.model.DetectedArtifact
-import com.egtourguide.home.domain.model.Event
-import com.egtourguide.home.domain.model.Place
+import com.egtourguide.home.domain.model.AbstractedEvent
+import com.egtourguide.home.domain.model.AbstractedLandmark
 
 data class HomeUIState(
     val callIsSent: Boolean = false,
@@ -13,10 +13,10 @@ data class HomeUIState(
     val isSave: Boolean = true,
     val error: String? = null,
     val saveError: String? = null,
-    val events: List<Event> = emptyList(),
-    val suggestedPlaces: List<Place> = emptyList(),
-    val topRatedPlaces: List<Place> = emptyList(),
-    val explorePlaces: List<Place> = emptyList(),
-    val recentlyAddedPlaces: List<Place> = emptyList(),
-    val recentlyViewedPlaces: List<Place> = emptyList()
+    val events: List<AbstractedEvent> = emptyList(),
+    val suggestedPlaces: List<AbstractedLandmark> = emptyList(),
+    val topRatedPlaces: List<AbstractedLandmark> = emptyList(),
+    val explorePlaces: List<AbstractedLandmark> = emptyList(),
+    val recentlyAddedPlaces: List<AbstractedLandmark> = emptyList(),
+    val recentlyViewedPlaces: List<AbstractedLandmark> = emptyList()
 )
