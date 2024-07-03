@@ -81,13 +81,19 @@ class ExpandedViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             getLandmarkUseCase(id = id).onResponse(
                 onLoading = {
-                    _uiState.update { it.copy(isLoading = true, id = id) }
+                    _uiState.update {
+                        it.copy(
+                            isLoading = true,
+                            callIsSent = true,
+                            errorMessage = null
+                        )
+                    }
                 },
                 onSuccess = { response ->
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            callIsSent = true,
+                            id = response.id,
                             images = response.images,
                             title = response.title,
                             isSaved = response.saved,
@@ -116,13 +122,20 @@ class ExpandedViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             getArtifactUseCase(id = id).onResponse(
                 onLoading = {
-                    _uiState.update { it.copy(isLoading = true, id = id) }
+                    _uiState.update {
+                        it.copy(
+                            isLoading = true,
+                            callIsSent = true,
+                            errorMessage = null
+                        )
+                    }
                 },
                 onSuccess = { response ->
                     _uiState.update {
                         it.copy(
                             isLoading = false,
                             callIsSent = true,
+                            id = response.id,
                             images = response.images,
                             title = response.title,
                             isSaved = response.saved,

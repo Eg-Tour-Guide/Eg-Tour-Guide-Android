@@ -4,6 +4,5 @@ enum class ExpandedType {
     EVENT,
     LANDMARK,
     ARTIFACT,
-    TOUR,
-    CUSTOM_TOUR
+    TOUR
 }

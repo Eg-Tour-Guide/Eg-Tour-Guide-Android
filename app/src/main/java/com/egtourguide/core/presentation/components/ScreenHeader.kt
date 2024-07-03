@@ -59,6 +59,22 @@ private fun ScreenHeaderPreview() {
                     .padding(top = 16.dp)
                     .height(52.dp)
             )
+
+            ScreenHeader(
+                showBack = true,
+                showEdit = true,
+                modifier = Modifier
+                    .padding(top = 16.dp)
+                    .height(52.dp)
+            )
+
+            ScreenHeader(
+                showBack = true,
+                showAdd = true,
+                modifier = Modifier
+                    .padding(top = 16.dp)
+                    .height(52.dp)
+            )
         }
     }
 }
@@ -76,6 +92,7 @@ fun ScreenHeader(
     showArView: Boolean = false,
     showBack: Boolean = false,
     showAdd: Boolean = false,
+    showEdit: Boolean = false,
     onBackClicked: () -> Unit = {},
     onSearchClicked: () -> Unit = {},
     onNotificationsClicked: () -> Unit = {},
@@ -83,7 +100,8 @@ fun ScreenHeader(
     onCaptureObjectClicked: () -> Unit = {},
     onVrViewClicked: () -> Unit = {},
     onArViewClicked: () -> Unit = {},
-    onAddClicked: () -> Unit = {}
+    onAddClicked: () -> Unit = {},
+    onEditClicked: () -> Unit = {}
 ) {
     Row(
         modifier = modifier
@@ -206,6 +224,17 @@ fun ScreenHeader(
                     modifier = Modifier
                         .size(20.dp)
                         .clickable { onAddClicked() }
+                )
+            }
+
+            if (showEdit) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_edit),
+                    contentDescription = stringResource(R.string.edit_icon),
+                    tint = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier
+                        .size(20.dp)
+                        .clickable { onEditClicked() }
                 )
             }
         }

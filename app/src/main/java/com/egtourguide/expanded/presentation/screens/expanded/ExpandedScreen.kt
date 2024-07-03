@@ -3,6 +3,9 @@ package com.egtourguide.expanded.presentation.screens.expanded
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -71,12 +74,13 @@ import com.egtourguide.core.presentation.components.ScreenHeader
 import com.egtourguide.core.presentation.components.TourItem
 import com.egtourguide.expanded.presentation.utils.convertDate
 
-@Preview(showBackground = true, heightDp = 2000)
+@Preview(showBackground = true, heightDp = 1200)
 @Composable
 private fun ExpandedScreenPreview() {
     EGTourGuideTheme {
         ExpandedScreen(
             uiState = ExpandedScreenState(
+                id = "0",
                 images = listOf("", "", "", ""),
                 title = "Pyramids",
                 location = "Giza",
@@ -257,7 +261,9 @@ private fun ExpandedScreen(
     navigateToSingleItem: (String, String) -> Unit = { _, _ -> }
 ) {
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) {
         ScreenHeader(
             showBack = true,
@@ -269,17 +275,23 @@ private fun ExpandedScreen(
             modifier = Modifier.height(52.dp)
         )
 
-        if (uiState.isLoading) {
+        AnimatedVisibility(
+            visible = uiState.isLoading,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
             LoadingState(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxSize()
             )
-        } else {
+        }
+
+        AnimatedVisibility(
+            visible = !uiState.isLoading && uiState.id.isNotEmpty(),
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background),
+                modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(bottom = 16.dp)
             ) {
                 item {
@@ -320,7 +332,8 @@ private fun ExpandedScreen(
                     }
                 }
 
-                if (expandedType != ExpandedType.TOUR.name && expandedType != ExpandedType.CUSTOM_TOUR.name && uiState.latitute != 0.0 && uiState.longitude != 0.0) {
+                // TODO: When we get a working key!!
+                /*if (expandedType != ExpandedType.TOUR.name && uiState.latitute != 0.0 && uiState.longitude != 0.0) {
                     item {
                         LocationSection(
                             title = uiState.title,
@@ -329,7 +342,7 @@ private fun ExpandedScreen(
                             modifier = Modifier.padding(top = 24.dp, start = 16.dp, end = 16.dp)
                         )
                     }
-                }
+                }*/
 
                 if (expandedType == ExpandedType.LANDMARK.name || expandedType == ExpandedType.TOUR.name) {
                     item {
@@ -604,7 +617,7 @@ private fun TitleSection(
                         }
                     }
 
-                    if (expandedType == ExpandedType.TOUR.name || expandedType == ExpandedType.CUSTOM_TOUR.name) {
+                    if (expandedType == ExpandedType.TOUR.name) {
                         IconButton(
                             onClick = goToTourPlan,
                             modifier = Modifier.size(31.dp)

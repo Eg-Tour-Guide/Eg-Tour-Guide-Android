@@ -153,7 +153,7 @@ private fun CreateTourContent(
                     value = uiState.name,
                     onValueChanged = onNameChanged,
                     labelText = stringResource(id = R.string.name),
-                    placeholderText = stringResource(id = R.string.write_tour_name),
+                    placeholderText = stringResource(id = R.string.enter_tour_name),
                     errorText = when (uiState.nameError) {
                         ValidationCases.EMPTY -> stringResource(id = R.string.tour_name_empty_error)
                         ValidationCases.ERROR -> stringResource(id = R.string.name_form_error)

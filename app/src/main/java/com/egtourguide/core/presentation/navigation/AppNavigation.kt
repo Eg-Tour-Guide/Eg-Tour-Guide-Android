@@ -19,6 +19,7 @@ import com.egtourguide.auth.presentation.screens.resetPassword.ResetPasswordScre
 import com.egtourguide.auth.presentation.screens.signup.SignUpScreen
 import com.egtourguide.auth.presentation.screens.welcome.WelcomeScreen
 import com.egtourguide.customTours.presentation.createTour.CreateTourScreenRoot
+import com.egtourguide.customTours.presentation.customExpanded.CustomExpandedScreenRoot
 import com.egtourguide.home.presentation.screens.main.screens.artifactsList.ArtifactsListScreen
 import com.egtourguide.expanded.presentation.screens.expanded.ExpandedScreenRoot
 import com.egtourguide.expanded.presentation.screens.expanded.ExpandedType
@@ -79,7 +80,14 @@ fun AppNavigation(
             )
         }
 
-        expandedGraph(navController = navController)
+        expandedGraph(
+            navController = navController,
+            navigateToMyTours = {
+                navController.navigate(
+                    route = AppGraph.CustomTours.route.replace("{isSelect}", "true")
+                )
+            }
+        )
 
         customToursGraph(navController = navController)
     }
@@ -462,7 +470,10 @@ fun MainNavGraph(
     }
 }
 
-fun NavGraphBuilder.expandedGraph(navController: NavHostController) {
+fun NavGraphBuilder.expandedGraph(
+    navController: NavHostController,
+    navigateToMyTours: () -> Unit
+) {
     navigation(
         route = AppGraph.Expanded.route,
         startDestination = AppScreen.Expanded.route
@@ -509,11 +520,7 @@ fun NavGraphBuilder.expandedGraph(navController: NavHostController) {
                         )
                     )
                 },
-                navigateToTours = {
-                    navController.navigate(
-                        route = AppGraph.CustomTours.route.replace("{isSelect}", "true")
-                    )
-                },
+                navigateToTours = navigateToMyTours,
                 goToTourPlan = { itemId ->
                     navController.navigate(
                         route = AppScreen.ToursPlan.route.replace("{tourId}", itemId)
@@ -700,7 +707,9 @@ fun NavGraphBuilder.customToursGraph(navController: NavHostController) {
                         )
                         navController.navigateUp()
                     } else {
-                        // TODO: Navigate to expanded!!
+                        navController.navigate(
+                            route = AppScreen.CustomExpanded.route.replace("{tourId}", tour.id)
+                        )
                     }
                 },
                 onNavigateToFilters = {
@@ -744,6 +753,27 @@ fun NavGraphBuilder.customToursGraph(navController: NavHostController) {
                 },
                 navigateToExpanded = {
                     // TODO: Navigate to custom expanded!!
+                }
+            )
+        }
+
+        composable(route = AppScreen.CustomExpanded.route) { entry ->
+            val tourId = entry.arguments?.getString("tourId") ?: ""
+
+            CustomExpandedScreenRoot(
+                tourId = tourId,
+                onBackClicked = { navController.navigateUp() },
+                onEditClicked = { name, description ->
+                    navController.navigate(
+                        route = AppScreen.CreateTour.route
+                            .replace("{isCreate}", "false")
+                            .replace("{tourId}", tourId)
+                            .replace("{name}", name)
+                            .replace("{description}", description)
+                    )
+                },
+                goToTourPlan = {
+                    // TODO: Navigate!!
                 }
             )
         }
