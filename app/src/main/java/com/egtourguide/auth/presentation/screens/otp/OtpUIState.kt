@@ -1,6 +1,6 @@
 package com.egtourguide.auth.presentation.screens.otp
 
-import com.egtourguide.auth.domain.validation.ValidationCases
+import com.egtourguide.core.domain.validation.ValidationCases
 
 data class OtpUIState(
     val name: String = "",

@@ -3,8 +3,8 @@ package com.egtourguide.auth.presentation.screens.signup
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.egtourguide.auth.domain.usecases.SendCodeUseCase
-import com.egtourguide.auth.domain.validation.AuthValidation
-import com.egtourguide.auth.domain.validation.ValidationCases
+import com.egtourguide.core.domain.validation.Validation
+import com.egtourguide.core.domain.validation.ValidationCases
 import com.egtourguide.core.utils.onResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -67,11 +67,11 @@ class SignUpViewModel @Inject constructor(
     }
 
     private fun checkData(): Boolean {
-        val nameErrorState = AuthValidation.validateName(_uiState.value.name)
-        val emailErrorState = AuthValidation.validateEmail(_uiState.value.email)
-        val phoneErrorState = AuthValidation.validatePhone(_uiState.value.phone)
-        val passwordErrorState = AuthValidation.validatePassword(_uiState.value.password)
-        val confirmPasswordErrorState = AuthValidation.validateConfirmPassword(
+        val nameErrorState = Validation.validateName(_uiState.value.name)
+        val emailErrorState = Validation.validateEmail(_uiState.value.email)
+        val phoneErrorState = Validation.validatePhone(_uiState.value.phone)
+        val passwordErrorState = Validation.validatePassword(_uiState.value.password)
+        val confirmPasswordErrorState = Validation.validateConfirmPassword(
             _uiState.value.password,
             _uiState.value.confirmPassword
         )

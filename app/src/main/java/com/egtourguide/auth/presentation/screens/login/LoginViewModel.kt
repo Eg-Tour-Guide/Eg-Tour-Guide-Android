@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.egtourguide.auth.data.dto.body.LoginRequestBody
 import com.egtourguide.auth.domain.usecases.LoginUseCase
-import com.egtourguide.auth.domain.validation.AuthValidation
-import com.egtourguide.auth.domain.validation.ValidationCases
+import com.egtourguide.core.domain.validation.Validation
+import com.egtourguide.core.domain.validation.ValidationCases
 import com.egtourguide.core.domain.usecases.SaveInDataStoreUseCase
 import com.egtourguide.core.utils.DataStoreKeys.IS_LOGGED_KEY
 import com.egtourguide.core.utils.DataStoreKeys.TOKEN_KEY
@@ -95,8 +95,8 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun checkData(): Boolean {
-        val emailErrorState = AuthValidation.validateEmail(_uiState.value.email)
-        val passwordErrorState = AuthValidation.validatePassword(_uiState.value.password)
+        val emailErrorState = Validation.validateEmail(_uiState.value.email)
+        val passwordErrorState = Validation.validatePassword(_uiState.value.password)
 
         _uiState.update {
             it.copy(

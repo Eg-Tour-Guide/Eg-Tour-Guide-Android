@@ -711,7 +711,9 @@ fun NavGraphBuilder.customToursGraph(navController: NavHostController) {
                     )
                 },
                 onNavigateToCreateTour = {
-                    navController.navigate(route = AppScreen.CreateTour.route)
+                    navController.navigate(
+                        route = AppScreen.CreateTour.route.replace("{isCreate}", "true")
+                    )
                 },
                 onNavigateBack = {
                     navController.navigateUp()
@@ -719,8 +721,31 @@ fun NavGraphBuilder.customToursGraph(navController: NavHostController) {
             )
         }
 
-        composable(route = AppScreen.CreateTour.route) {
-            CreateTourScreenRoot()
+        composable(route = AppScreen.CreateTour.route) { entry ->
+            val isCreate = entry.arguments?.getString("isCreate").toBoolean()
+            val tourId = entry.arguments?.getString("tourId") ?: ""
+            val name = entry.arguments?.getString("name") ?: ""
+            val description = entry.arguments?.getString("description") ?: ""
+
+            CreateTourScreenRoot(
+                isCreate = isCreate,
+                tourId = tourId,
+                name = name,
+                description = description,
+                onNavigateBack = {
+                    navController.navigateUp()
+                },
+                navigateToMyTours = {
+                    navController.navigate(route = AppScreen.MyTours.route) {
+                        popUpTo(route = AppScreen.MyTours.route) {
+                            inclusive = true
+                        }
+                    }
+                },
+                navigateToExpanded = {
+                    // TODO: Navigate to custom expanded!!
+                }
+            )
         }
     }
 }

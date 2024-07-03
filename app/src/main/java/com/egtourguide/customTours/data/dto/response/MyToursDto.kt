@@ -1,4 +1,4 @@
-package com.egtourguide.user.data.dto.response
+package com.egtourguide.customTours.data.dto.response
 
 import com.egtourguide.home.domain.model.AbstractedTour
 

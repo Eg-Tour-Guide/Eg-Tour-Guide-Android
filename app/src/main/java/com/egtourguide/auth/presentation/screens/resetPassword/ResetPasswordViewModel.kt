@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.egtourguide.auth.data.dto.body.ResetPasswordRequestBody
 import com.egtourguide.auth.domain.usecases.ResetPasswordUseCase
-import com.egtourguide.auth.domain.validation.AuthValidation
-import com.egtourguide.auth.domain.validation.ValidationCases
+import com.egtourguide.core.domain.validation.Validation
+import com.egtourguide.core.domain.validation.ValidationCases
 import com.egtourguide.core.utils.onResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -69,8 +69,8 @@ class ResetPasswordViewModel @Inject constructor(
     }
 
     private fun checkData(): Boolean {
-        val passwordErrorState = AuthValidation.validatePassword(_uiState.value.password)
-        val confirmPasswordErrorState = AuthValidation.validateConfirmPassword(
+        val passwordErrorState = Validation.validatePassword(_uiState.value.password)
+        val confirmPasswordErrorState = Validation.validateConfirmPassword(
             _uiState.value.password,
             _uiState.value.confirmPassword
         )

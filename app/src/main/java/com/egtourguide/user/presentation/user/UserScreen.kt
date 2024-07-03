@@ -114,7 +114,7 @@ private fun UserScreenContent(
             icon = R.drawable.ic_edit_profile,
             iconSize = 20.dp,
             iconPadding = 16.dp,
-            textStyle = MaterialTheme.typography.headlineMedium,
+            textStyle = MaterialTheme.typography.displaySmall,
             text = stringResource(id = R.string.edit_profile),
             modifier = Modifier
                 .padding(horizontal = 16.dp)
@@ -126,7 +126,7 @@ private fun UserScreenContent(
             icon = R.drawable.ic_save,
             iconSize = 20.dp,
             iconPadding = 16.dp,
-            textStyle = MaterialTheme.typography.headlineMedium,
+            textStyle = MaterialTheme.typography.displaySmall,
             text = stringResource(id = R.string.saved),
             modifier = Modifier
                 .padding(horizontal = 16.dp)
@@ -138,7 +138,7 @@ private fun UserScreenContent(
             icon = R.drawable.ic_active_tour,
             iconSize = 20.dp,
             iconPadding = 16.dp,
-            textStyle = MaterialTheme.typography.headlineMedium,
+            textStyle = MaterialTheme.typography.displaySmall,
             text = stringResource(id = R.string.my_tours),
             modifier = Modifier
                 .padding(horizontal = 16.dp)
@@ -150,7 +150,7 @@ private fun UserScreenContent(
             icon = R.drawable.ic_settings,
             iconSize = 20.dp,
             iconPadding = 16.dp,
-            textStyle = MaterialTheme.typography.headlineMedium,
+            textStyle = MaterialTheme.typography.displaySmall,
             text = stringResource(id = R.string.settings),
             modifier = Modifier
                 .padding(horizontal = 16.dp)
@@ -162,7 +162,7 @@ private fun UserScreenContent(
             icon = R.drawable.ic_change_password,
             iconSize = 20.dp,
             iconPadding = 16.dp,
-            textStyle = MaterialTheme.typography.headlineMedium,
+            textStyle = MaterialTheme.typography.displaySmall,
             text = stringResource(id = R.string.change_password),
             modifier = Modifier
                 .padding(horizontal = 16.dp)
@@ -176,7 +176,7 @@ private fun UserScreenContent(
             iconPadding = 16.dp,
             iconTint = MaterialTheme.colorScheme.error,
             text = stringResource(id = R.string.logout),
-            textStyle = MaterialTheme.typography.headlineMedium,
+            textStyle = MaterialTheme.typography.displaySmall,
             textColor = MaterialTheme.colorScheme.error,
             modifier = Modifier
                 .padding(horizontal = 16.dp)

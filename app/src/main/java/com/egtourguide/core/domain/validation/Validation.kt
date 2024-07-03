@@ -1,10 +1,10 @@
-package com.egtourguide.auth.domain.validation
+package com.egtourguide.core.domain.validation
 
 enum class ValidationCases {
     CORRECT, EMPTY, ERROR, NOT_MATCHED
 }
 
-object AuthValidation {
+object Validation {
 
     private val emailRegex = Regex(pattern = "^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}\$")
     private val passwordRegex =
@@ -43,6 +43,12 @@ object AuthValidation {
     fun validateConfirmPassword(password: String, confirmPassword: String): ValidationCases {
         return if (confirmPassword.isEmpty()) ValidationCases.EMPTY
         else if (password != confirmPassword) ValidationCases.NOT_MATCHED
+        else ValidationCases.CORRECT
+    }
+
+    fun validateDescription(description: String): ValidationCases {
+        return if (description.isEmpty()) ValidationCases.EMPTY
+        else if (description.length < 3) ValidationCases.ERROR
         else ValidationCases.CORRECT
     }
 }

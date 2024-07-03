@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.egtourguide.auth.data.dto.body.ForgotPasswordRequestBody
 import com.egtourguide.auth.domain.usecases.GetForgotPasswordCodeUseCase
-import com.egtourguide.auth.domain.validation.AuthValidation
-import com.egtourguide.auth.domain.validation.ValidationCases
+import com.egtourguide.core.domain.validation.Validation
+import com.egtourguide.core.domain.validation.ValidationCases
 import com.egtourguide.core.utils.onResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -74,7 +74,7 @@ class ForgotPasswordViewModel @Inject constructor(
     }
 
     private fun checkData(): Boolean {
-        val emailErrorState = AuthValidation.validateEmail(_uiState.value.email)
+        val emailErrorState = Validation.validateEmail(_uiState.value.email)
         _uiState.update {
             it.copy(emailError = emailErrorState)
         }

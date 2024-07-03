@@ -32,7 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.egtourguide.R
-import com.egtourguide.auth.domain.validation.ValidationCases
+import com.egtourguide.core.domain.validation.ValidationCases
 import com.egtourguide.auth.presentation.components.AuthHeader
 import com.egtourguide.core.presentation.components.MainButton
 import com.egtourguide.core.presentation.components.MainTextField

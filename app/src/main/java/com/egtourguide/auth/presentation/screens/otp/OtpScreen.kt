@@ -36,7 +36,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.egtourguide.R
-import com.egtourguide.auth.domain.validation.ValidationCases
+import com.egtourguide.core.domain.validation.ValidationCases
 import com.egtourguide.auth.presentation.components.AuthHeader
 import com.egtourguide.core.presentation.components.MainButton
 import com.egtourguide.core.presentation.components.MainTextField

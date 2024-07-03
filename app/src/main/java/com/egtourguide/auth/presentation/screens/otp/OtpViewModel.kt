@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.egtourguide.auth.domain.usecases.SendCodeUseCase
 import com.egtourguide.auth.domain.usecases.SignupUseCase
-import com.egtourguide.auth.domain.validation.AuthValidation
-import com.egtourguide.auth.domain.validation.ValidationCases
+import com.egtourguide.core.domain.validation.Validation
+import com.egtourguide.core.domain.validation.ValidationCases
 import com.egtourguide.core.domain.usecases.SaveInDataStoreUseCase
 import com.egtourguide.core.utils.DataStoreKeys
 import com.egtourguide.core.utils.onResponse
@@ -64,7 +64,7 @@ class OtpViewModel @Inject constructor(
     private fun checkCode(): Boolean {
         _uiState.update { it.copy(codeError = ValidationCases.CORRECT) }
 
-        val isCodeCorrect = AuthValidation.validateCode(
+        val isCodeCorrect = Validation.validateCode(
             sentCode = _uiState.value.sentCode,
             code = _uiState.value.code
         )

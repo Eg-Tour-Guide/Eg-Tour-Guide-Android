@@ -1,6 +1,6 @@
 package com.egtourguide.auth.presentation.screens.signup
 
-import com.egtourguide.auth.domain.validation.ValidationCases
+import com.egtourguide.core.domain.validation.ValidationCases
 
 data class SignUpUIState(
     val name: String = "",
