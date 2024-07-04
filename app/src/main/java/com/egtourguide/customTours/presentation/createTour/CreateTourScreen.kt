@@ -138,18 +138,22 @@ private fun CreateTourContent(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Column {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
                 Text(
                     text = stringResource(id = R.string.name),
                     style = MaterialTheme.typography.displayMedium,
                     color = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp)
+                    modifier = Modifier.padding(top = 16.dp)
                 )
 
                 MainTextField(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 16.dp, start = 16.dp, end = 16.dp),
+                        .padding(top = 16.dp),
                     value = uiState.name,
                     onValueChanged = onNameChanged,
                     labelText = stringResource(id = R.string.name),
@@ -165,12 +169,12 @@ private fun CreateTourContent(
                     text = stringResource(id = R.string.description),
                     style = MaterialTheme.typography.displayMedium,
                     color = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.padding(top = 32.dp, start = 16.dp, end = 16.dp)
+                    modifier = Modifier.padding(top = 32.dp)
                 )
 
                 MainTextField(
                     modifier = Modifier
-                        .padding(top = 16.dp, start = 16.dp, end = 16.dp)
+                        .padding(top = 16.dp)
                         .fillMaxWidth()
                         .height(200.dp),
                     value = uiState.description,

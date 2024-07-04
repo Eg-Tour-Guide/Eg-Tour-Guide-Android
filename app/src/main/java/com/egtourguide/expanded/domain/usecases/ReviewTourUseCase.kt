@@ -7,6 +7,12 @@ import javax.inject.Inject
 class ReviewTourUseCase @Inject constructor(
     private val repository: ExpandedRepository
 ) {
-    suspend operator fun invoke(id: String, requestBody: ReviewRequestBody) =
-        repository.sendTourReview(id, requestBody)
+    suspend operator fun invoke(id: String, rating: Int, review: String) =
+        repository.sendTourReview(
+            tourId = id,
+            requestBody = ReviewRequestBody(
+                rating = rating,
+                review = review
+            )
+        )
 }

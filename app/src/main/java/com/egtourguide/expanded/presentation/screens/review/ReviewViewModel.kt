@@ -3,7 +3,6 @@ package com.egtourguide.expanded.presentation.screens.review
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.egtourguide.core.utils.onResponse
-import com.egtourguide.expanded.data.dto.body.ReviewRequestBody
 import com.egtourguide.expanded.domain.usecases.ReviewPlaceUseCase
 import com.egtourguide.expanded.domain.usecases.ReviewTourUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,96 +15,68 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ReviewViewModel @Inject constructor(
-    private val sendReviewTourUseCase: ReviewTourUseCase,
-    private val sendReviewPlaceUseCase: ReviewPlaceUseCase
+    private val reviewTourUseCase: ReviewTourUseCase,
+    private val reviewPlaceUseCase: ReviewPlaceUseCase
 ) : ViewModel() {
+
     private val _uiState = MutableStateFlow(ReviewState())
     val uiState = _uiState.asStateFlow()
 
-    fun tourOrPlace(tour: Boolean, place: Boolean, id: String) {
-        _uiState.update { it.copy(id = id) }
-        if (tour) _uiState.update { it.copy(isTour = true) }
-        if (place) _uiState.update { it.copy(isPlace = true) }
+    fun changeRating(rating: Int) {
+        _uiState.update { it.copy(rating = rating) }
     }
 
     fun changeReview(review: String) {
         _uiState.update { it.copy(review = review) }
     }
 
-    fun changeRating(rating: Float) {
-        _uiState.update { it.copy(rating = rating) }
-    }
-
-    fun clearSuccess() {
-        _uiState.update { it.copy(isSuccess = false) }
-    }
-
     fun clearError() {
-        _uiState.update { it.copy(isError = false) }
+        _uiState.update { it.copy(errorMessage = null) }
     }
 
-    fun onSubmitClick() {
-        _uiState.update {
-            it.copy(
-                isLoading = false,
-                isSuccess = true
+    fun onSubmitClick(isLandMark: Boolean, id: String) {
+        // TODO: The user can review with 0 or not!!
+        if (isLandMark) reviewLandmark(id = id)
+        else reviewTour(id = id)
+    }
+
+    private fun reviewLandmark(id: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            reviewPlaceUseCase(
+                id = id,
+                rating = _uiState.value.rating,
+                review = _uiState.value.review
+            ).onResponse(
+                onLoading = {
+                    _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+                },
+                onSuccess = {
+                    _uiState.update { it.copy(isLoading = false, isSuccess = true) }
+                },
+                onFailure = { message ->
+                    _uiState.update { it.copy(isLoading = false, errorMessage = message) }
+                }
             )
         }
-        viewModelScope.launch(Dispatchers.IO) {
-            val requestBody =
-                ReviewRequestBody(_uiState.value.review, _uiState.value.rating.toInt().toString())
-            val id = _uiState.value.id
+    }
 
-            if (_uiState.value.isTour) {
-                sendReviewTourUseCase(id, requestBody).onResponse(
-                    onLoading = {
-                        _uiState.update {
-                            it.copy(isLoading = true)
-                        }
-                    },
-                    onFailure = { _ ->
-                        _uiState.update {
-                            it.copy(
-                                isLoading = false,
-                                isError = true,
-                            )
-                        }
-                    },
-                    onSuccess = { _ ->
-                        _uiState.update {
-                            it.copy(
-                                isLoading = false,
-                                isSuccess = true
-                            )
-                        }
-                    }
-                )
-            }
-            if (_uiState.value.isPlace) {
-                sendReviewPlaceUseCase(id, requestBody).onResponse(
-                    onLoading = {
-                        _uiState.update {
-                            it.copy(isLoading = true)
-                        }
-                    },
-                    onFailure = { _ ->
-                        _uiState.update {
-                            it.copy(
-                                isLoading = false,
-                                isError = true,
-                            )
-                        }
-                    },
-                    onSuccess = { _ ->
-                        _uiState.update {
-                            it.copy(
-                                isLoading = false,
-                                isSuccess = true
-                            )
-                        }
-                    }
-                )
-            }
+    private fun reviewTour(id: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            reviewTourUseCase(
+                id = id,
+                rating = _uiState.value.rating,
+                review = _uiState.value.review
+            ).onResponse(
+                onLoading = {
+                    _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+                },
+                onSuccess = {
+                    _uiState.update { it.copy(isLoading = false, isSuccess = true) }
+                },
+                onFailure = { message ->
+                    _uiState.update { it.copy(isLoading = false, errorMessage = message) }
+                }
+            )
         }
     }
 }

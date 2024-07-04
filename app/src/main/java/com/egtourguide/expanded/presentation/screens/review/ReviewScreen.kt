@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,41 +32,43 @@ import com.egtourguide.R
 import com.egtourguide.core.presentation.components.MainButton
 import com.egtourguide.core.presentation.components.MainTextField
 
-
 @Composable
-fun ReviewScreen(
+fun ReviewScreenRoot(
     viewModel: ReviewViewModel = hiltViewModel(),
-    source: String = "",
     id: String,
-    onNavigateBack: () -> Unit
+    isLandmark: Boolean,
+    onNavigateBack: () -> Unit,
+    onSuccessReview: () -> Unit
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
-    var isPlace = false
-    var isTour = false
-    when (source) {
-        "tour" -> isTour = true
-        "place" -> isPlace = true
-    }
-    viewModel.tourOrPlace(isTour, isPlace, id)
+
     ReviewContent(
         onNavigateBack = onNavigateBack,
         uiState = uiState,
         onChangeReview = viewModel::changeReview,
-        onSubmitClick = viewModel::onSubmitClick,
+        onSubmitClick = {
+            viewModel.onSubmitClick(isLandMark = isLandmark, id = id)
+        },
         onChangeRating = viewModel::changeRating
     )
-    LaunchedEffect(key1 = uiState.isSuccess, key2 = uiState.isError) {
-        if (uiState.isSuccess) {
-            Toast.makeText(context, "You Rate with ${uiState.rating} stars", Toast.LENGTH_SHORT)
-                .show()
-            viewModel.clearSuccess()
-            onNavigateBack()
-        }
-        if (uiState.isError) {
-            Toast.makeText(context, "Something get wrong", Toast.LENGTH_SHORT)
-                .show()
+
+    LaunchedEffect(key1 = uiState.errorMessage) {
+        uiState.errorMessage?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
             viewModel.clearError()
+        }
+    }
+
+    LaunchedEffect(key1 = uiState.isSuccess) {
+        // TODO: Ask about message!!
+        if (uiState.isSuccess) {
+            Toast.makeText(
+                context,
+                "You Rate with ${uiState.rating} stars",
+                Toast.LENGTH_SHORT
+            ).show()
+            onSuccessReview()
         }
     }
 }
@@ -71,98 +76,89 @@ fun ReviewScreen(
 @Composable
 private fun ReviewContent(
     modifier: Modifier = Modifier,
-    onNavigateBack: () -> Unit,
-    uiState: ReviewState,
-    onChangeReview: (String) -> Unit,
-    onSubmitClick: () -> Unit,
-    onChangeRating: (Float) -> Unit
+    onNavigateBack: () -> Unit = {},
+    uiState: ReviewState = ReviewState(),
+    onChangeReview: (String) -> Unit = {},
+    onSubmitClick: () -> Unit = {},
+    onChangeRating: (Int) -> Unit = {}
 ) {
+    val focusManager = LocalFocusManager.current
+
     Column(
         modifier = modifier
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) {
-
         ScreenHeader(
             showBack = true,
             onBackClicked = onNavigateBack,
-            modifier = modifier
-                .height(52.dp)
+            modifier = modifier.height(52.dp)
         )
+
         Column(
             modifier = modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxWidth()
+                .weight(1f)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                text = stringResource(id = R.string.rating),
-                style = MaterialTheme.typography.displayLarge,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = modifier
-                    .align(Alignment.Start)
-            )
-            RatingBar(
-                modifier = modifier
-                    .height(40.dp)
-                    .fillMaxWidth(),
-                initialRating = uiState.rating,
-                starSize = 28.dp,
-                onRatingChanged = onChangeRating
-            )
-
-            Text(
-                text = stringResource(id = R.string.review),
-                style = MaterialTheme.typography.displayLarge,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = modifier
-                    .padding(top = 16.dp)
-                    .align(Alignment.Start)
-            )
-            MainTextField(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(209.dp)
-                    .padding(top = 8.dp),
-                value = uiState.review,
-                onValueChanged = onChangeReview,
-                singleLine = false,
-                labelText = stringResource(id = R.string.review),
-                placeholderText = stringResource(id = R.string.write_review),
-                imeAction = ImeAction.Default
-            )
-            ReviewFooter(
-                onSubmitClick = onSubmitClick,
-                uiState = uiState
+                    .padding(horizontal = 16.dp)
+            ) {
+                Text(
+                    text = stringResource(id = R.string.rating),
+                    style = MaterialTheme.typography.displayLarge,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = modifier.padding(top = 16.dp)
+                )
+
+                RatingBar(
+                    modifier = modifier
+                        .padding(top = 8.dp)
+                        .align(Alignment.CenterHorizontally),
+                    rating = uiState.rating,
+                    onRatingChanged = onChangeRating,
+                    isClickable = !uiState.isLoading
+                )
+
+                Text(
+                    text = stringResource(id = R.string.review),
+                    style = MaterialTheme.typography.displayLarge,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = modifier.padding(top = 24.dp)
+                )
+
+                MainTextField(
+                    modifier = Modifier
+                        .padding(top = 8.dp)
+                        .fillMaxWidth()
+                        .height(200.dp),
+                    value = uiState.review,
+                    onValueChanged = onChangeReview,
+                    singleLine = false,
+                    isEnabled = !uiState.isLoading,
+                    labelText = stringResource(id = R.string.review),
+                    placeholderText = stringResource(id = R.string.write_review),
+                    imeAction = ImeAction.Default
+                )
+            }
+
+            MainButton(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth()
+                    .height(40.dp),
+                text = stringResource(id = R.string.submit),
+                onClick = {
+                    focusManager.clearFocus()
+                    onSubmitClick()
+                },
+                isLoading = uiState.isLoading,
+                isEnabled = !uiState.isLoading
             )
         }
-
-    }
-}
-
-@Composable
-private fun ReviewFooter(
-    modifier: Modifier = Modifier,
-    onSubmitClick: () -> Unit,
-    uiState: ReviewState
-) {
-    Column(
-        modifier = modifier
-            .fillMaxSize(),
-        verticalArrangement = Arrangement.Bottom,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        MainButton(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(40.dp),
-            text = stringResource(id = R.string.submit),
-            onClick = onSubmitClick,
-            isLoading = uiState.isLoading,
-            isEnabled = !uiState.isLoading
-        )
     }
 }
 
@@ -170,9 +166,6 @@ private fun ReviewFooter(
 @Composable
 private fun ReviewScreenReview() {
     EGTourGuideTheme {
-        ReviewScreen(
-            id = "",
-            onNavigateBack = { }
-        )
+        ReviewContent()
     }
 }

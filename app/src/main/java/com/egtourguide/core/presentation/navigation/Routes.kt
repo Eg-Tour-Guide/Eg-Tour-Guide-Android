@@ -30,7 +30,7 @@ object Routes {
     // Expanded Routes
     const val EXPANDED_SCREEN_ROUTE = "EXPANDED_SCREEN_ROUTE"
     const val WEB_VIEW_SCREEN_ROUTE = "WEB_VIEW_SCREEN_ROUTE/{modelUrl}"
-    const val REVIEW_SCREEN_ROUTE = "REVIEW_SCREEN_ROUTE"
+    const val REVIEW_SCREEN_ROUTE = "REVIEW_SCREEN_ROUTE/{id}/{isLandmark}"
     const val MORE_REVIEWS_ROUTE = "MORE_REVIEWS_ROUTE"
     const val TOURS_PLAN_SCREEN_ROUTE = "TOURS_PLAN_SCREEN_ROUTE/{tourId}"
 

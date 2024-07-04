@@ -30,7 +30,7 @@ import com.egtourguide.home.presentation.screens.main.screens.home.HomeScreen
 import com.egtourguide.home.presentation.screens.main.screens.landmarksList.LandmarksListScreen
 import com.egtourguide.expanded.presentation.screens.moreReviews.MoreReviewsScreenRoot
 import com.egtourguide.customTours.presentation.myTours.MyToursScreen
-import com.egtourguide.expanded.presentation.screens.review.ReviewScreen
+import com.egtourguide.expanded.presentation.screens.review.ReviewScreenRoot
 import com.egtourguide.user.presentation.savedItems.SavedScreen
 import com.egtourguide.home.presentation.screens.search.SearchScreen
 import com.egtourguide.home.presentation.screens.search_results.SearchResultsScreen
@@ -505,8 +505,8 @@ fun NavGraphBuilder.expandedGraph(
                         route = AppScreen.Review.route
                             .replace("{id}", id)
                             .replace(
-                                "{source}",
-                                if (expandedType == ExpandedType.LANDMARK.name) "place" else "tour"
+                                "{isLandmark}",
+                                (expandedType == ExpandedType.LANDMARK.name).toString()
                             )
                     )
                 },
@@ -550,6 +550,7 @@ fun NavGraphBuilder.expandedGraph(
             MoreReviewsScreenRoot(
                 onNavigateBack = { navController.navigateUp() },
                 onNavigateToReview = {
+                    // TODO: Fix this!!
                     navController.navigate(route = AppScreen.Review.route)
                 }
             )
@@ -557,18 +558,21 @@ fun NavGraphBuilder.expandedGraph(
 
         composable(route = AppScreen.Review.route) { entry ->
             val itemId = entry.arguments?.getString("id") ?: ""
-            val source = entry.arguments?.getString("source") ?: ""
+            val isLandmark = entry.arguments?.getString("isLandmark").toBoolean()
 
-            ReviewScreen(
+            ReviewScreenRoot(
                 id = itemId,
-                source = source,
+                isLandmark = isLandmark,
                 onNavigateBack = {
+                    navController.navigateUp()
+                },
+                onSuccessReview = {
                     navController.navigate(
                         route = AppScreen.Expanded.route
                             .replace("{id}", itemId)
                             .replace(
                                 "{expandedType}",
-                                if (source == "place") ExpandedType.LANDMARK.name else ExpandedType.TOUR.name
+                                if (isLandmark) ExpandedType.LANDMARK.name else ExpandedType.TOUR.name
                             )
                     ) {
                         popUpTo(route = AppScreen.Expanded.route) {
