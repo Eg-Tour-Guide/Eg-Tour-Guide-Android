@@ -12,13 +12,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.egtourguide.R
 import com.egtourguide.core.presentation.components.MainButton
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
@@ -33,23 +30,21 @@ import com.egtourguide.core.presentation.components.ScreenHeader
 private fun MoreReviewsScreenPreview() {
     EGTourGuideTheme {
         MoreReviewsScreen(
-            uiState = MoreReviewsScreenState(
-                reviews = listOf(
-                    Review(
-                        id = "",
-                        authorName = "Abdo Sharaf",
-                        authorImage = "",
-                        rating = 3,
-                        description = getLoremString(words = 20)
-                    ),
-                    Review(
-                        id = "",
-                        authorName = "Abdo Sharaf",
-                        authorImage = "",
-                        rating = 3,
-                        description = getLoremString(words = 20)
-                    ),
-                )
+            reviews = listOf(
+                Review(
+                    id = "",
+                    authorName = "Abdo Sharaf",
+                    authorImage = "",
+                    rating = 3,
+                    description = getLoremString(words = 20)
+                ),
+                Review(
+                    id = "",
+                    authorName = "Abdo Sharaf",
+                    authorImage = "",
+                    rating = 3,
+                    description = getLoremString(words = 20)
+                ),
             )
         )
     }
@@ -57,14 +52,14 @@ private fun MoreReviewsScreenPreview() {
 
 @Composable
 fun MoreReviewsScreenRoot(
-    viewModel: MoreReviewsViewModel = hiltViewModel(),
+    reviews: List<Review>,
+    reviewsAverage: Double,
     onNavigateBack: () -> Unit,
     onNavigateToReview: () -> Unit
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-
     MoreReviewsScreen(
-        uiState = uiState,
+        reviews = reviews,
+        reviewsAverage = reviewsAverage,
         onBackClicked = onNavigateBack,
         onReviewClicked = onNavigateToReview
     )
@@ -72,7 +67,8 @@ fun MoreReviewsScreenRoot(
 
 @Composable
 private fun MoreReviewsScreen(
-    uiState: MoreReviewsScreenState = MoreReviewsScreenState(),
+    reviews: List<Review> = emptyList(),
+    reviewsAverage: Double = 0.0,
     onBackClicked: () -> Unit = {},
     onReviewClicked: () -> Unit = {}
 ) {
@@ -94,13 +90,13 @@ private fun MoreReviewsScreen(
         ) {
             item {
                 ReviewsHeader(
-                    reviewsAverage = uiState.reviewsAverage,
-                    reviewsTotal = uiState.reviewsTotal,
+                    reviewsAverage = reviewsAverage,
+                    reviewsTotal = reviews.size,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
             }
 
-            items(items = uiState.reviews) {
+            items(items = reviews, key = { it.id }) {
                 ReviewItem(
                     review = it
                 )

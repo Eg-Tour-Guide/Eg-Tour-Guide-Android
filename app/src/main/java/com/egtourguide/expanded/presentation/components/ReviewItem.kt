@@ -1,6 +1,5 @@
 package com.egtourguide.expanded.presentation.components
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,15 +7,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,8 +31,8 @@ private fun ReviewItemPreview() {
             review = Review(
                 id = "",
                 authorName = "Abdo Sharaf",
-                authorImage = "https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png",
-                rating = 4,
+                authorImage = "",
+                rating = 5,
                 description = getLoremString(words = 20)
             )
         )
@@ -74,22 +70,14 @@ fun ReviewItem(
             )
         }
 
-        // TODO: Replace with rating bar!!
-        Row(
-            modifier = Modifier.padding(top = 12.dp),
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            repeat(5) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_rating_star),
-                    contentDescription = "${review.rating} Rating",
-                    tint = if (it > review.rating.toInt()) MaterialTheme.colorScheme.primaryContainer else Color(
-                        0xFFFF8D18
-                    ),
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-        }
+        RatingBar(
+            rating = review.rating,
+            starSize = 20.dp,
+            starPadding = 6.dp,
+            isClickable = false,
+            onRatingChanged = {},
+            modifier = Modifier.padding(top = 12.dp)
+        )
 
         SelectionContainer(
             modifier = Modifier.padding(top = 8.dp)

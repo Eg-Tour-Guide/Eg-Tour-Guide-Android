@@ -120,7 +120,7 @@ fun ExpandedScreenRoot(
     tourImage: String,
     expandedType: String,
     onBackClicked: () -> Unit,
-    onSeeMoreClicked: () -> Unit,
+    onSeeMoreClicked: (List<Review>, Double) -> Unit,
     onReviewClicked: () -> Unit,
     navigateToWebScreen: (String) -> Unit,
     navigateToTours: () -> Unit,
@@ -236,7 +236,9 @@ fun ExpandedScreenRoot(
         onSaveArtifact = viewModel::changeArtifactSavedState,
         onSaveTour = viewModel::changeTourSavedState,
         onAddClicked = viewModel::changeAddDialogVisibility,
-        onSeeMoreClicked = onSeeMoreClicked,
+        onSeeMoreClicked = {
+            onSeeMoreClicked(uiState.reviews, uiState.reviewsAverage)
+        },
         onReviewClicked = onReviewClicked,
         goToTourPlan = { goToTourPlan(uiState.id) },
         navigateToSingleItem = navigateToSingleItem

@@ -49,7 +49,8 @@ private fun EditProfileScreenPreview() {
 
 @Composable
 fun EditProfileScreenRoot(
-    viewModel: EditProfileViewModel = hiltViewModel()
+    viewModel: EditProfileViewModel = hiltViewModel(),
+    onBackClicked: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -74,6 +75,7 @@ fun EditProfileScreenRoot(
 
     EditProfileContent(
         uiState = uiState,
+        onBackClicked = onBackClicked,
         onNameChanged = viewModel::onNameChanged,
         onPhoneChanged = viewModel::onPhoneChanged,
         onEmailChanged = viewModel::onEmailChanged,
@@ -84,6 +86,7 @@ fun EditProfileScreenRoot(
 @Composable
 private fun EditProfileContent(
     uiState: EditProfileState = EditProfileState(),
+    onBackClicked: () -> Unit = {},
     onNameChanged: (String) -> Unit = {},
     onPhoneChanged: (String) -> Unit = {},
     onEmailChanged: (String) -> Unit = {},
@@ -98,7 +101,7 @@ private fun EditProfileContent(
     ) {
         ScreenHeader(
             showBack = true,
-            onBackClicked = {},
+            onBackClicked = onBackClicked,
             modifier = Modifier.height(52.dp)
         )
 

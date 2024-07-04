@@ -35,12 +35,14 @@ private fun SettingsScreenPreview() {
 
 @Composable
 fun SettingsScreenRoot(
-    viewModel: SettingsViewModel = hiltViewModel()
+    viewModel: SettingsViewModel = hiltViewModel(),
+    onBackClicked: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
     SettingsContent(
         uiState = uiState,
+        onBackClicked = onBackClicked,
         changeNotificationsState = viewModel::changeNotificationsState
     )
 }
@@ -48,6 +50,7 @@ fun SettingsScreenRoot(
 @Composable
 private fun SettingsContent(
     uiState: SettingsState = SettingsState(),
+    onBackClicked: () -> Unit = {},
     changeNotificationsState: (Boolean) -> Unit = {}
 ) {
     Column(
@@ -57,7 +60,7 @@ private fun SettingsContent(
     ) {
         ScreenHeader(
             showBack = true,
-            onBackClicked = {},
+            onBackClicked = onBackClicked,
             modifier = Modifier.height(52.dp)
         )
 

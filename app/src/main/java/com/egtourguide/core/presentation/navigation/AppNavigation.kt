@@ -35,6 +35,8 @@ import com.egtourguide.user.presentation.savedItems.SavedScreen
 import com.egtourguide.home.presentation.screens.search.SearchScreen
 import com.egtourguide.home.presentation.screens.search_results.SearchResultsScreen
 import com.egtourguide.expanded.presentation.screens.toursPlan.ToursPlanScreenRoot
+import com.egtourguide.home.domain.model.toReviewsList
+import com.egtourguide.home.domain.model.toStringJson
 import com.egtourguide.home.presentation.screens.main.screens.toursList.ToursListScreen
 import com.egtourguide.user.presentation.changePassword.ChangePasswordScreenRoot
 import com.egtourguide.user.presentation.editProfile.EditProfileScreenRoot
@@ -497,8 +499,17 @@ fun NavGraphBuilder.expandedGraph(
                 tourImage = tourImage,
                 expandedType = expandedType,
                 onBackClicked = { navController.navigateUp() },
-                onSeeMoreClicked = {
-                    navController.navigate(route = AppScreen.MoreReviews.route)
+                onSeeMoreClicked = { reviews, reviewsAverage ->
+                    navController.navigate(
+                        route = AppScreen.MoreReviews.route
+                            .replace("{id}", id)
+                            .replace(
+                                "{isLandmark}",
+                                (expandedType == ExpandedType.LANDMARK.name).toString()
+                            )
+                            .replace("{reviews}", reviews.toStringJson())
+                            .replace("{reviewsAverage}", reviewsAverage.toString())
+                    )
                 },
                 onReviewClicked = {
                     navController.navigate(
@@ -546,12 +557,22 @@ fun NavGraphBuilder.expandedGraph(
             )
         }
 
-        composable(route = AppScreen.MoreReviews.route) {
+        composable(route = AppScreen.MoreReviews.route) { entry ->
+            val itemId = entry.arguments?.getString("id") ?: ""
+            val isLandmark = entry.arguments?.getString("isLandmark").toBoolean()
+            val reviewsJson = entry.arguments?.getString("reviews") ?: ""
+            val reviewsAverage = entry.arguments?.getString("reviewsAverage") ?: ""
+
             MoreReviewsScreenRoot(
+                reviews = reviewsJson.toReviewsList(),
+                reviewsAverage = reviewsAverage.toDouble(),
                 onNavigateBack = { navController.navigateUp() },
                 onNavigateToReview = {
-                    // TODO: Fix this!!
-                    navController.navigate(route = AppScreen.Review.route)
+                    navController.navigate(
+                        route = AppScreen.Review.route
+                            .replace("{id}", itemId)
+                            .replace("{isLandmark}", isLandmark.toString())
+                    )
                 }
             )
         }
@@ -630,15 +651,27 @@ fun NavGraphBuilder.userGraph(
         }
 
         composable(route = AppScreen.EditProfile.route) {
-            EditProfileScreenRoot()
+            EditProfileScreenRoot(
+                onBackClicked = {
+                    navController.navigateUp()
+                }
+            )
         }
 
         composable(route = AppScreen.ChangePassword.route) {
-            ChangePasswordScreenRoot()
+            ChangePasswordScreenRoot(
+                onBackClicked = {
+                    navController.navigateUp()
+                }
+            )
         }
 
         composable(route = AppScreen.Settings.route) {
-            SettingsScreenRoot()
+            SettingsScreenRoot(
+                onBackClicked = {
+                    navController.navigateUp()
+                }
+            )
         }
 
         composable(route = AppScreen.Saved.route) { backStackEntry ->

@@ -42,7 +42,8 @@ private fun ChangePasswordScreenPreview() {
 
 @Composable
 fun ChangePasswordScreenRoot(
-    viewModel: ChangePasswordViewModel = hiltViewModel()
+    viewModel: ChangePasswordViewModel = hiltViewModel(),
+    onBackClicked: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -67,6 +68,7 @@ fun ChangePasswordScreenRoot(
 
     ChangePasswordContent(
         uiState = uiState,
+        onBackClicked = onBackClicked,
         onOldPasswordChanged = viewModel::onOldPasswordChanged,
         onNewPasswordChanged = viewModel::onNewPasswordChanged,
         onConfirmPasswordChanged = viewModel::onConfirmPasswordChanged,
@@ -77,6 +79,7 @@ fun ChangePasswordScreenRoot(
 @Composable
 private fun ChangePasswordContent(
     uiState: ChangePasswordState = ChangePasswordState(),
+    onBackClicked: () -> Unit = {},
     onOldPasswordChanged: (String) -> Unit = {},
     onNewPasswordChanged: (String) -> Unit = {},
     onConfirmPasswordChanged: (String) -> Unit = {},
@@ -91,7 +94,7 @@ private fun ChangePasswordContent(
     ) {
         ScreenHeader(
             showBack = true,
-            onBackClicked = {},
+            onBackClicked = onBackClicked,
             modifier = Modifier.height(52.dp)
         )
 
