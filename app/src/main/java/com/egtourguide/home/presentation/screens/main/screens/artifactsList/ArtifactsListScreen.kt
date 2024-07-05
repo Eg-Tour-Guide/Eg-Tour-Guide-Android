@@ -54,6 +54,7 @@ fun ArtifactsListScreen(
     viewModel: ArtifactsListViewModel = hiltViewModel(),
     filters: HashMap<*, *>? = null,
     onNavigateToSearch: () -> Unit = {},
+    navigateToNotifications: () -> Unit,
     onNavigateToFilters: () -> Unit = {},
     onNavigateToSingleArtifact: (AbstractedArtifact) -> Unit = {}
 ) {
@@ -65,6 +66,7 @@ fun ArtifactsListScreen(
     ArtifactsListScreenContent(
         uiState = uiState,
         onSearchClicked = onNavigateToSearch,
+        onNotificationsClicked = navigateToNotifications,
         onFilterClicked = onNavigateToFilters,
         onArtifactClicked = onNavigateToSingleArtifact,
         onSaveClicked = viewModel::onSaveClicked
@@ -102,10 +104,11 @@ fun ArtifactsListScreen(
 @Composable
 fun ArtifactsListScreenContent(
     uiState: ArtifactsListUIState,
-    onSearchClicked: () -> Unit,
-    onFilterClicked: () -> Unit,
-    onArtifactClicked: (AbstractedArtifact) -> Unit,
-    onSaveClicked: (AbstractedArtifact) -> Unit
+    onSearchClicked: () -> Unit = {},
+    onNotificationsClicked: () -> Unit = {},
+    onFilterClicked: () -> Unit = {},
+    onArtifactClicked: (AbstractedArtifact) -> Unit = {},
+    onSaveClicked: (AbstractedArtifact) -> Unit = {}
 ) {
     Column(
         Modifier
@@ -125,9 +128,7 @@ fun ArtifactsListScreenContent(
             onCaptureObjectClicked = {
                 // TODO: Here!!
             },
-            onNotificationsClicked = {
-                // TODO: Here!!
-            },
+            onNotificationsClicked = onNotificationsClicked,
             onActiveTourClicked = {
                 // TODO: And here!!
             }

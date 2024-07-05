@@ -18,6 +18,7 @@ sealed class AppScreen(val route: String) {
     object Filter : AppScreen(route = Routes.FILTER_SCREEN_ROUTE)
     object Search : AppScreen(route = Routes.SEARCH_SCREEN_ROUTE)
     object SearchResults : AppScreen(route = Routes.SEARCH_RESULTS_SCREEN_ROUTE)
+    object Notification : AppScreen(route = Routes.NOTIFICATION_SCREEN_ROUTE)
 
     // Expanded Screens
     object Expanded : AppScreen(route = Routes.EXPANDED_SCREEN_ROUTE)

@@ -54,6 +54,7 @@ fun ToursListScreen(
     viewModel: ToursListViewModel = hiltViewModel(),
     filters: HashMap<*, *>? = null,
     onNavigateToSearch: () -> Unit = {},
+    navigateToNotifications: () -> Unit,
     onNavigateToFilters: () -> Unit = {},
     onNavigateToSingleTour: (AbstractedTour) -> Unit = {}
 ) {
@@ -65,6 +66,7 @@ fun ToursListScreen(
     ToursListScreenContent(
         uiState = uiState,
         onSearchClicked = onNavigateToSearch,
+        onNotificationsClicked = navigateToNotifications,
         onFilterClicked = onNavigateToFilters,
         onTourClicked = onNavigateToSingleTour,
         onSaveClicked = viewModel::onSaveClicked
@@ -102,10 +104,11 @@ fun ToursListScreen(
 @Composable
 fun ToursListScreenContent(
     uiState: ToursListUIState,
-    onSearchClicked: () -> Unit,
-    onFilterClicked: () -> Unit,
-    onTourClicked: (AbstractedTour) -> Unit,
-    onSaveClicked: (AbstractedTour) -> Unit
+    onSearchClicked: () -> Unit = {},
+    onNotificationsClicked: () -> Unit = {},
+    onFilterClicked: () -> Unit = {},
+    onTourClicked: (AbstractedTour) -> Unit = {},
+    onSaveClicked: (AbstractedTour) -> Unit = {}
 ) {
     Column(
         Modifier
@@ -125,9 +128,7 @@ fun ToursListScreenContent(
             onCaptureObjectClicked = {
                 // TODO: Here!!
             },
-            onNotificationsClicked = {
-                // TODO: Here!!
-            },
+            onNotificationsClicked = onNotificationsClicked,
             onActiveTourClicked = {
                 // TODO: And here!!
             }
@@ -249,11 +250,7 @@ private fun ToursScreenPreview() {
                         isSaved = false
                     )
                 }
-            ),
-            onSearchClicked = {},
-            onFilterClicked = {},
-            onTourClicked = {},
-            onSaveClicked = {}
+            )
         )
     }
 }

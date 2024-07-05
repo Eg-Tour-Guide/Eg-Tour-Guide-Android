@@ -53,6 +53,7 @@ fun LandmarksListScreen(
     viewModel: LandmarksListViewModel = hiltViewModel(),
     filters: HashMap<*, *>? = null,
     onNavigateToSearch: () -> Unit = {},
+    navigateToNotifications: () -> Unit,
     onNavigateToFilters: () -> Unit = {},
     onNavigateToSinglePlace: (AbstractedLandmark) -> Unit = {}
 ) {
@@ -63,6 +64,7 @@ fun LandmarksListScreen(
 
     LandmarksListScreenContent(
         uiState = uiState,
+        navigateToNotifications = navigateToNotifications,
         onSearchClicked = onNavigateToSearch,
         onFilterClicked = onNavigateToFilters,
         onPlaceClicked = onNavigateToSinglePlace,
@@ -101,10 +103,11 @@ fun LandmarksListScreen(
 @Composable
 fun LandmarksListScreenContent(
     uiState: LandmarksListUIState,
-    onSearchClicked: () -> Unit,
-    onFilterClicked: () -> Unit,
-    onPlaceClicked: (AbstractedLandmark) -> Unit,
-    onSaveClicked: (AbstractedLandmark) -> Unit
+    onSearchClicked: () -> Unit = {},
+    navigateToNotifications: () -> Unit = {},
+    onFilterClicked: () -> Unit = {},
+    onPlaceClicked: (AbstractedLandmark) -> Unit = {},
+    onSaveClicked: (AbstractedLandmark) -> Unit = {}
 ) {
     Column(
         Modifier
@@ -124,9 +127,7 @@ fun LandmarksListScreenContent(
             onCaptureObjectClicked = {
                 // TODO: Here!!
             },
-            onNotificationsClicked = {
-                // TODO: Here!!
-            },
+            onNotificationsClicked = navigateToNotifications,
             onActiveTourClicked = {
                 // TODO: And here!!
             }

@@ -34,6 +34,7 @@ private fun UserScreenRoot() {
 
 @Composable
 fun UserScreenRoot(
+    navigateToNotifications: () -> Unit,
     navigateToEditProfile: () -> Unit,
     navigateToSaved: () -> Unit,
     navigateToMyTours: () -> Unit,
@@ -44,6 +45,7 @@ fun UserScreenRoot(
         navigateToSearch = {
             // TODO: Here!!
         },
+        navigateToNotifications = navigateToNotifications,
         navigateToEditProfile = navigateToEditProfile,
         navigateToSaved = navigateToSaved,
         navigateToMyTours = navigateToMyTours,
@@ -58,6 +60,7 @@ fun UserScreenRoot(
 @Composable
 private fun UserScreenContent(
     navigateToSearch: () -> Unit = {},
+    navigateToNotifications: () -> Unit = {},
     navigateToEditProfile: () -> Unit = {},
     navigateToSaved: () -> Unit = {},
     navigateToMyTours: () -> Unit = {},
@@ -83,9 +86,7 @@ private fun UserScreenContent(
             onCaptureObjectClicked = {
                 // TODO: Here!!
             },
-            onNotificationsClicked = {
-                // TODO: Here!!
-            },
+            onNotificationsClicked = navigateToNotifications,
             onActiveTourClicked = {
                 // TODO: And here!!
             }

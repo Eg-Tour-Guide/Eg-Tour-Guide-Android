@@ -76,6 +76,7 @@ import kotlinx.coroutines.delay
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onNavigateToSearch: () -> Unit = {},
+    navigateToNotifications: () -> Unit,
     onNavigateToSinglePlace: (AbstractedLandmark) -> Unit = {},
     onNavigateToDetectedArtifact: (DetectedArtifact) -> Unit = {},
     onNavigateToEvent: (AbstractedEvent) -> Unit = {}
@@ -135,11 +136,9 @@ fun HomeScreen(
             onCaptureObjectClicked = {
                 isArtifactDetectionDialogShown = true
             },
-            onNotificationsClicked = {
-                // TODO: Here!!
-            },
+            onNotificationsClicked = navigateToNotifications,
             onActiveTourClicked = {
-                // TODO: And here!!
+                // TODO: Here!!
             }
         )
 
