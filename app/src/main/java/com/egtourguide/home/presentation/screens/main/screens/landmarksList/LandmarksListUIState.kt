@@ -1,6 +1,7 @@
 package com.egtourguide.home.presentation.screens.main.screens.landmarksList
 
 import com.egtourguide.home.domain.model.AbstractedLandmark
+import com.egtourguide.home.domain.model.DetectedArtifact
 
 data class LandmarksListUIState(
     val callIsSent: Boolean = false,
@@ -9,5 +10,7 @@ data class LandmarksListUIState(
     val error: String? = null,
     val isSaveSuccess: Boolean = false,
     val isSave: Boolean = true,
-    val saveError: String? = null
+    val saveError: String? = null,
+    val isDetectionLoading: Boolean = false,
+    val detectedArtifact: DetectedArtifact? = null
 )

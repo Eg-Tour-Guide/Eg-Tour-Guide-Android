@@ -1,5 +1,12 @@
 package com.egtourguide.user.presentation.user
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.net.Uri
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -12,17 +19,28 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.egtourguide.R
 import com.egtourguide.core.presentation.components.DataRow
 import com.egtourguide.core.presentation.components.ScreenHeader
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
+import com.egtourguide.home.domain.model.DetectedArtifact
+import com.egtourguide.home.presentation.screens.main.components.ArtifactDetectionDialog
 
 @Preview
 @Composable
@@ -34,13 +52,51 @@ private fun UserScreenRoot() {
 
 @Composable
 fun UserScreenRoot(
+    viewModel: UserViewModel = hiltViewModel(),
     navigateToNotifications: () -> Unit,
     navigateToEditProfile: () -> Unit,
     navigateToSaved: () -> Unit,
     navigateToMyTours: () -> Unit,
     navigateToChangePassword: () -> Unit,
-    navigateToSettings: () -> Unit
+    navigateToSettings: () -> Unit,
+    onNavigateToDetectedArtifact: (DetectedArtifact) -> Unit
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+    var isArtifactDetectionDialogShown by remember { mutableStateOf(false) }
+
+    var hasCameraPermission by remember {
+        mutableStateOf(
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED
+        )
+    }
+
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        hasCameraPermission = isGranted
+    }
+
+    val galleryImageLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            val image = viewModel.getBitmapFromUri(context = context, uri = uri)
+            viewModel.detectArtifact(image = image!!, context = context)
+        }
+    }
+
+    val cameraImageLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicturePreview()
+    ) { bitmap: Bitmap? ->
+        bitmap?.let {
+            viewModel.detectArtifact(image = bitmap, context = context)
+        }
+    }
+
     UserScreenContent(
         navigateToSearch = {
             // TODO: Here!!
@@ -53,8 +109,35 @@ fun UserScreenRoot(
         navigateToSettings = navigateToSettings,
         onLogoutClicked = {
             // TODO: Here!!
-        }
+        },
+        onCaptureObjectClicked = { isArtifactDetectionDialogShown = true }
     )
+
+    LaunchedEffect(key1 = uiState.detectedArtifact) {
+        if (uiState.detectedArtifact != null) {
+            isArtifactDetectionDialogShown = false
+            onNavigateToDetectedArtifact(uiState.detectedArtifact!!)
+            viewModel.clearDetectionSuccess()
+            Toast.makeText(context, uiState.detectedArtifact!!.message, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    if (isArtifactDetectionDialogShown) {
+        ArtifactDetectionDialog(
+            isDetectionLoading = uiState.isDetectionLoading,
+            onDismissRequest = { isArtifactDetectionDialogShown = false },
+            onGalleryClicked = {
+                galleryImageLauncher.launch("image/*")
+            },
+            onCameraClicked = {
+                if (hasCameraPermission) {
+                    cameraImageLauncher.launch(null)
+                } else {
+                    cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                }
+            }
+        )
+    }
 }
 
 @Composable
@@ -66,7 +149,8 @@ private fun UserScreenContent(
     navigateToMyTours: () -> Unit = {},
     navigateToChangePassword: () -> Unit = {},
     navigateToSettings: () -> Unit = {},
-    onLogoutClicked: () -> Unit = {}
+    onLogoutClicked: () -> Unit = {},
+    onCaptureObjectClicked: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -83,12 +167,10 @@ private fun UserScreenContent(
             showActiveTour = true,
             showCaptureObject = true,
             onSearchClicked = navigateToSearch,
-            onCaptureObjectClicked = {
-                // TODO: Here!!
-            },
+            onCaptureObjectClicked = onCaptureObjectClicked,
             onNotificationsClicked = navigateToNotifications,
             onActiveTourClicked = {
-                // TODO: And here!!
+                // TODO: Here!!
             }
         )
 

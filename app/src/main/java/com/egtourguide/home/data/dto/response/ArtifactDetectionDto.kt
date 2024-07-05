@@ -14,10 +14,15 @@ data class ArtifactDetectionDto(
         val description: String,
         val images: List<String>,
         val material: String,
-        val museum: String,
+        val museum: Mudeum,
         val name: String,
         val type: String
-    )
+    ) {
+        data class Mudeum(
+            val _id: String,
+            val name: String
+        )
+    }
 
     fun toDomainDetectedArtifact(): DetectedArtifact {
         return DetectedArtifact(

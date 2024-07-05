@@ -1,6 +1,12 @@
 package com.egtourguide.home.presentation.screens.main.screens.toursList
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -27,7 +33,9 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,6 +45,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -47,6 +56,8 @@ import com.egtourguide.core.presentation.components.EmptyState
 import com.egtourguide.core.presentation.components.LoadingState
 import com.egtourguide.core.presentation.components.ScreenHeader
 import com.egtourguide.core.presentation.components.TourItem
+import com.egtourguide.home.domain.model.DetectedArtifact
+import com.egtourguide.home.presentation.screens.main.components.ArtifactDetectionDialog
 import java.util.HashMap
 
 @Composable
@@ -56,12 +67,47 @@ fun ToursListScreen(
     onNavigateToSearch: () -> Unit = {},
     navigateToNotifications: () -> Unit,
     onNavigateToFilters: () -> Unit = {},
-    onNavigateToSingleTour: (AbstractedTour) -> Unit = {}
+    onNavigateToSingleTour: (AbstractedTour) -> Unit = {},
+    onNavigateToDetectedArtifact: (DetectedArtifact) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
     viewModel.filters = filters
+
+    var isArtifactDetectionDialogShown by remember { mutableStateOf(false) }
+
+    var hasCameraPermission by remember {
+        mutableStateOf(
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED
+        )
+    }
+
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        hasCameraPermission = isGranted
+    }
+
+    val galleryImageLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            val image = viewModel.getBitmapFromUri(context = context, uri = uri)
+            viewModel.detectArtifact(image = image!!, context = context)
+        }
+    }
+
+    val cameraImageLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicturePreview()
+    ) { bitmap: Bitmap? ->
+        bitmap?.let {
+            viewModel.detectArtifact(image = bitmap, context = context)
+        }
+    }
 
     ToursListScreenContent(
         uiState = uiState,
@@ -69,7 +115,8 @@ fun ToursListScreen(
         onNotificationsClicked = navigateToNotifications,
         onFilterClicked = onNavigateToFilters,
         onTourClicked = onNavigateToSingleTour,
-        onSaveClicked = viewModel::onSaveClicked
+        onSaveClicked = viewModel::onSaveClicked,
+        onCaptureObjectClicked = { isArtifactDetectionDialogShown = true }
     )
 
     DisposableEffect(key1 = lifecycleOwner) {
@@ -99,6 +146,32 @@ fun ToursListScreen(
             viewModel.clearSaveError()
         }
     }
+
+    LaunchedEffect(key1 = uiState.detectedArtifact) {
+        if (uiState.detectedArtifact != null) {
+            isArtifactDetectionDialogShown = false
+            onNavigateToDetectedArtifact(uiState.detectedArtifact!!)
+            viewModel.clearDetectionSuccess()
+            Toast.makeText(context, uiState.detectedArtifact!!.message, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    if (isArtifactDetectionDialogShown) {
+        ArtifactDetectionDialog(
+            isDetectionLoading = uiState.isDetectionLoading,
+            onDismissRequest = { isArtifactDetectionDialogShown = false },
+            onGalleryClicked = {
+                galleryImageLauncher.launch("image/*")
+            },
+            onCameraClicked = {
+                if (hasCameraPermission) {
+                    cameraImageLauncher.launch(null)
+                } else {
+                    cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                }
+            }
+        )
+    }
 }
 
 @Composable
@@ -108,7 +181,8 @@ fun ToursListScreenContent(
     onNotificationsClicked: () -> Unit = {},
     onFilterClicked: () -> Unit = {},
     onTourClicked: (AbstractedTour) -> Unit = {},
-    onSaveClicked: (AbstractedTour) -> Unit = {}
+    onSaveClicked: (AbstractedTour) -> Unit = {},
+    onCaptureObjectClicked: () -> Unit = {}
 ) {
     Column(
         Modifier
@@ -125,12 +199,10 @@ fun ToursListScreenContent(
             showActiveTour = true,
             showCaptureObject = true,
             onSearchClicked = onSearchClicked,
-            onCaptureObjectClicked = {
-                // TODO: Here!!
-            },
+            onCaptureObjectClicked = onCaptureObjectClicked,
             onNotificationsClicked = onNotificationsClicked,
             onActiveTourClicked = {
-                // TODO: And here!!
+                // TODO: Here!!
             }
         )
 

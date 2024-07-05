@@ -29,7 +29,7 @@ object Routes {
     const val NOTIFICATION_SCREEN_ROUTE = "NOTIFICATION_SCREEN_ROUTE"
 
     // Expanded Routes
-    const val EXPANDED_SCREEN_ROUTE = "EXPANDED_SCREEN_ROUTE"
+    const val EXPANDED_SCREEN_ROUTE = "EXPANDED_SCREEN_ROUTE/{fromInside}/{id}/{expandedType}"
     const val WEB_VIEW_SCREEN_ROUTE = "WEB_VIEW_SCREEN_ROUTE/{modelUrl}"
     const val REVIEW_SCREEN_ROUTE = "REVIEW_SCREEN_ROUTE/{id}/{isLandmark}"
     const val MORE_REVIEWS_ROUTE = "MORE_REVIEWS_ROUTE/{id}/{isLandmark}/{reviews}/{reviewsAverage}"

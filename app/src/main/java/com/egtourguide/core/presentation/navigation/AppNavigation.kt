@@ -35,6 +35,7 @@ import com.egtourguide.user.presentation.savedItems.SavedScreen
 import com.egtourguide.home.presentation.screens.search.SearchScreen
 import com.egtourguide.home.presentation.screens.search_results.SearchResultsScreen
 import com.egtourguide.expanded.presentation.screens.toursPlan.ToursPlanScreenRoot
+import com.egtourguide.home.domain.model.DetectedArtifact
 import com.egtourguide.home.domain.model.toReviewsList
 import com.egtourguide.home.domain.model.toStringJson
 import com.egtourguide.home.presentation.screens.main.screens.toursList.ToursListScreen
@@ -286,6 +287,9 @@ fun MainNavGraph(
                 },
                 onNavigateToSingleTour = { tour ->
                     navigateToExpanded(tour.id, ExpandedType.TOUR.name)
+                },
+                onNavigateToDetectedArtifact = { artifact ->
+                    navigateToExpanded(artifact.id, ExpandedType.ARTIFACT.name)
                 }
             )
         }
@@ -326,6 +330,9 @@ fun MainNavGraph(
                 },
                 onNavigateToSinglePlace = {
                     navigateToExpanded(it.id, ExpandedType.LANDMARK.name)
+                },
+                onNavigateToDetectedArtifact = { artifact ->
+                    navigateToExpanded(artifact.id, ExpandedType.ARTIFACT.name)
                 }
             )
         }
@@ -358,6 +365,9 @@ fun MainNavGraph(
                 },
                 onNavigateToSingleArtifact = { artifact ->
                     navigateToExpanded(artifact.id, ExpandedType.ARTIFACT.name)
+                },
+                onNavigateToDetectedArtifact = { artifact ->
+                    navigateToExpanded(artifact.id, ExpandedType.ARTIFACT.name)
                 }
             )
         }
@@ -367,6 +377,9 @@ fun MainNavGraph(
             navigateToMyTours = navigateToMyTours,
             navigateToNotifications = {
                 navController.navigate(route = AppScreen.Notification.route)
+            },
+            onNavigateToDetectedArtifact = { artifact ->
+                navigateToExpanded(artifact.id, ExpandedType.ARTIFACT.name)
             }
         )
 
@@ -509,8 +522,13 @@ fun NavGraphBuilder.expandedGraph(
                 navController.getBackStackEntry(route = AppGraph.Expanded.route)
             }
 
-            val id = parentEntry.arguments?.getString("id") ?: ""
-            val expandedType = parentEntry.arguments?.getString("expandedType") ?: ""
+            val fromInside = entry.arguments?.getString("fromInside").toBoolean()
+
+            val id = if (fromInside) entry.arguments?.getString("id")
+                ?: "" else parentEntry.arguments?.getString("id") ?: ""
+
+            val expandedType = if (fromInside) entry.arguments?.getString("expandedType")
+                ?: "" else parentEntry.arguments?.getString("expandedType") ?: ""
 
             val tourId = entry.savedStateHandle.get<String>(key = "tourId") ?: ""
             val tourName = entry.savedStateHandle.get<String>(key = "tourName") ?: ""
@@ -564,6 +582,7 @@ fun NavGraphBuilder.expandedGraph(
                 navigateToSingleItem = { itemId, expandedType2 ->
                     navController.navigate(
                         route = AppScreen.Expanded.route
+                            .replace("{fromInside}", "true")
                             .replace("{id}", itemId)
                             .replace("{expandedType}", expandedType2)
                     )
@@ -651,7 +670,8 @@ fun NavGraphBuilder.expandedGraph(
 fun NavGraphBuilder.userGraph(
     navController: NavHostController,
     navigateToMyTours: () -> Unit,
-    navigateToNotifications: () -> Unit
+    navigateToNotifications: () -> Unit,
+    onNavigateToDetectedArtifact: (DetectedArtifact) -> Unit
 ) {
     navigation(
         route = AppGraph.User.route,
@@ -672,7 +692,8 @@ fun NavGraphBuilder.userGraph(
                 },
                 navigateToSettings = {
                     navController.navigate(route = AppScreen.Settings.route)
-                }
+                },
+                onNavigateToDetectedArtifact = onNavigateToDetectedArtifact
             )
         }
 
