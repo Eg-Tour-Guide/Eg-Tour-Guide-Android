@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -57,23 +58,28 @@ import com.egtourguide.core.presentation.components.LoadingState
 import com.egtourguide.core.presentation.components.ScreenHeader
 import com.egtourguide.core.presentation.components.TourItem
 import com.egtourguide.home.domain.model.DetectedArtifact
+import com.egtourguide.home.presentation.screens.filter.FilterScreenViewModel
 import com.egtourguide.home.presentation.screens.main.components.ArtifactDetectionDialog
-import java.util.HashMap
 
 @Composable
 fun ToursListScreen(
     viewModel: ToursListViewModel = hiltViewModel(),
-    filters: HashMap<*, *>? = null,
-    onNavigateToSearch: () -> Unit = {},
+    filterViewModel: FilterScreenViewModel,
+    onNavigateToSearch: () -> Unit,
     navigateToNotifications: () -> Unit,
-    onNavigateToFilters: () -> Unit = {},
-    onNavigateToSingleTour: (AbstractedTour) -> Unit = {},
+    onNavigateToFilters: () -> Unit,
+    onNavigateToSingleTour: (AbstractedTour) -> Unit,
     onNavigateToDetectedArtifact: (DetectedArtifact) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val filterState by filterViewModel.uiState.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
-    viewModel.filters = filters
+
+    LaunchedEffect(key1 = filterState) {
+        Log.d("```TAG```", "ToursListScreen: Changed!!")
+        viewModel.filterTours(filterState)
+    }
 
     var isArtifactDetectionDialogShown by remember { mutableStateOf(false) }
 
@@ -131,6 +137,7 @@ fun ToursListScreen(
         }
     }
 
+    // TODO: Check messages!!
     LaunchedEffect(key1 = uiState.isSaveSuccess, key2 = uiState.saveError) {
         val successMsg =
             if (uiState.isSave) "Tour Saved Successfully" else "Tour Unsaved Successfully"
@@ -234,14 +241,14 @@ fun ToursListScreenContent(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 ToursHeader(
-                    toursCount = uiState.tours.size,
+                    toursCount = uiState.displayedTours.size,
                     onFilterClicked = onFilterClicked
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 ToursSection(
-                    tours = uiState.tours,
+                    tours = uiState.displayedTours,
                     onTourClicked = onTourClicked,
                     onSaveClicked = onSaveClicked
                 )
@@ -311,6 +318,17 @@ private fun ToursScreenPreview() {
         ToursListScreenContent(
             uiState = ToursListUIState(
                 isLoading = false,
+                displayedTours = (0..3).map {
+                    AbstractedTour(
+                        id = "$it",
+                        image = "contentiones",
+                        title = "eros",
+                        duration = 3645,
+                        rating = 10.11f,
+                        ratingCount = 3276,
+                        isSaved = false
+                    )
+                },
                 tours = (0..9).map {
                     AbstractedTour(
                         id = "$it",
@@ -321,7 +339,7 @@ private fun ToursScreenPreview() {
                         ratingCount = 3276,
                         isSaved = false
                     )
-                }
+                },
             )
         )
     }

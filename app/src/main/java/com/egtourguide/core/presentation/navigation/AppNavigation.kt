@@ -5,6 +5,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -38,6 +39,7 @@ import com.egtourguide.expanded.presentation.screens.toursPlan.ToursPlanScreenRo
 import com.egtourguide.home.domain.model.DetectedArtifact
 import com.egtourguide.home.domain.model.toReviewsList
 import com.egtourguide.home.domain.model.toStringJson
+import com.egtourguide.home.presentation.screens.filter.FilterScreenViewModel
 import com.egtourguide.home.presentation.screens.main.screens.toursList.ToursListScreen
 import com.egtourguide.home.presentation.screens.notifications.NotificationsScreenRoot
 import com.egtourguide.user.presentation.changePassword.ChangePasswordScreenRoot
@@ -222,6 +224,11 @@ fun MainNavGraph(
     navigateToExpanded: (String, String) -> Unit,
     navigateToMyTours: () -> Unit
 ) {
+    val toursFilterViewModel: FilterScreenViewModel = hiltViewModel(key = "tours")
+    val landmarksFilterViewModel: FilterScreenViewModel = hiltViewModel(key = "landmarks")
+    val artifactsFilterViewModel: FilterScreenViewModel = hiltViewModel(key = "artifacts")
+    val searchFilterViewModel: FilterScreenViewModel = hiltViewModel(key = "search")
+
     NavHost(
         navController = navController,
         route = AppGraph.Main.route,
@@ -259,19 +266,9 @@ fun MainNavGraph(
             )
         }
 
-        composable(route = AppScreen.ToursList.route) { backStackEntry ->
-            val filtersJson = backStackEntry.arguments?.getString("filters")
-            var filters: HashMap<*, *>? = null
-
-            filtersJson?.let {
-                filters = Gson().fromJson(
-                    filtersJson.substringAfter('/'),
-                    HashMap::class.java
-                )
-            }
-
+        composable(route = AppScreen.ToursList.route) {
             ToursListScreen(
-                filters = filters,
+                filterViewModel = toursFilterViewModel,
                 onNavigateToSearch = {
                     navController.navigate(route = AppScreen.Search.route)
                 },
@@ -279,11 +276,7 @@ fun MainNavGraph(
                     navController.navigate(route = AppScreen.Notification.route)
                 },
                 onNavigateToFilters = {
-                    navController.navigate(
-                        route = AppScreen.Filter.route
-                            .replace("{SOURCE}", "tour")
-                            .replace("{QUERY}", "null")
-                    )
+                    navController.navigate(route = AppScreen.ToursFilter.route)
                 },
                 onNavigateToSingleTour = { tour ->
                     navigateToExpanded(tour.id, ExpandedType.TOUR.name)
@@ -291,6 +284,13 @@ fun MainNavGraph(
                 onNavigateToDetectedArtifact = { artifact ->
                     navigateToExpanded(artifact.id, ExpandedType.ARTIFACT.name)
                 }
+            )
+        }
+
+        composable(route = AppScreen.ToursFilter.route) {
+            FilterScreen(
+                viewModel = toursFilterViewModel,
+                onNavigateBack = { navController.navigateUp() }
             )
         }
 
@@ -322,11 +322,7 @@ fun MainNavGraph(
                     navController.navigate(route = AppScreen.Notification.route)
                 },
                 onNavigateToFilters = {
-                    navController.navigate(
-                        route = AppScreen.Filter.route
-                            .replace("{SOURCE}", "landmark")
-                            .replace("{QUERY}", "null")
-                    )
+                    navController.navigate(route = AppScreen.LandmarksFilter.route)
                 },
                 onNavigateToSinglePlace = {
                     navigateToExpanded(it.id, ExpandedType.LANDMARK.name)
@@ -334,6 +330,13 @@ fun MainNavGraph(
                 onNavigateToDetectedArtifact = { artifact ->
                     navigateToExpanded(artifact.id, ExpandedType.ARTIFACT.name)
                 }
+            )
+        }
+
+        composable(route = AppScreen.LandmarksFilter.route) {
+            FilterScreen(
+                viewModel = landmarksFilterViewModel,
+                onNavigateBack = { navController.navigateUp() }
             )
         }
 
@@ -357,11 +360,7 @@ fun MainNavGraph(
                     navController.navigate(route = AppScreen.Notification.route)
                 },
                 onNavigateToFilters = {
-                    navController.navigate(
-                        route = AppScreen.Filter.route
-                            .replace("{SOURCE}", "artifact")
-                            .replace("{QUERY}", "null")
-                    )
+                    navController.navigate(route = AppScreen.ArtifactsFilter.route)
                 },
                 onNavigateToSingleArtifact = { artifact ->
                     navigateToExpanded(artifact.id, ExpandedType.ARTIFACT.name)
@@ -369,6 +368,13 @@ fun MainNavGraph(
                 onNavigateToDetectedArtifact = { artifact ->
                     navigateToExpanded(artifact.id, ExpandedType.ARTIFACT.name)
                 }
+            )
+        }
+
+        composable(route = AppScreen.ArtifactsFilter.route) {
+            FilterScreen(
+                viewModel = artifactsFilterViewModel,
+                onNavigateBack = { navController.navigateUp() }
             )
         }
 
@@ -383,14 +389,13 @@ fun MainNavGraph(
             }
         )
 
+        // TODO: Remove this!!
         composable(route = AppScreen.Filter.route) { it ->
             val source = it.arguments?.getString("SOURCE")
             val query = it.arguments?.getString("QUERY")
 
             FilterScreen(
-                source = source!!,
-                query = query ?: "",
-                onNavigateToResults = { hashMap ->
+                /*onNavigateToResults = { hashMap ->
                     val hashMapJson = Gson().toJson(hashMap)
                     source.let {
                         when (it) {
@@ -450,7 +455,8 @@ fun MainNavGraph(
                             }
                         }
                     }
-                },
+                },*/
+                viewModel = hiltViewModel(),
                 onNavigateBack = { navController.navigateUp() }
             )
         }
@@ -490,12 +496,15 @@ fun MainNavGraph(
                     )
                 },
                 onNavigateToFilters = {
-                    navController.navigate(
-                        route = AppScreen.Filter.route
-                            .replace("{SOURCE}", "search")
-                            .replace("{QUERY}", query ?: "")
-                    )
+                    navController.navigate(route = AppScreen.SearchFilter.route)
                 }
+            )
+        }
+
+        composable(route = AppScreen.SearchFilter.route) {
+            FilterScreen(
+                viewModel = searchFilterViewModel,
+                onNavigateBack = { navController.navigateUp() }
             )
         }
 

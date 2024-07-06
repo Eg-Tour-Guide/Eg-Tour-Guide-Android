@@ -15,10 +15,14 @@ sealed class AppScreen(val route: String) {
     object ToursList : AppScreen(route = Routes.TOURS_SCREEN_ROUTE)
     object LandmarksList : AppScreen(route = Routes.LANDMARKS_LIST_SCREEN_ROUTE)
     object ArtifactsList : AppScreen(route = Routes.ARTIFACTS_LIST_SCREEN_ROUTE)
-    object Filter : AppScreen(route = Routes.FILTER_SCREEN_ROUTE)
     object Search : AppScreen(route = Routes.SEARCH_SCREEN_ROUTE)
     object SearchResults : AppScreen(route = Routes.SEARCH_RESULTS_SCREEN_ROUTE)
     object Notification : AppScreen(route = Routes.NOTIFICATION_SCREEN_ROUTE)
+    object Filter : AppScreen(route = "filter_screen")
+    object ToursFilter : AppScreen(route = Routes.TOURS_FILTER_SCREEN_ROUTE)
+    object LandmarksFilter : AppScreen(route = Routes.LANDMARKS_FILTER_SCREEN_ROUTE)
+    object ArtifactsFilter : AppScreen(route = Routes.ARTIFACTS_FILTER_SCREEN_ROUTE)
+    object SearchFilter : AppScreen(route = Routes.SEARCH_FILTER_SCREEN_ROUTE)
 
     // Expanded Screens
     object Expanded : AppScreen(route = Routes.EXPANDED_SCREEN_ROUTE)

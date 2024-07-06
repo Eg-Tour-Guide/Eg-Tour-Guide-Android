@@ -1,11 +1,11 @@
 package com.egtourguide.home.presentation.screens.filter
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,7 +15,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -27,62 +26,29 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.egtourguide.R
 import com.egtourguide.core.presentation.components.MainButton
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
-import com.egtourguide.home.presentation.components.ChipFilter
-import com.egtourguide.home.presentation.components.RangeSliderWithBubble
 import com.egtourguide.core.presentation.components.ScreenHeader
-
 
 @Composable
 fun FilterScreen(
-    viewModel: FilterScreenViewModel = hiltViewModel(),
-    source: String,
-    query: String = "",
-    onNavigateToResults: (HashMap<String, List<String>>) -> Unit,
+    viewModel: FilterScreenViewModel,
+//    onNavigateToResults: (HashMap<String, List<String>>) -> Unit,
     onNavigateBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    var isSearch = false
-    var isArtifacts = false
-    var isLandmarks = false
-    var isTours = false
 
-    Log.d("````TAG````", "FilterScreen: $query")
-
-    when (source) {
-        "artifact" -> isArtifacts = true
-        "tour" -> isTours = true
-        "landmark" -> isLandmarks = true
-        "saved" -> isSearch = true
-        "search" -> isSearch = true
-        "my_tours" -> isTours = true
-    }
-    if (isSearch) {
-        viewModel.saveQuery(query)
-    }
-    if (isTours) {
-        viewModel.tourScreen()
-    }
-    if (isLandmarks) {
-        viewModel.landmarkScreen()
-    }
-    if (isArtifacts) {
-        viewModel.artifactScreen()
-    }
-
-    LaunchedEffect(key1 = uiState.isSuccess, key2 = uiState.reset) {
+    /*LaunchedEffect(key1 = uiState.isSuccess) {
         if (uiState.isSuccess) {
             viewModel.clearSuccess()
             Log.d("````TAG````", "selectedmap: ${uiState.selectedMap}")
             onNavigateToResults(uiState.selectedMap!!)
         }
-        if (uiState.reset) {
-            viewModel.clearRest()
-        }
+    }*/
 
-    }
-
-
-    Column {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
         ScreenHeader(
             showBack = true,
             onBackClicked = onNavigateBack,
@@ -91,256 +57,245 @@ fun FilterScreen(
 
         ScreenContent(
             uiState = uiState,
-            viewModel = viewModel,
-            reset = uiState.reset,
-            isSearch = isSearch,
-            isTours = uiState.isTours,
-            isLandmarks = uiState.isLandmarks,
-            isArtifacts = uiState.isArtifacts,
-            durationUpdate = viewModel::changeDuration,
-            addToSelectedCategoryList = viewModel::addSelectedCategoryFilter,
-            addToSelectedLocationList = viewModel::addSelectedLocationFilter,
-            removeFromSelectedLocationList = viewModel::removeSelectedLocationFilter,
-            addToSelectedTourTypeList = viewModel::addSelectedTourTypeFilter,
-            removeFromSelectedTourTypeList = viewModel::removeSelectedTourTypeFilter,
-            addToSelectedMaterialList = viewModel::addSelectedMaterialFilter,
-            removeFromSelectedMaterialList = viewModel::removeSelectedMaterialFilter,
-            addToSelectedArtifactTypeList = viewModel::addSelectedArtifactTypeFilter,
-            removeFromSelectedArtifactList = viewModel::removeSelectedArtifactTypeFilter,
-            addToSelectedRatingList = viewModel::addSelectedRatingFilter,
-            removeFromSelectedRatingList = viewModel::removeSelectedRatingFilter,
-            addToSelectedSortByList = viewModel::addSelectedSortByFilter,
-            removeFromSelectedSortByList = viewModel::removeSelectedSortByFilter,
-            addToSelectedTourismTypeList = viewModel::addSelectedTourismTypeFilter,
-            removeFromSelectedTourismTypeList = viewModel::removeSelectedTourismTypeFilter,
-            onApplyClick = viewModel::onApplyClick,
-            onResetClick = viewModel::onResetClick
+            filterType = uiState.filterType,
+            onCategoryChipClicked = viewModel::onCategoryChipClicked,
+            onTourismTypeChipClicked = viewModel::onTourismTypeChipClicked,
+            onLocationChipClicked = viewModel::onLocationChipClicked,
+            onRatingChipClicked = viewModel::onRatingChipClicked,
+            onSortByChipClicked = viewModel::onSortByChipClicked,
+            onArtifactTypeChipClicked = viewModel::onArtifactTypeChipClicked,
+            onMaterialChipClicked = viewModel::onMaterialChipClicked,
+            onTourTypeChipClicked = viewModel::onTourTypeChipClicked,
+            onDurationChanged = viewModel::changeDuration,
+            onApplyClicked = {
+                // TODO: Implement!!
+                onNavigateBack()
+            },
+            onResetClicked = viewModel::onResetClicked
         )
     }
 }
 
-
 @Composable
 private fun ScreenContent(
-    modifier: Modifier = Modifier,
     uiState: FilterScreenState,
-    viewModel: FilterScreenViewModel,
-    reset: Boolean,
-    isSearch: Boolean,
-    isLandmarks: Boolean,
-    isTours: Boolean,
-    isArtifacts: Boolean,
-    durationUpdate: (Int, Int) -> Unit,
-    addToSelectedCategoryList: (String) -> Unit,
-    addToSelectedLocationList: (String) -> Unit,
-    removeFromSelectedLocationList: (String) -> Unit,
-    addToSelectedTourTypeList: (String) -> Unit,
-    removeFromSelectedTourTypeList: (String) -> Unit,
-    addToSelectedMaterialList: (String) -> Unit,
-    removeFromSelectedMaterialList: (String) -> Unit,
-    addToSelectedArtifactTypeList: (String) -> Unit,
-    removeFromSelectedArtifactList: (String) -> Unit,
-    addToSelectedRatingList: (String) -> Unit,
-    removeFromSelectedRatingList: (String) -> Unit,
-    addToSelectedSortByList: (String) -> Unit,
-    removeFromSelectedSortByList: (String) -> Unit,
-    addToSelectedTourismTypeList: (String) -> Unit,
-    removeFromSelectedTourismTypeList: (String) -> Unit,
-    onApplyClick: () -> Unit,
-    onResetClick: () -> Unit
+    filterType: FilterType,
+    onCategoryChipClicked: (String) -> Unit,
+    onTourismTypeChipClicked: (String) -> Unit,
+    onLocationChipClicked: (String) -> Unit,
+    onRatingChipClicked: (String) -> Unit,
+    onSortByChipClicked: (String) -> Unit,
+    onArtifactTypeChipClicked: (String) -> Unit,
+    onMaterialChipClicked: (String) -> Unit,
+    onTourTypeChipClicked: (String) -> Unit,
+    onDurationChanged: (Float, Float) -> Unit,
+    onApplyClicked: () -> Unit,
+    onResetClicked: () -> Unit
 ) {
     LazyColumn(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(start = 16.dp, end = 16.dp)
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(32.dp)
     ) {
-        if (isSearch) {
-            item {
-                FlowFilterSection(text = stringResource(id = R.string.catogry),
-                    list = uiState.categoryFilters!!,
-                    reset = reset,
-                    selectedList = viewModel.categoryList,
-                    addToSelectedList = addToSelectedCategoryList,
-                    removeFromSelectedList = {})
-            }
-        }
-        if (isLandmarks) {
+        if (filterType == FilterType.SEARCH) {
             item {
                 FlowFilterSection(
-                    text = stringResource(id = R.string.tourism_type),
-                    list = uiState.tourismTypeFilters!!,
-                    selectedList = viewModel.tourismTypeList,
-                    reset = reset,
-                    addToSelectedList = addToSelectedTourismTypeList,
-                    removeFromSelectedList = removeFromSelectedTourismTypeList
+                    title = stringResource(id = R.string.catogry),
+                    chipsTitles = categoryFilters,
+                    selectedChips = listOf(uiState.selectedCategory),
+                    onChipClicked = onCategoryChipClicked
                 )
             }
         }
-        if (isArtifacts) {
+
+        if (filterType == FilterType.LANDMARK) {
             item {
                 FlowFilterSection(
-                    text = stringResource(id = R.string.material),
-                    list = uiState.materialList!!,
-                    reset = reset,
-                    selectedList = viewModel.materialList,
-                    addToSelectedList = addToSelectedMaterialList,
-                    removeFromSelectedList = removeFromSelectedMaterialList
+                    title = stringResource(id = R.string.tourism_type),
+                    chipsTitles = tourismTypeFilters,
+                    selectedChips = uiState.selectedTourismTypes,
+                    onChipClicked = onTourismTypeChipClicked
+                )
+            }
+        }
+
+        if (filterType == FilterType.ARTIFACT) {
+            item {
+                FlowFilterSection(
+                    title = stringResource(id = R.string.artifact_type),
+                    chipsTitles = artifactTypeList,
+                    selectedChips = uiState.selectedArtifactTypes,
+                    onChipClicked = onArtifactTypeChipClicked
                 )
 
                 FlowFilterSection(
-                    text = stringResource(id = R.string.artifact_type),
-                    list = uiState.artifactTypeList!!,
-                    reset = reset,
-                    selectedList = viewModel.artifactTypeList,
-                    addToSelectedList = addToSelectedArtifactTypeList,
-                    removeFromSelectedList = removeFromSelectedArtifactList
+                    title = stringResource(id = R.string.material),
+                    chipsTitles = materialList,
+                    selectedChips = uiState.selectedMaterials,
+                    onChipClicked = onMaterialChipClicked,
+                    modifier = Modifier.padding(top = 32.dp)
                 )
             }
         }
-        if (isTours) {
+
+        if (filterType == FilterType.TOUR) {
             item {
                 FlowFilterSection(
-                    text = stringResource(id = R.string.tour_type),
-                    list = uiState.tourTypeList!!,
-                    reset = reset,
-                    selectedList = viewModel.tourTypeList,
-                    addToSelectedList = addToSelectedTourTypeList,
-                    removeFromSelectedList = removeFromSelectedTourTypeList
+                    title = stringResource(id = R.string.tour_type),
+                    chipsTitles = tourTypeList,
+                    selectedChips = uiState.selectedTourTypes,
+                    onChipClicked = onTourTypeChipClicked
                 )
+
                 Text(
                     text = stringResource(id = R.string.duration),
                     style = MaterialTheme.typography.displayMedium,
                     color = MaterialTheme.colorScheme.primary,
-                    modifier = modifier.padding(top = 16.dp)
+                    modifier = Modifier.padding(top = 32.dp)
                 )
-//                DurationSlider(onValueChange = durationUpdate)
-                RangeSliderWithBubble(durationUpdate)
+
+                // TODO: Change these texts!!
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.days, uiState.minDuration.toInt()),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+
+                    Text(
+                        text = stringResource(id = R.string.days, uiState.maxDuration.toInt()),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+
+                CustomRangeSlider(
+                    min = uiState.minDuration,
+                    max = uiState.maxDuration,
+                    onDurationChanged = onDurationChanged
+                )
             }
         }
-        item {
-            if (!isSearch) {
+
+        if (filterType != FilterType.SEARCH) {
+            item {
                 FlowFilterSection(
-                    text = stringResource(id = R.string.location),
-                    list = uiState.locationFilters!!,
-                    reset = reset,
-                    selectedList = viewModel.locationList,
-                    addToSelectedList = addToSelectedLocationList,
-                    removeFromSelectedList = removeFromSelectedLocationList
+                    title = stringResource(id = R.string.location),
+                    chipsTitles = locationFilters,
+                    selectedChips = uiState.selectedLocations,
+                    onChipClicked = onLocationChipClicked
                 )
             }
-            if (isTours || isLandmarks) {
+        }
+
+        if (filterType == FilterType.TOUR || filterType == FilterType.LANDMARK) {
+            item {
                 FlowFilterSection(
-                    text = stringResource(id = R.string.rating),
-                    list = uiState.ratingFilters!!,
+                    title = stringResource(id = R.string.rating),
                     isRating = true,
-                    selectedList = viewModel.ratingList,
-                    reset = reset,
-                    addToSelectedList = addToSelectedRatingList,
-                    removeFromSelectedList = removeFromSelectedRatingList
+                    chipsTitles = ratingFilters,
+                    selectedChips = listOf(uiState.selectedRating),
+                    onChipClicked = onRatingChipClicked
                 )
             }
+        }
 
-
+        item {
             FlowFilterSection(
-                text = stringResource(id = R.string.sortby),
-                list = uiState.sortList!!,
-                reset = reset,
-                selectedList = viewModel.sortByList,
-                addToSelectedList = addToSelectedSortByList,
-                removeFromSelectedList = removeFromSelectedSortByList
+                title = stringResource(id = R.string.sortby),
+                chipsTitles = sortList,
+                selectedChips = listOf(uiState.selectedSortBy),
+                onChipClicked = onSortByChipClicked
             )
         }
+
         item {
             FilterFooter(
-                onResetClick = onResetClick, onApplyClick = onApplyClick
+                onApplyClick = onApplyClicked,
+                onResetClick = onResetClicked
             )
         }
     }
 }
 
-//TODO(Handle isCategory)
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun FlowFilterSection(
     modifier: Modifier = Modifier,
-    text: String,
-    list: List<String>,
-    selectedList: List<String>,
-    reset: Boolean = false,
-    isCategory: Boolean = false,
+    title: String,
+    chipsTitles: List<String>,
+    selectedChips: List<String>,
     isRating: Boolean = false,
-    addToSelectedList: (String) -> Unit,
-    removeFromSelectedList: (String) -> Unit
+    onChipClicked: (String) -> Unit
 ) {
-    Text(
-        text = text,
-        color = MaterialTheme.colorScheme.onBackground,
-        style = MaterialTheme.typography.displayMedium,
-        modifier = Modifier.padding(top = 16.dp, end = 16.dp)
-    )
-
-    FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalArrangement = Arrangement.SpaceBetween,
-        modifier = modifier
+    Column(
+        modifier = modifier.fillMaxWidth()
     ) {
-        list.forEach { item ->
-            ChipFilter(
-                text = item,
-                isRating = isRating,
-                selectedList = selectedList,
-                reset = reset,
-                addSelectedFilter = addToSelectedList,
-                removeSelectedFilter = removeFromSelectedList,
-                modifier = modifier.padding(top = 16.dp)
-            )
+        Text(
+            text = title,
+            color = MaterialTheme.colorScheme.onBackground,
+            style = MaterialTheme.typography.displayMedium
+        )
+
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.padding(top = 16.dp)
+        ) {
+            chipsTitles.forEach { item ->
+                CustomChip(
+                    title = item,
+                    isRating = isRating,
+                    isSelected = (item in selectedChips),
+                    onClicked = onChipClicked
+                )
+            }
         }
     }
 }
 
-
 @Composable
 private fun FilterFooter(
-    modifier: Modifier = Modifier,
-    isLoading: Boolean = false,
     onResetClick: () -> Unit,
     onApplyClick: () -> Unit
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .padding(top = 24.dp, bottom = 16.dp)
-            .fillMaxWidth()
-            .height(40.dp)
+        modifier = Modifier.fillMaxWidth()
     ) {
         MainButton(
             text = stringResource(id = R.string.reset),
             onClick = onResetClick,
             isWightBtn = true,
-            isLoading = isLoading,
-            isEnabled = !isLoading,
-            modifier = modifier.weight(0.5f)
-
+            modifier = Modifier
+                .weight(1f)
+                .height(40.dp)
         )
 
         MainButton(
             text = stringResource(id = R.string.apply),
             onClick = onApplyClick,
-            isLoading = isLoading,
-            isEnabled = !isLoading,
-            modifier = modifier.weight(0.5f)
+            modifier = Modifier
+                .weight(1f)
+                .height(40.dp)
         )
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable
 private fun FilterScreenReview() {
     EGTourGuideTheme {
-        FilterScreen(source = "", onNavigateBack = {}, onNavigateToResults = {})
+        FilterScreen(
+            viewModel = hiltViewModel(),
+            onNavigateBack = {},
+//            onNavigateToResults = {}
+        )
     }
-
 }

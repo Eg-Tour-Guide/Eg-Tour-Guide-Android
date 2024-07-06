@@ -12,6 +12,7 @@ import com.egtourguide.home.domain.model.AbstractedTour
 import com.egtourguide.core.domain.usecases.ChangeTourSavedStateUseCase
 import com.egtourguide.home.domain.usecases.DetectArtifactUseCase
 import com.egtourguide.home.domain.usecases.GetToursListUseCase
+import com.egtourguide.home.presentation.screens.filter.FilterScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +21,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.IOException
 import java.io.InputStream
-import java.util.HashMap
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,7 +32,6 @@ class ToursListViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(ToursListUIState())
     val uiState = _uiState.asStateFlow()
-    var filters: HashMap<*, *>? = null
 
     fun getToursList() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -41,8 +40,13 @@ class ToursListViewModel @Inject constructor(
                     _uiState.update { it.copy(isLoading = true, callIsSent = true, error = null) }
                 },
                 onSuccess = { response ->
-                    val tours = filterTours(tours = response, filters = filters)
-                    _uiState.update { it.copy(isLoading = false, tours = tours) }
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            tours = response,
+                            displayedTours = response
+                        )
+                    }
                 },
                 onFailure = { error ->
                     _uiState.update { it.copy(isLoading = false, error = error) }
@@ -65,7 +69,6 @@ class ToursListViewModel @Inject constructor(
         }
     }
 
-
     fun clearSaveSuccess() {
         _uiState.update { it.copy(isSaveSuccess = false) }
     }
@@ -74,27 +77,12 @@ class ToursListViewModel @Inject constructor(
         _uiState.update { it.copy(saveError = null) }
     }
 
-    private fun filterTours(
-        tours: List<AbstractedTour>,
-        filters: HashMap<*, *>?
-    ): List<AbstractedTour> {
-        var resultedList = tours
+    fun filterTours(filterState: FilterScreenState) {
+        /*var resultedList = tours
         filters?.forEach { (filterKey, filterValue) ->
             filterKey as String
             filterValue as List<String>
             when (filterKey) {
-                /*"Tour Type" -> {
-                    resultedList = resultedList.filter { item ->
-                        filterValue.contains(item.type)
-                    }
-                }*/
-
-                /*"Location" -> {
-                    resultedList = resultedList.filter { item ->
-                        filterValue.contains(item.location)
-                    }
-                }*/
-
                 "Rating" -> {
                     if (filterValue.isNotEmpty()) {
                         val ratingValue = filterValue.first().toInt()
@@ -126,7 +114,13 @@ class ToursListViewModel @Inject constructor(
                 }
             }
         }
-        return resultedList
+        return resultedList*/
+
+        _uiState.update {
+            it.copy(displayedTours = it.displayedTours.filter { tour ->
+                filterState.minDuration.toInt() <= tour.duration && tour.duration <= filterState.maxDuration.toInt()
+            })
+        }
     }
 
     fun detectArtifact(image: Bitmap, context: Context) {
