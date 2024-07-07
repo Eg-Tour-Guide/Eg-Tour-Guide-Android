@@ -12,4 +12,15 @@ data class FilterScreenState(
     val selectedTourTypes: List<String> = emptyList(),
     val minDuration: Float = 0f,
     val maxDuration: Float = 30f
-)
+) {
+    fun hasChanged() = selectedCategory != "" ||
+            selectedTourismTypes.isNotEmpty() ||
+            selectedLocations.isNotEmpty() ||
+            selectedRating != "" ||
+            selectedSortBy != "" ||
+            selectedArtifactTypes.isNotEmpty() ||
+            selectedMaterials.isNotEmpty() ||
+            selectedTourTypes.isNotEmpty() ||
+            minDuration != 0f ||
+            maxDuration != 30f
+}

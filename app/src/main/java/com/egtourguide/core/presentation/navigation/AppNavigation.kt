@@ -8,10 +8,8 @@ import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.egtourguide.auth.presentation.screens.forgotPassword.ForgotPasswordScreen
 import com.egtourguide.auth.presentation.screens.login.LoginScreen
@@ -40,6 +38,7 @@ import com.egtourguide.home.domain.model.DetectedArtifact
 import com.egtourguide.home.domain.model.toReviewsList
 import com.egtourguide.home.domain.model.toStringJson
 import com.egtourguide.home.presentation.screens.filter.FilterScreenViewModel
+import com.egtourguide.home.presentation.screens.filter.FilterType
 import com.egtourguide.home.presentation.screens.main.screens.toursList.ToursListScreen
 import com.egtourguide.home.presentation.screens.notifications.NotificationsScreenRoot
 import com.egtourguide.user.presentation.changePassword.ChangePasswordScreenRoot
@@ -229,6 +228,11 @@ fun MainNavGraph(
     val artifactsFilterViewModel: FilterScreenViewModel = hiltViewModel(key = "artifacts")
     val searchFilterViewModel: FilterScreenViewModel = hiltViewModel(key = "search")
 
+    toursFilterViewModel.setType(FilterType.TOUR)
+    landmarksFilterViewModel.setType(FilterType.LANDMARK)
+    artifactsFilterViewModel.setType(FilterType.ARTIFACT)
+    searchFilterViewModel.setType(FilterType.SEARCH)
+
     NavHost(
         navController = navController,
         route = AppGraph.Main.route,
@@ -294,27 +298,9 @@ fun MainNavGraph(
             )
         }
 
-        composable(
-            route = AppScreen.LandmarksList.route,
-            arguments = listOf(
-                navArgument("filters") {
-                    type = NavType.StringType
-                    nullable = true
-                }
-            )
-        ) { backStackEntry ->
-            val filtersJson = backStackEntry.arguments?.getString("filters")
-            var filters: HashMap<*, *>? = null
-
-            filtersJson?.let {
-                filters = Gson().fromJson(
-                    filtersJson.substringAfter('/'),
-                    HashMap::class.java
-                )
-            }
-
+        composable(route = AppScreen.LandmarksList.route) {
             LandmarksListScreen(
-                filters = filters,
+                filterViewModel = landmarksFilterViewModel,
                 onNavigateToSearch = {
                     navController.navigate(route = AppScreen.Search.route)
                 },
@@ -340,19 +326,9 @@ fun MainNavGraph(
             )
         }
 
-        composable(route = AppScreen.ArtifactsList.route) { backStackEntry ->
-            val filtersJson = backStackEntry.arguments?.getString("filters")
-            var filters: HashMap<*, *>? = null
-
-            filtersJson?.let {
-                filters = Gson().fromJson(
-                    filtersJson.substringAfter('/'),
-                    HashMap::class.java
-                )
-            }
-
+        composable(route = AppScreen.ArtifactsList.route) {
             ArtifactsListScreen(
-                filters = filters,
+                filterViewModel = artifactsFilterViewModel,
                 onNavigateToSearch = {
                     navController.navigate(route = AppScreen.Search.route)
                 },
@@ -389,78 +365,6 @@ fun MainNavGraph(
             }
         )
 
-        // TODO: Remove this!!
-        composable(route = AppScreen.Filter.route) { it ->
-            val source = it.arguments?.getString("SOURCE")
-            val query = it.arguments?.getString("QUERY")
-
-            FilterScreen(
-                /*onNavigateToResults = { hashMap ->
-                    val hashMapJson = Gson().toJson(hashMap)
-                    source.let {
-                        when (it) {
-                            "tour" -> {
-                                navController.navigate(
-                                    route = AppScreen.ToursList.route
-                                        .replace("{filters}", hashMapJson)
-                                ) {
-                                    popUpTo(AppScreen.Home.route)
-                                }
-                            }
-
-                            "landmark" -> {
-                                navController.navigate(
-                                    route = AppScreen.LandmarksList.route
-                                        .replace("{filters}", hashMapJson)
-                                ) {
-                                    popUpTo(AppScreen.Home.route)
-                                }
-                            }
-
-                            "search" -> {
-                                navController.navigate(
-                                    route = AppScreen.SearchResults.route
-                                        .replace("{filters}", hashMapJson)
-                                ) {
-                                    popUpTo(AppScreen.Search.route)
-                                }
-                            }
-
-                            "saved" -> {
-                                navController.navigate(
-                                    route = AppScreen.Saved.route
-                                        .replace("{filters}", hashMapJson)
-                                ) {
-                                    //TODO change this to user when user screen is created
-                                    popUpTo(AppScreen.Home.route)
-                                }
-                            }
-
-                            "my_tours" -> {
-                                navController.navigate(
-                                    route = AppScreen.MyTours.route
-                                        .replace("{filters}", hashMapJson)
-                                ) {
-                                    popUpTo(AppScreen.MyTours.route)
-                                }
-                            }
-
-                            "artifact" -> {
-                                navController.navigate(
-                                    route = AppScreen.ArtifactsList.route
-                                        .replace("{filters}", hashMapJson)
-                                ) {
-                                    popUpTo(AppScreen.Home.route)
-                                }
-                            }
-                        }
-                    }
-                },*/
-                viewModel = hiltViewModel(),
-                onNavigateBack = { navController.navigateUp() }
-            )
-        }
-
         composable(route = AppScreen.Search.route) {
             SearchScreen(
                 onNavigateToSearchResults = { query ->
@@ -472,20 +376,11 @@ fun MainNavGraph(
         }
 
         composable(route = AppScreen.SearchResults.route) { navBackStackEntry ->
-            val query = navBackStackEntry.arguments?.getString("query")
-            val filtersJson = navBackStackEntry.arguments?.getString("filters")
-            var filters: HashMap<*, *>? = null
-
-            filtersJson?.let {
-                filters = Gson().fromJson(
-                    filtersJson.substringAfter('/'),
-                    HashMap::class.java
-                )
-            }
+            val query = navBackStackEntry.arguments?.getString("query") ?: ""
 
             SearchResultsScreen(
-                query = query ?: "",
-                filters = filters,
+                filterViewModel = searchFilterViewModel,
+                query = query,
                 onNavigateToSearch = {
                     navController.navigateUp()
                 },
@@ -750,11 +645,7 @@ fun NavGraphBuilder.userGraph(
                     //TODO handel navigation here
                 },
                 onNavigateToFilters = {
-                    navController.navigate(
-                        route = AppScreen.Filter.route
-                            .replace("{SOURCE}", "saved")
-                            .replace("{QUERY}", "null")
-                    )
+                    // TODO: Create own filters!!
                 }
             )
         }
@@ -806,11 +697,7 @@ fun NavGraphBuilder.customToursGraph(navController: NavHostController) {
                     }
                 },
                 onNavigateToFilters = {
-                    navController.navigate(
-                        route = AppScreen.Filter.route
-                            .replace("{SOURCE}", "my_tours")
-                            .replace("{QUERY}", "null")
-                    )
+                    // TODO: Create own filters!!
                 },
                 onNavigateToCreateTour = {
                     navController.navigate(

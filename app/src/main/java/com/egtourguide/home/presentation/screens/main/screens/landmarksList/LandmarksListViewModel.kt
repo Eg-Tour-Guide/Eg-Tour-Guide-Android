@@ -5,7 +5,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.egtourguide.core.utils.onResponse
@@ -13,6 +12,7 @@ import com.egtourguide.home.domain.model.AbstractedLandmark
 import com.egtourguide.core.domain.usecases.ChangeLandmarkSavedStateUseCase
 import com.egtourguide.home.domain.usecases.DetectArtifactUseCase
 import com.egtourguide.home.domain.usecases.GetLandmarksListUseCase
+import com.egtourguide.home.presentation.screens.filter.FilterScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,7 +32,6 @@ class LandmarksListViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(LandmarksListUIState())
     val uiState = _uiState.asStateFlow()
-    var filters: HashMap<*, *>? = null
 
     fun onSaveClicked(place: AbstractedLandmark) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -60,8 +59,13 @@ class LandmarksListViewModel @Inject constructor(
                     _uiState.update { it.copy(isLoading = false, error = error) }
                 },
                 onSuccess = { response ->
-                    val landmarks = filterLandmarks(landMarks = response, filters = filters)
-                    _uiState.update { it.copy(isLoading = false, landmarks = landmarks) }
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            landmarks = response,
+                            displayedLandmarks = response
+                        )
+                    }
                 }
             )
         }
@@ -75,55 +79,15 @@ class LandmarksListViewModel @Inject constructor(
         _uiState.update { it.copy(saveError = null) }
     }
 
-    private fun filterLandmarks(
-        landMarks: List<AbstractedLandmark>,
-        filters: HashMap<*, *>?
-    ): List<AbstractedLandmark> {
-        Log.d("`````TAG`````", "filterLandmarks: $filters")
-        var resultedList = landMarks
-        filters?.forEach { (filterKey, filterValue) ->
-            filterKey as String
-            filterValue as List<String>
-            when (filterKey) {
-                "Tourism Type" -> {
-                    if (filterValue.isNotEmpty()) {
-                        resultedList = resultedList.filter { item ->
-                            filterValue.contains(item.category)
-                        }
-                    }
+    // TODO: Add rest of filters!!
+    fun filterLandmarks(filterState: FilterScreenState) {
+        _uiState.update {
+            it.copy(
+                displayedLandmarks = it.landmarks.filter { landmark ->
+                    landmark.location in filterState.selectedLocations || filterState.selectedLocations.isEmpty()
                 }
-
-                "Location" -> {
-                    if (filterValue.isNotEmpty()) {
-                        resultedList = resultedList.filter { item ->
-                            filterValue.contains(item.location)
-                        }
-                    }
-                }
-
-                "Rating" -> {
-                    if (filterValue.isNotEmpty()) {
-                        val ratingValue = filterValue.first().toInt()
-                        resultedList = resultedList.filter { item ->
-                            item.rating >= ratingValue
-                        }
-                    }
-                }
-
-                "Sort By" -> {
-                    if (filterValue.isNotEmpty()) {
-                        val sortType = filterValue.first().toInt()
-                        resultedList = if (sortType == 0) {
-                            resultedList.sortedBy { item -> item.rating }
-                        } else {
-                            resultedList.sortedByDescending { item -> item.rating }
-                        }
-                    }
-                }
-            }
+            )
         }
-        Log.d("````TAG````", "results: $resultedList")
-        return resultedList
     }
 
     fun detectArtifact(image: Bitmap, context: Context) {

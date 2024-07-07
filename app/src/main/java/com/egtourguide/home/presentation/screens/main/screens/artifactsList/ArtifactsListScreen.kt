@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -38,7 +39,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
@@ -57,13 +57,13 @@ import com.egtourguide.core.presentation.components.EmptyState
 import com.egtourguide.core.presentation.components.LoadingState
 import com.egtourguide.core.presentation.components.ScreenHeader
 import com.egtourguide.home.domain.model.DetectedArtifact
+import com.egtourguide.home.presentation.screens.filter.FilterScreenViewModel
 import com.egtourguide.home.presentation.screens.main.components.ArtifactDetectionDialog
-import java.util.HashMap
 
 @Composable
 fun ArtifactsListScreen(
     viewModel: ArtifactsListViewModel = hiltViewModel(),
-    filters: HashMap<*, *>? = null,
+    filterViewModel: FilterScreenViewModel,
     onNavigateToSearch: () -> Unit = {},
     navigateToNotifications: () -> Unit,
     onNavigateToFilters: () -> Unit = {},
@@ -71,9 +71,14 @@ fun ArtifactsListScreen(
     onNavigateToDetectedArtifact: (DetectedArtifact) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val filterState by filterViewModel.uiState.collectAsState()
+    val hasChanged by filterViewModel.hasChanged.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
-    viewModel.filters = filters
+
+    LaunchedEffect(key1 = filterState) {
+        viewModel.filterArtifacts(filterState)
+    }
 
     var isArtifactDetectionDialogShown by remember { mutableStateOf(false) }
 
@@ -111,6 +116,7 @@ fun ArtifactsListScreen(
 
     ArtifactsListScreenContent(
         uiState = uiState,
+        hasChanged = hasChanged,
         onSearchClicked = onNavigateToSearch,
         onNotificationsClicked = navigateToNotifications,
         onFilterClicked = onNavigateToFilters,
@@ -131,6 +137,7 @@ fun ArtifactsListScreen(
         }
     }
 
+    // TODO: Check this!!
     LaunchedEffect(key1 = uiState.isSaveSuccess, key2 = uiState.saveError) {
         val successMsg =
             if (uiState.isSave) R.string.saved_successfully else R.string.unsaved_successfully
@@ -177,6 +184,7 @@ fun ArtifactsListScreen(
 @Composable
 fun ArtifactsListScreenContent(
     uiState: ArtifactsListUIState,
+    hasChanged: Boolean = false,
     onSearchClicked: () -> Unit = {},
     onNotificationsClicked: () -> Unit = {},
     onFilterClicked: () -> Unit = {},
@@ -234,14 +242,15 @@ fun ArtifactsListScreenContent(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 ArtifactsHeader(
-                    artifactsCount = uiState.artifacts.size,
-                    onFilterClicked = onFilterClicked
+                    artifactsCount = uiState.displayedArtifacts.size,
+                    onFilterClicked = onFilterClicked,
+                    hasChanged = hasChanged
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 ArtifactsSection(
-                    artifacts = uiState.artifacts,
+                    artifacts = uiState.displayedArtifacts,
                     onArtifactClicked = onArtifactClicked,
                     onSaveClicked = onSaveClicked
                 )
@@ -253,7 +262,8 @@ fun ArtifactsListScreenContent(
 @Composable
 private fun ArtifactsHeader(
     artifactsCount: Int,
-    onFilterClicked: () -> Unit
+    onFilterClicked: () -> Unit,
+    hasChanged: Boolean
 ) {
     Row(
         Modifier
@@ -263,20 +273,24 @@ private fun ArtifactsHeader(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "$artifactsCount Artifact",
+            text = stringResource(id = R.string.artifacts_count, artifactsCount),
             style = MaterialTheme.typography.displaySmall,
             color = MaterialTheme.colorScheme.onBackground
         )
+
         Icon(
-            modifier = Modifier.clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null
-            ) {
-                onFilterClicked()
-            },
+            modifier = Modifier
+                .size(20.dp)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+                    onFilterClicked()
+                },
             painter = painterResource(id = R.drawable.ic_filter),
-            contentDescription = "Filter Icon",
-            tint = Color.Unspecified
+            contentDescription = stringResource(id = R.string.filters),
+            tint = if (hasChanged) MaterialTheme.colorScheme.outlineVariant
+            else MaterialTheme.colorScheme.onBackground
         )
     }
 }
@@ -309,24 +323,32 @@ private fun ArtifactsSection(
 private fun ArtifactsScreenPreview() {
     EGTourGuideTheme {
         ArtifactsListScreenContent(
+            hasChanged = true,
             uiState = ArtifactsListUIState(
                 isLoading = false,
+                displayedArtifacts = (0..6).map {
+                    AbstractedArtifact(
+                        id = "$it",
+                        name = "Yolanda Koch",
+                        image = "",
+                        isSaved = false,
+                        type = "eam",
+                        material = "Stone",
+                        museumName = "Jeanie Norris"
+                    )
+                },
                 artifacts = (0..9).map {
                     AbstractedArtifact(
                         id = "$it",
                         name = "Yolanda Koch",
-                        image = "habemus",
+                        image = "",
                         isSaved = false,
                         type = "eam",
-                        material = "patrioque",
+                        material = "Stone",
                         museumName = "Jeanie Norris"
                     )
                 }
-            ),
-            onSearchClicked = {},
-            onFilterClicked = {},
-            onArtifactClicked = {},
-            onSaveClicked = {}
+            )
         )
     }
 }

@@ -1,6 +1,5 @@
 package com.egtourguide.home.presentation.screens.search_results
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.egtourguide.core.utils.onResponse
@@ -8,6 +7,7 @@ import com.egtourguide.home.domain.model.SearchResult
 import com.egtourguide.core.domain.usecases.ChangeArtifactSavedStateUseCase
 import com.egtourguide.core.domain.usecases.ChangeLandmarkSavedStateUseCase
 import com.egtourguide.home.domain.usecases.SearchUseCase
+import com.egtourguide.home.presentation.screens.filter.FilterScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,28 +22,22 @@ class SearchResultsViewModel @Inject constructor(
     private val changeLandmarkSavedStateUseCase: ChangeLandmarkSavedStateUseCase,
     private val changeArtifactSavedStateUseCase: ChangeArtifactSavedStateUseCase
 ) : ViewModel() {
+
     private val _uiState = MutableStateFlow(SearchResultsUIState())
     val uiState = _uiState.asStateFlow()
-    var filters: HashMap<*, *>? = null
 
     fun getSearchResults(query: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            var searchQuery = query
-            if (searchQuery.isEmpty()) {
-                Log.d("```TAG```", "getSearchResults: $filters")
-                val filterQuery = filters?.get("Query") as List<String>
-                searchQuery = filterQuery.first()
-            }
-            searchUseCase(searchQuery).onResponse(
+            searchUseCase(query).onResponse(
                 onLoading = {
                     _uiState.update { it.copy(isLoading = true, isShowEmptyState = false) }
                 },
                 onSuccess = { response ->
-                    val results = filterSearchResults(results = response, filters = filters)
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            results = results,
+                            results = response,
+                            displayedResults = response,
                             isShowEmptyState = true
                         )
                     }
@@ -85,30 +79,15 @@ class SearchResultsViewModel @Inject constructor(
         }
     }
 
-    private fun filterSearchResults(
-        results: List<SearchResult>,
-        filters: HashMap<*, *>?
-    ): List<SearchResult> {
-        var resultedList = results
-        filters?.forEach { (filterKey, filterValue) ->
-            filterKey as String
-            filterValue as List<String>
-
-            when (filterKey) {
-                "Category" -> {
-                    if (filterValue.isNotEmpty()) {
-                        resultedList = resultedList.filter { item ->
-                            when (filterValue) {
-                                "Landmarks" -> !item.isArtifact
-                                "Artifacts" -> item.isArtifact
-                                else -> true
-                            }
-                        }
-                    }
+    // TODO: Add rest of filters!!
+    fun filterResults(filterState: FilterScreenState) {
+        _uiState.update {
+            it.copy(
+                displayedResults = it.results.filter { result ->
+                    result.location in filterState.selectedLocations
                 }
-            }
+            )
         }
-        return resultedList
     }
 
     fun clearSaveSuccess() {

@@ -1,8 +1,13 @@
 package com.egtourguide.home.presentation.screens.filter
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
@@ -10,6 +15,10 @@ class FilterScreenViewModel @Inject constructor() : ViewModel() {
 
     private val _uiState = MutableStateFlow(FilterScreenState())
     val uiState = _uiState.asStateFlow()
+
+    val hasChanged: StateFlow<Boolean> = _uiState
+        .map { it.hasChanged() }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     fun setType(filterType: FilterType) {
         _uiState.update { it.copy(filterType = filterType) }
@@ -101,90 +110,3 @@ class FilterScreenViewModel @Inject constructor() : ViewModel() {
         }
     }
 }
-
-val categoryFilters = listOf("Tours", "Landmarks", "Artifacts")
-
-val artifactTypeList = listOf(
-    "Pottery",
-    "Sculpture",
-    "Statue",
-    "Jewelry",
-    "Manuscript",
-    "Tool",
-    "Utensil",
-    "Weapon",
-    "Armor",
-    "Textile",
-    "Coin",
-    "Religiou",
-    "Artistic",
-    "Architectural",
-    "Decorative"
-)
-
-val materialList = listOf(
-    "Stone", "Clay", "Wood", "Papyrus", "Marble", "Gold", "Silver",
-    "Bronze", "Silk", "Leather", "Glass"
-)
-
-val locationFilters = listOf(
-    "Alexandria",
-    "Aswan",
-    "Assiut",
-    "Beheira",
-    "Beni Suef",
-    "Cairo",
-    "Dakahlia",
-    "Damietta",
-    "Fayoum",
-    "Gharbia",
-    "Giza",
-    "Ismailia",
-    "Kafr el-Sheikh",
-    "Matrouh",
-    "Minya",
-    "Menofia",
-    "New Valley",
-    "North Sinai",
-    "Port Said",
-    "Qualyubia",
-    "Qena",
-    "Red Sea",
-    "Al-Sharqia",
-    "Sohag",
-    "South Sinai",
-    "Suez",
-    "Luxor"
-)
-
-val sortList = listOf("Rating: High To Low", "Rating: Low To High")
-
-val tourismTypeFilters = listOf(
-    "Adventure",
-    "Ecotourism",
-    "Cultural",
-    "Medical",
-    "Historical",
-    "Culinary",
-    "Urban",
-    "Beach",
-    "Sports",
-    "Shopping",
-    "Education", "Various"
-)
-
-val ratingFilters = listOf("5 Only", "4 & Up", "3 & Up", "2 & Up", "1 & Up")
-
-val tourTypeList = listOf(
-    "Adventure",
-    "Ecotourism",
-    "Cultural",
-    "Medical",
-    "Historical",
-    "Culinary",
-    "Urban",
-    "Beach",
-    "Sports",
-    "Shopping",
-    "Education"
-)

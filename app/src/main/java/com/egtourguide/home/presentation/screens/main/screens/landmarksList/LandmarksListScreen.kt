@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -38,7 +39,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
@@ -57,12 +57,13 @@ import com.egtourguide.core.presentation.components.LoadingState
 import com.egtourguide.core.presentation.components.LandmarkItem
 import com.egtourguide.core.presentation.components.ScreenHeader
 import com.egtourguide.home.domain.model.DetectedArtifact
+import com.egtourguide.home.presentation.screens.filter.FilterScreenViewModel
 import com.egtourguide.home.presentation.screens.main.components.ArtifactDetectionDialog
 
 @Composable
 fun LandmarksListScreen(
     viewModel: LandmarksListViewModel = hiltViewModel(),
-    filters: HashMap<*, *>? = null,
+    filterViewModel: FilterScreenViewModel,
     onNavigateToSearch: () -> Unit = {},
     navigateToNotifications: () -> Unit,
     onNavigateToFilters: () -> Unit = {},
@@ -70,9 +71,14 @@ fun LandmarksListScreen(
     onNavigateToDetectedArtifact: (DetectedArtifact) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val filterState by filterViewModel.uiState.collectAsState()
+    val hasChanged by filterViewModel.hasChanged.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
-    viewModel.filters = filters
+
+    LaunchedEffect(key1 = filterState) {
+        viewModel.filterLandmarks(filterState)
+    }
 
     var isArtifactDetectionDialogShown by remember { mutableStateOf(false) }
 
@@ -110,6 +116,7 @@ fun LandmarksListScreen(
 
     LandmarksListScreenContent(
         uiState = uiState,
+        hasChanged = hasChanged,
         navigateToNotifications = navigateToNotifications,
         onSearchClicked = onNavigateToSearch,
         onFilterClicked = onNavigateToFilters,
@@ -130,6 +137,7 @@ fun LandmarksListScreen(
         }
     }
 
+    // TODO: Check this!!
     LaunchedEffect(key1 = uiState.isSaveSuccess, key2 = uiState.saveError) {
         val successMsg =
             if (uiState.isSave) R.string.saved_successfully else R.string.unsaved_successfully
@@ -176,6 +184,7 @@ fun LandmarksListScreen(
 @Composable
 fun LandmarksListScreenContent(
     uiState: LandmarksListUIState,
+    hasChanged: Boolean = false,
     onSearchClicked: () -> Unit = {},
     navigateToNotifications: () -> Unit = {},
     onFilterClicked: () -> Unit = {},
@@ -233,14 +242,15 @@ fun LandmarksListScreenContent(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 PlacesHeader(
-                    placesCount = uiState.landmarks.size,
-                    onFilterClicked = onFilterClicked
+                    placesCount = uiState.displayedLandmarks.size,
+                    onFilterClicked = onFilterClicked,
+                    hasChanged = hasChanged
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 PlacesSection(
-                    places = uiState.landmarks,
+                    places = uiState.displayedLandmarks,
                     onPlaceClicked = onPlaceClicked,
                     onSaveClicked = onSaveClicked
                 )
@@ -252,7 +262,8 @@ fun LandmarksListScreenContent(
 @Composable
 private fun PlacesHeader(
     placesCount: Int,
-    onFilterClicked: () -> Unit
+    onFilterClicked: () -> Unit,
+    hasChanged: Boolean
 ) {
     Row(
         Modifier
@@ -262,20 +273,24 @@ private fun PlacesHeader(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "$placesCount Landmarks",
+            text = stringResource(id = R.string.landmarks_count, placesCount),
             style = MaterialTheme.typography.displaySmall,
             color = MaterialTheme.colorScheme.onBackground
         )
+
         Icon(
-            modifier = Modifier.clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null
-            ) {
-                onFilterClicked()
-            },
+            modifier = Modifier
+                .size(20.dp)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+                    onFilterClicked()
+                },
             painter = painterResource(id = R.drawable.ic_filter),
-            contentDescription = "Filter Icon",
-            tint = Color.Unspecified
+            contentDescription = stringResource(id = R.string.filters),
+            tint = if (hasChanged) MaterialTheme.colorScheme.outlineVariant
+            else MaterialTheme.colorScheme.onBackground
         )
     }
 }
@@ -308,24 +323,32 @@ private fun PlacesSection(
 private fun LandmarksScreenPreview() {
     EGTourGuideTheme {
         LandmarksListScreenContent(
+            hasChanged = true,
             uiState = LandmarksListUIState(
                 isLoading = false,
+                displayedLandmarks = (0..4).map {
+                    AbstractedLandmark(
+                        id = "$it",
+                        name = "Terrence Kane",
+                        image = "pro",
+                        location = "Cairo",
+                        isSaved = false,
+                        rating = 6.7f,
+                        ratingCount = 8388
+                    )
+                },
                 landmarks = (0..9).map {
                     AbstractedLandmark(
                         id = "$it",
                         name = "Terrence Kane",
                         image = "pro",
-                        location = "affert",
+                        location = "Cairo",
                         isSaved = false,
                         rating = 6.7f,
                         ratingCount = 8388
                     )
                 }
-            ),
-            onSearchClicked = {},
-            onFilterClicked = {},
-            onPlaceClicked = {},
-            onSaveClicked = {}
+            )
         )
     }
 }

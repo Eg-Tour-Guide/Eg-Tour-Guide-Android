@@ -27,22 +27,15 @@ import com.egtourguide.R
 import com.egtourguide.core.presentation.components.MainButton
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 import com.egtourguide.core.presentation.components.ScreenHeader
+import com.egtourguide.home.presentation.screens.filter.components.CustomChip
+import com.egtourguide.home.presentation.screens.filter.components.CustomRangeSlider
 
 @Composable
 fun FilterScreen(
     viewModel: FilterScreenViewModel,
-//    onNavigateToResults: (HashMap<String, List<String>>) -> Unit,
     onNavigateBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
-
-    /*LaunchedEffect(key1 = uiState.isSuccess) {
-        if (uiState.isSuccess) {
-            viewModel.clearSuccess()
-            Log.d("````TAG````", "selectedmap: ${uiState.selectedMap}")
-            onNavigateToResults(uiState.selectedMap!!)
-        }
-    }*/
 
     Column(
         modifier = Modifier
@@ -67,15 +60,13 @@ fun FilterScreen(
             onMaterialChipClicked = viewModel::onMaterialChipClicked,
             onTourTypeChipClicked = viewModel::onTourTypeChipClicked,
             onDurationChanged = viewModel::changeDuration,
-            onApplyClicked = {
-                // TODO: Implement!!
-                onNavigateBack()
-            },
+            onApplyClicked = onNavigateBack,
             onResetClicked = viewModel::onResetClicked
         )
     }
 }
 
+// TODO: Change used data according to the backend!!
 @Composable
 private fun ScreenContent(
     uiState: FilterScreenState,
@@ -101,7 +92,7 @@ private fun ScreenContent(
             item {
                 FlowFilterSection(
                     title = stringResource(id = R.string.catogry),
-                    chipsTitles = categoryFilters,
+                    chipsTitles = categories,
                     selectedChips = listOf(uiState.selectedCategory),
                     onChipClicked = onCategoryChipClicked
                 )
@@ -112,7 +103,7 @@ private fun ScreenContent(
             item {
                 FlowFilterSection(
                     title = stringResource(id = R.string.tourism_type),
-                    chipsTitles = tourismTypeFilters,
+                    chipsTitles = tourismTypes,
                     selectedChips = uiState.selectedTourismTypes,
                     onChipClicked = onTourismTypeChipClicked
                 )
@@ -123,14 +114,14 @@ private fun ScreenContent(
             item {
                 FlowFilterSection(
                     title = stringResource(id = R.string.artifact_type),
-                    chipsTitles = artifactTypeList,
+                    chipsTitles = artifactTypes,
                     selectedChips = uiState.selectedArtifactTypes,
                     onChipClicked = onArtifactTypeChipClicked
                 )
 
                 FlowFilterSection(
                     title = stringResource(id = R.string.material),
-                    chipsTitles = materialList,
+                    chipsTitles = materials,
                     selectedChips = uiState.selectedMaterials,
                     onChipClicked = onMaterialChipClicked,
                     modifier = Modifier.padding(top = 32.dp)
@@ -142,7 +133,7 @@ private fun ScreenContent(
             item {
                 FlowFilterSection(
                     title = stringResource(id = R.string.tour_type),
-                    chipsTitles = tourTypeList,
+                    chipsTitles = tourTypes,
                     selectedChips = uiState.selectedTourTypes,
                     onChipClicked = onTourTypeChipClicked
                 )
@@ -186,7 +177,7 @@ private fun ScreenContent(
             item {
                 FlowFilterSection(
                     title = stringResource(id = R.string.location),
-                    chipsTitles = locationFilters,
+                    chipsTitles = locations,
                     selectedChips = uiState.selectedLocations,
                     onChipClicked = onLocationChipClicked
                 )
@@ -198,7 +189,7 @@ private fun ScreenContent(
                 FlowFilterSection(
                     title = stringResource(id = R.string.rating),
                     isRating = true,
-                    chipsTitles = ratingFilters,
+                    chipsTitles = ratings,
                     selectedChips = listOf(uiState.selectedRating),
                     onChipClicked = onRatingChipClicked
                 )
@@ -208,7 +199,7 @@ private fun ScreenContent(
         item {
             FlowFilterSection(
                 title = stringResource(id = R.string.sortby),
-                chipsTitles = sortList,
+                chipsTitles = sortWays,
                 selectedChips = listOf(uiState.selectedSortBy),
                 onChipClicked = onSortByChipClicked
             )

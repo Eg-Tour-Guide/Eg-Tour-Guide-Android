@@ -1,7 +1,6 @@
 package com.egtourguide.expanded.presentation.screens.expanded
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
 import android.webkit.WebView
@@ -27,8 +26,6 @@ private fun WebViewScreenPreview() {
 fun WebViewScreen(
     modelUrl: String
 ) {
-    Log.d("WebViewScreen", "ModelUrl: $modelUrl")
-
     AndroidView(
         factory = {
             WebView(it).apply {

@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -23,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -39,7 +39,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
@@ -73,11 +72,11 @@ fun ToursListScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val filterState by filterViewModel.uiState.collectAsState()
+    val hasChanged by filterViewModel.hasChanged.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
 
     LaunchedEffect(key1 = filterState) {
-        Log.d("```TAG```", "ToursListScreen: Changed!!")
         viewModel.filterTours(filterState)
     }
 
@@ -117,6 +116,7 @@ fun ToursListScreen(
 
     ToursListScreenContent(
         uiState = uiState,
+        hasChanged = hasChanged,
         onSearchClicked = onNavigateToSearch,
         onNotificationsClicked = navigateToNotifications,
         onFilterClicked = onNavigateToFilters,
@@ -183,7 +183,8 @@ fun ToursListScreen(
 
 @Composable
 fun ToursListScreenContent(
-    uiState: ToursListUIState,
+    uiState: ToursListUIState = ToursListUIState(),
+    hasChanged: Boolean = false,
     onSearchClicked: () -> Unit = {},
     onNotificationsClicked: () -> Unit = {},
     onFilterClicked: () -> Unit = {},
@@ -242,7 +243,8 @@ fun ToursListScreenContent(
 
                 ToursHeader(
                     toursCount = uiState.displayedTours.size,
-                    onFilterClicked = onFilterClicked
+                    onFilterClicked = onFilterClicked,
+                    hasChanged = hasChanged
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -260,7 +262,8 @@ fun ToursListScreenContent(
 @Composable
 private fun ToursHeader(
     toursCount: Int,
-    onFilterClicked: () -> Unit
+    onFilterClicked: () -> Unit,
+    hasChanged: Boolean
 ) {
     Row(
         Modifier
@@ -270,20 +273,24 @@ private fun ToursHeader(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "$toursCount Tours",
+            text = stringResource(id = R.string.tours_count, toursCount),
             style = MaterialTheme.typography.displaySmall,
             color = MaterialTheme.colorScheme.onBackground
         )
+
         Icon(
-            modifier = Modifier.clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null
-            ) {
-                onFilterClicked()
-            },
+            modifier = Modifier
+                .size(20.dp)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+                    onFilterClicked()
+                },
             painter = painterResource(id = R.drawable.ic_filter),
-            contentDescription = "Filter Icon",
-            tint = Color.Unspecified
+            contentDescription = stringResource(id = R.string.filters),
+            tint = if (hasChanged) MaterialTheme.colorScheme.outlineVariant
+            else MaterialTheme.colorScheme.onBackground
         )
     }
 }
@@ -316,19 +323,21 @@ private fun ToursSection(
 private fun ToursScreenPreview() {
     EGTourGuideTheme {
         ToursListScreenContent(
+            hasChanged = false,
             uiState = ToursListUIState(
                 isLoading = false,
-                displayedTours = (0..3).map {
-                    AbstractedTour(
-                        id = "$it",
-                        image = "contentiones",
-                        title = "eros",
-                        duration = 3645,
-                        rating = 10.11f,
-                        ratingCount = 3276,
-                        isSaved = false
-                    )
-                },
+                displayedTours = emptyList(),
+//                (0..3).map {
+//                    AbstractedTour(
+//                        id = "$it",
+//                        image = "contentiones",
+//                        title = "eros",
+//                        duration = 3645,
+//                        rating = 10.11f,
+//                        ratingCount = 3276,
+//                        isSaved = false
+//                    )
+//                },
                 tours = (0..9).map {
                     AbstractedTour(
                         id = "$it",

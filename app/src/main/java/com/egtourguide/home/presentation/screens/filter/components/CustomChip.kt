@@ -1,4 +1,4 @@
-package com.egtourguide.home.presentation.screens.filter
+package com.egtourguide.home.presentation.screens.filter.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Row

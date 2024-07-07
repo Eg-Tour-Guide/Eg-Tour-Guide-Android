@@ -151,4 +151,10 @@
     <string name="created_successfully">Created Successfully</string>
     <string name="edited_successfully">Edited Successfully</string>
     <string name="edit_icon">Edit icon</string>
+    <string name="filters">Filters</string>
+    <string name="tours_count">%s Tours</string>
+    <string name="landmarks_count">%s Landmarks</string>
+    <string name="artifacts_count">%s Artifacts</string>
+    <string name="no_results_found">No Results Found</string>
+    <string name="results_count">%1$s Results</string>
 </resources>

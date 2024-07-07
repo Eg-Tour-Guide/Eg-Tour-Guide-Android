@@ -18,7 +18,6 @@ sealed class AppScreen(val route: String) {
     object Search : AppScreen(route = Routes.SEARCH_SCREEN_ROUTE)
     object SearchResults : AppScreen(route = Routes.SEARCH_RESULTS_SCREEN_ROUTE)
     object Notification : AppScreen(route = Routes.NOTIFICATION_SCREEN_ROUTE)
-    object Filter : AppScreen(route = "filter_screen")
     object ToursFilter : AppScreen(route = Routes.TOURS_FILTER_SCREEN_ROUTE)
     object LandmarksFilter : AppScreen(route = Routes.LANDMARKS_FILTER_SCREEN_ROUTE)
     object ArtifactsFilter : AppScreen(route = Routes.ARTIFACTS_FILTER_SCREEN_ROUTE)

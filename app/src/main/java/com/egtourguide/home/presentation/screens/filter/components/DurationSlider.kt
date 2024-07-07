@@ -1,4 +1,4 @@
-package com.egtourguide.home.presentation.screens.filter
+package com.egtourguide.home.presentation.screens.filter.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -76,8 +76,14 @@ fun CustomRangeSlider(
                 ) {
                     drawLine(
                         color = Color(color.value),
-                        start = Offset(x = size.width * (state.activeRangeStart / 30), y = size.height / 2),
-                        end = Offset(x = size.width * (state.activeRangeEnd / 30), y = size.height / 2),
+                        start = Offset(
+                            x = size.width * (state.activeRangeStart / 30),
+                            y = size.height / 2
+                        ),
+                        end = Offset(
+                            x = size.width * (state.activeRangeEnd / 30),
+                            y = size.height / 2
+                        ),
                         cap = StrokeCap.Round,
                         strokeWidth = size.height
                     )

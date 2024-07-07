@@ -77,52 +77,18 @@ class ToursListViewModel @Inject constructor(
         _uiState.update { it.copy(saveError = null) }
     }
 
+    // TODO: Add rest of filters!!
     fun filterTours(filterState: FilterScreenState) {
-        /*var resultedList = tours
-        filters?.forEach { (filterKey, filterValue) ->
-            filterKey as String
-            filterValue as List<String>
-            when (filterKey) {
-                "Rating" -> {
-                    if (filterValue.isNotEmpty()) {
-                        val ratingValue = filterValue.first().toInt()
-                        resultedList = resultedList.filter { item ->
-                            item.rating >= ratingValue
-                        }
-                    }
-                }
-
-                "Duration" -> {
-                    if (filterValue.size == 2) {
-                        val minDays = filterValue.first().toInt()
-                        val maxDays = filterValue.last().toInt()
-                        resultedList = resultedList.filter { item ->
-                            item.duration in minDays..maxDays
-                        }
-                    }
-                }
-
-                "Sort By" -> {
-                    if (filterValue.isNotEmpty()) {
-                        val sortType = filterValue.first().toInt()
-                        resultedList = if (sortType == 0) {
-                            resultedList.sortedBy { item -> item.rating }
-                        } else {
-                            resultedList.sortedByDescending { item -> item.rating }
-                        }
-                    }
-                }
-            }
-        }
-        return resultedList*/
-
         _uiState.update {
-            it.copy(displayedTours = it.displayedTours.filter { tour ->
-                filterState.minDuration.toInt() <= tour.duration && tour.duration <= filterState.maxDuration.toInt()
-            })
+            it.copy(
+                displayedTours = it.tours.filter { tour ->
+                    filterState.minDuration.toInt() <= tour.duration && tour.duration <= filterState.maxDuration.toInt()
+                }
+            )
         }
     }
 
+    // TODO: This!!
     fun detectArtifact(image: Bitmap, context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             detectArtifactUseCase(

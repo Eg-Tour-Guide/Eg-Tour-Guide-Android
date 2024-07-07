@@ -1,6 +1,5 @@
 package com.egtourguide.home.presentation.screens.search_results
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -55,24 +54,30 @@ import com.egtourguide.home.domain.model.SearchResult
 import com.egtourguide.core.presentation.components.EmptyState
 import com.egtourguide.core.presentation.components.LoadingState
 import com.egtourguide.core.presentation.components.ScreenHeader
+import com.egtourguide.home.presentation.screens.filter.FilterScreenViewModel
 
 @Composable
 fun SearchResultsScreen(
     viewModel: SearchResultsViewModel = hiltViewModel(),
-    query: String = "",
-    filters: HashMap<*, *>? = null,
-    onNavigateToSearch: () -> Unit = {},
-    onNavigateToFilters: () -> Unit = {},
-    onNavigateToSingleItem: (SearchResult) -> Unit = {}
+    filterViewModel: FilterScreenViewModel,
+    query: String,
+    onNavigateToSearch: () -> Unit,
+    onNavigateToFilters: () -> Unit,
+    onNavigateToSingleItem: (SearchResult) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val filterState by filterViewModel.uiState.collectAsState()
+    val hasChanged by filterViewModel.hasChanged.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
-    Log.d("````TAG````", "filters in screen: $filters")
-    viewModel.filters = filters
+
+    LaunchedEffect(key1 = filterState) {
+        viewModel.filterResults(filterState)
+    }
 
     SearchResultsScreenContent(
         uiState = uiState,
+        hasChanged = hasChanged,
         onSearchClicked = onNavigateToSearch,
         onFilterClicked = onNavigateToFilters,
         onResultClicked = onNavigateToSingleItem,
@@ -91,6 +96,7 @@ fun SearchResultsScreen(
         }
     }
 
+    // TODO: Check this!!
     LaunchedEffect(key1 = uiState.isSaveSuccess, key2 = uiState.saveError) {
         val successMsg =
             if (uiState.isSave) "Place Saved Successfully" else "Place Unsaved Successfully"
@@ -111,10 +117,11 @@ fun SearchResultsScreen(
 @Composable
 fun SearchResultsScreenContent(
     uiState: SearchResultsUIState,
-    onSearchClicked: () -> Unit,
-    onFilterClicked: () -> Unit,
-    onResultClicked: (SearchResult) -> Unit,
-    onSaveClicked: (SearchResult) -> Unit
+    hasChanged: Boolean = false,
+    onSearchClicked: () -> Unit = {},
+    onFilterClicked: () -> Unit = {},
+    onResultClicked: (SearchResult) -> Unit = {},
+    onSaveClicked: (SearchResult) -> Unit = {}
 ) {
     Column(
         Modifier
@@ -127,12 +134,17 @@ fun SearchResultsScreenContent(
             showSearch = true,
             onSearchClicked = onSearchClicked
         )
-        Spacer(modifier = Modifier.height(18.dp))
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         ResultsHeader(
             resultsCount = uiState.results.size,
-            onFilterClicked = onFilterClicked
+            onFilterClicked = onFilterClicked,
+            hasChanged = hasChanged
         )
+
         Spacer(modifier = Modifier.height(16.dp))
+
         AnimatedVisibility(
             visible = uiState.isLoading,
             enter = fadeIn(),
@@ -140,15 +152,17 @@ fun SearchResultsScreenContent(
         ) {
             LoadingState(modifier = Modifier.fillMaxSize())
         }
+
         AnimatedVisibility(
             visible = uiState.isShowEmptyState && uiState.results.isEmpty(),
             enter = fadeIn(),
             exit = fadeOut()
         ) {
             EmptyState(
-                message = "No Results Found"
+                message = stringResource(id = R.string.no_results_found)
             )
         }
+
         AnimatedVisibility(
             visible = !uiState.isLoading,
             enter = fadeIn(),
@@ -166,7 +180,8 @@ fun SearchResultsScreenContent(
 @Composable
 private fun ResultsHeader(
     resultsCount: Int,
-    onFilterClicked: () -> Unit
+    onFilterClicked: () -> Unit,
+    hasChanged: Boolean
 ) {
     Row(
         Modifier
@@ -176,21 +191,24 @@ private fun ResultsHeader(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "$resultsCount Results",
+            text = stringResource(id = R.string.results_count, resultsCount),
             style = MaterialTheme.typography.displaySmall,
             color = MaterialTheme.colorScheme.onBackground
         )
-        /*Icon(
-            modifier = Modifier.clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null
-            ) {
-                onFilterClicked()
-            },
+        Icon(
+            modifier = Modifier
+                .size(20.dp)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+                    onFilterClicked()
+                },
             painter = painterResource(id = R.drawable.ic_filter),
-            contentDescription = "Filter Icon",
-            tint = Color.Unspecified
-        )*/
+            contentDescription = stringResource(id = R.string.filters),
+            tint = if (hasChanged) MaterialTheme.colorScheme.outlineVariant
+            else MaterialTheme.colorScheme.onBackground
+        )
     }
 }
 
@@ -337,5 +355,10 @@ fun ResultItem(
 @Preview
 @Composable
 private fun SearchResultsScreenPreview() {
-    SearchResultsScreen()
+    SearchResultsScreenContent(
+        hasChanged = true,
+        uiState = SearchResultsUIState(
+
+        )
+    )
 }

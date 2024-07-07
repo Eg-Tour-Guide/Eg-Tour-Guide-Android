@@ -12,6 +12,7 @@ import com.egtourguide.home.domain.model.AbstractedArtifact
 import com.egtourguide.core.domain.usecases.ChangeArtifactSavedStateUseCase
 import com.egtourguide.home.domain.usecases.DetectArtifactUseCase
 import com.egtourguide.home.domain.usecases.GetArtifactsListUseCase
+import com.egtourguide.home.presentation.screens.filter.FilterScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +21,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.IOException
 import java.io.InputStream
-import java.util.HashMap
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,7 +32,6 @@ class ArtifactsListViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(ArtifactsListUIState())
     val uiState = _uiState.asStateFlow()
-    var filters: HashMap<*, *>? = null
 
     fun onSaveClicked(artifact: AbstractedArtifact) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -59,49 +58,27 @@ class ArtifactsListViewModel @Inject constructor(
                     _uiState.update { it.copy(isLoading = false, error = error) }
                 },
                 onSuccess = { response ->
-                    val artifacts = filterArtifacts(artifacts = response, filters = filters)
-                    _uiState.update { it.copy(isLoading = false, artifacts = artifacts) }
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            artifacts = response,
+                            displayedArtifacts = response
+                        )
+                    }
                 }
             )
         }
     }
 
-    private fun filterArtifacts(
-        artifacts: List<AbstractedArtifact>,
-        filters: HashMap<*, *>?
-    ): List<AbstractedArtifact> {
-        var resultedList = artifacts
-        filters?.forEach { (filterKey, filterValue) ->
-            filterKey as String
-            filterValue as List<String>
-
-            when (filterKey) {
-                "Artifact Type" -> {
-                    if (filterValue.isNotEmpty()) {
-                        resultedList = resultedList.filter { item ->
-                            filterValue.contains(item.type)
-                        }
-                    }
+    // TODO: Add rest of filters!!
+    fun filterArtifacts(filterState: FilterScreenState) {
+        _uiState.update {
+            it.copy(
+                displayedArtifacts = it.artifacts.filter { artifact ->
+                    artifact.material in filterState.selectedMaterials || filterState.selectedMaterials.isEmpty()
                 }
-
-                "Location" -> {
-                    if (filterValue.isNotEmpty()) {
-                        resultedList = resultedList.filter { item ->
-                            filterValue.contains(item.museumName)
-                        }
-                    }
-                }
-
-                "Material" -> {
-                    if (filterValue.isNotEmpty()) {
-                        resultedList = resultedList.filter { item ->
-                            filterValue.contains(item.material)
-                        }
-                    }
-                }
-            }
+            )
         }
-        return resultedList
     }
 
     fun clearSaveSuccess() {
