@@ -20,6 +20,7 @@ fun EmptyState(
     modifier: Modifier = Modifier,
     message: String,
 ) {
+    // TODO: Get black logo back!!
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.Center,
@@ -27,7 +28,8 @@ fun EmptyState(
     ) {
         Image(
             modifier = Modifier.size(120.dp),
-            painter = painterResource(id = R.drawable.ic_logo_bw),
+//            painter = painterResource(id = R.drawable.ic_logo_bw),
+            painter = painterResource(id = R.drawable.ic_launcher_background),
             contentDescription = ""
         )
         Spacer(modifier = Modifier.height(8.dp))

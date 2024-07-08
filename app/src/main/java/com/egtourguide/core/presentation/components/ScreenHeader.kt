@@ -127,7 +127,9 @@ fun ScreenHeader(
                 Image(
                     painter = painterResource(id = R.drawable.ic_text_logo),
                     contentDescription = null,
-                    modifier = Modifier.height(16.dp)
+                    modifier = Modifier
+                        .height(16.dp)
+                        .width(119.dp)
                 )
             }
         }

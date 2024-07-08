@@ -140,6 +140,7 @@ fun AddDialog(
             modifier = Modifier.padding(top = 24.dp)
         )
 
+        // TODO: Change this text!!
         Text(
             text = stringResource(id = R.string.hours, value.toInt()),
             color = MaterialTheme.colorScheme.onBackground,
