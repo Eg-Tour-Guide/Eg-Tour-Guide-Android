@@ -14,6 +14,7 @@ android {
     defaultConfig {
         applicationId = "com.egtourguide"
         minSdk = 26
+        //noinspection OldTargetApi
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -103,25 +104,13 @@ dependencies {
     implementation(libs.coil.compose)
 
     // Compose Navigation
-    implementation (libs.androidx.navigation.compose)
+    implementation(libs.androidx.navigation.compose)
 
     // Lottie
     implementation(libs.lottie.compose)
 
     // DataStore
     implementation(libs.androidx.datastore.preferences)
-
-    // Easy Permissions
-    implementation(libs.easypermissions)
-
-    // Compose Animation
-    implementation (libs.androidx.animation)
-
-    // Constraint Layout
-    implementation (libs.androidx.constraintlayout.compose)
-
-    //Pager
-    implementation (libs.pager)
 
     // Google Maps
     implementation(libs.maps.compose)
