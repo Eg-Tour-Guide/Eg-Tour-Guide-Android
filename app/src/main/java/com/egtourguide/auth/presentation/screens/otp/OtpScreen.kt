@@ -72,7 +72,7 @@ fun OtpScreen(
         uiState = uiState,
         onCodeChanged = viewModel::changeCode,
         onVerifyClicked = viewModel::onVerifyClicked,
-        onResendClicked = viewModel::resendCode
+        onResendClicked = { viewModel.resendCode(fromSignup = fromSignup) }
     )
 
     DisposableEffect(key1 = lifecycleOwner) {

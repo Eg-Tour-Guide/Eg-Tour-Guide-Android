@@ -2,6 +2,8 @@ package com.egtourguide.auth.presentation.screens.otp
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.egtourguide.auth.data.dto.body.ForgotPasswordRequestBody
+import com.egtourguide.auth.domain.usecases.GetForgotPasswordCodeUseCase
 import com.egtourguide.auth.domain.usecases.SendCodeUseCase
 import com.egtourguide.auth.domain.usecases.SignupUseCase
 import com.egtourguide.core.domain.validation.Validation
@@ -21,7 +23,8 @@ import javax.inject.Inject
 class OtpViewModel @Inject constructor(
     private val signupUseCase: SignupUseCase,
     private val saveInDataStoreUseCase: SaveInDataStoreUseCase,
-    private val sendCodeUseCase: SendCodeUseCase
+    private val sendCodeUseCase: SendCodeUseCase,
+    private val forgotPasswordCodeUseCase: GetForgotPasswordCodeUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(OtpUIState())
@@ -39,7 +42,32 @@ class OtpViewModel @Inject constructor(
         _uiState.update { it.copy(isSignedSuccessfully = false) }
     }
 
-    fun resendCode() {
+    fun resendCode(fromSignup: Boolean) {
+        if (fromSignup) resendSignupCode()
+        else resendForgotPasswordCode()
+    }
+
+    private fun resendForgotPasswordCode() {
+        viewModelScope.launch(Dispatchers.IO) {
+            forgotPasswordCodeUseCase(
+                requestBody = ForgotPasswordRequestBody(
+                    email = _uiState.value.email
+                )
+            ).onResponse(
+                onLoading = {
+                    _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+                },
+                onSuccess = { response ->
+                    _uiState.update { it.copy(isLoading = false, sentCode = response.code) }
+                },
+                onFailure = { message ->
+                    _uiState.update { it.copy(isLoading = false, errorMessage = message) }
+                }
+            )
+        }
+    }
+
+    private fun resendSignupCode() {
         viewModelScope.launch(Dispatchers.IO) {
             sendCodeUseCase(email = _uiState.value.email).onResponse(
                 onLoading = {
