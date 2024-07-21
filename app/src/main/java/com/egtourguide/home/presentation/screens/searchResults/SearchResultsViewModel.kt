@@ -1,4 +1,4 @@
-package com.egtourguide.home.presentation.screens.search_results
+package com.egtourguide.home.presentation.screens.searchResults
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -31,7 +31,13 @@ class SearchResultsViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             searchUseCase(query).onResponse(
                 onLoading = {
-                    _uiState.update { it.copy(isLoading = true, isShowEmptyState = false) }
+                    _uiState.update {
+                        it.copy(
+                            isLoading = true,
+                            isShowEmptyState = false,
+                            isCallSent = true
+                        )
+                    }
                 },
                 onSuccess = { response ->
                     _uiState.update {

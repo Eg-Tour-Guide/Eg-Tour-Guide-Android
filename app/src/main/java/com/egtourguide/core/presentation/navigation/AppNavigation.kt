@@ -33,7 +33,7 @@ import com.egtourguide.customTours.presentation.myTours.MyToursScreen
 import com.egtourguide.expanded.presentation.screens.review.ReviewScreenRoot
 import com.egtourguide.user.presentation.saved.SavedScreen
 import com.egtourguide.home.presentation.screens.search.SearchScreen
-import com.egtourguide.home.presentation.screens.search_results.SearchResultsScreen
+import com.egtourguide.home.presentation.screens.searchResults.SearchResultsScreen
 import com.egtourguide.expanded.presentation.screens.toursPlan.ToursPlanScreenRoot
 import com.egtourguide.home.domain.model.DetectedArtifact
 import com.egtourguide.home.domain.model.toReviewsList

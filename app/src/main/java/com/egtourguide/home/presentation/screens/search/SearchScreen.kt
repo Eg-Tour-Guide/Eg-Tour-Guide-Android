@@ -2,18 +2,16 @@ package com.egtourguide.home.presentation.screens.search
 
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -32,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
@@ -45,8 +44,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.egtourguide.R
 import com.egtourguide.core.presentation.components.MainTextField
-import com.egtourguide.core.presentation.components.EmptyState
 import com.egtourguide.core.presentation.components.LoadingState
+import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 
 @Composable
 fun SearchScreen(
@@ -60,18 +59,21 @@ fun SearchScreen(
     SearchScreenContent(
         uiState = uiState,
         onQueryChanged = viewModel::updateSearchQuery,
-        onSearchClicked = viewModel::getSearchSuggestions,
+        onSearchClicked = {
+            if (uiState.searchQuery.isNotEmpty()) onNavigateToSearchResults(uiState.searchQuery)
+        },
         onClearHistoryClicked = viewModel::clearHistory,
         onSearchItemClicked = onNavigateToSearchResults
     )
 
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_CREATE) {
+            if (event == Lifecycle.Event.ON_CREATE && !uiState.isCallSent) {
                 viewModel.getSearchHistory()
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
+
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
@@ -87,56 +89,49 @@ fun SearchScreen(
 
 @Composable
 private fun SearchScreenContent(
-    uiState: SearchUIState,
-    onQueryChanged: (String) -> Unit,
-    onSearchClicked: () -> Unit,
-    onClearHistoryClicked: () -> Unit,
-    onSearchItemClicked: (String) -> Unit,
+    uiState: SearchUIState = SearchUIState(),
+    onQueryChanged: (String) -> Unit = {},
+    onSearchClicked: () -> Unit = {},
+    onClearHistoryClicked: () -> Unit = {},
+    onSearchItemClicked: (String) -> Unit = {}
 ) {
     Column(
         Modifier
-            .padding(top = 24.dp, start = 24.dp, end = 24.dp)
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(top = 24.dp)
     ) {
-        SearchBar(
-            query = uiState.searchQuery,
-            onQueryChanged = onQueryChanged,
-            onSearchClicked = onSearchClicked
+        MainTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp),
+            value = uiState.searchQuery,
+            onValueChanged = onQueryChanged,
+            labelText = stringResource(id = R.string.search),
+            placeholderText = stringResource(id = R.string.search_placeholder),
+            leadingIcon = R.drawable.ic_search,
+            imeAction = ImeAction.Search,
+            keyboardActions = KeyboardActions(onSearch = { onSearchClicked() })
         )
-        Spacer(modifier = Modifier.height(24.dp))
+
         AnimatedVisibility(
-            visible = uiState.searchQuery.isEmpty(),
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
-            RecentSearchesSection(
-                isSearchHistoryLoading = uiState.isRecentSearchesLoading,
-                isClearHistoryLoading = uiState.isClearHistoryLoading,
-                searchHistory = uiState.searchHistory,
-                onClearClicked = onClearHistoryClicked,
-                onSearchItemClicked = onSearchItemClicked
-            )
-        }
-        AnimatedVisibility(
-            visible = uiState.isShowEmptyState && uiState.searchSuggestions.isEmpty() && uiState.searchQuery.isNotEmpty(),
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
-            EmptyState(
-                modifier = Modifier.fillMaxWidth(),
-                message = "No Results Found"
-            )
-        }
-        AnimatedVisibility(
-            visible = uiState.isSearchLoading,
+            visible = uiState.isLoading,
             enter = fadeIn(),
             exit = fadeOut()
         ) {
             LoadingState(modifier = Modifier.fillMaxSize())
         }
-        AnimatedVisibility(visible = !uiState.isSearchLoading && uiState.searchQuery.isNotEmpty()) {
-            SearchSuggestionsSection(
-                suggestionsList = uiState.searchSuggestions,
+
+        AnimatedVisibility(
+            visible = !uiState.isLoading && uiState.searchHistory.isNotEmpty(),
+            enter = fadeIn(),
+            exit = fadeOut(),
+            modifier = Modifier.padding(top = 24.dp)
+        ) {
+            RecentSearchesSection(
+                isClearHistoryLoading = uiState.isClearHistoryLoading,
+                searchHistory = uiState.searchHistory,
+                onClearClicked = onClearHistoryClicked,
                 onSearchItemClicked = onSearchItemClicked
             )
         }
@@ -144,26 +139,7 @@ private fun SearchScreenContent(
 }
 
 @Composable
-private fun SearchBar(
-    query: String,
-    onQueryChanged: (String) -> Unit,
-    onSearchClicked: () -> Unit
-) {
-    MainTextField(
-        modifier = Modifier.fillMaxWidth(),
-        value = query,
-        onValueChanged = onQueryChanged,
-        labelText = stringResource(id = R.string.search),
-        placeholderText = "What are you looking for?",
-        leadingIcon = R.drawable.ic_search,
-        imeAction = ImeAction.Search,
-        keyboardActions = KeyboardActions(onSearch = { onSearchClicked() })
-    )
-}
-
-@Composable
 private fun RecentSearchesSection(
-    isSearchHistoryLoading: Boolean,
     isClearHistoryLoading: Boolean,
     searchHistory: List<String>,
     onClearClicked: () -> Unit,
@@ -173,18 +149,21 @@ private fun RecentSearchesSection(
         modifier = Modifier.fillMaxWidth(),
     ) {
         Row(
-            Modifier.fillMaxWidth(),
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = stringResource(R.string.recent_searches),
+                text = stringResource(id = R.string.recent_searches),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onBackground
             )
+
             if (isClearHistoryLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(18.dp),
-                    strokeWidth = 1.dp
+                    strokeWidth = 2.dp
                 )
             } else {
                 Text(
@@ -195,102 +174,73 @@ private fun RecentSearchesSection(
                         ) {
                             onClearClicked()
                         },
-                    text = stringResource(R.string.clear),
+                    text = stringResource(id = R.string.clear),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.error
                 )
             }
+        }
 
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        AnimatedVisibility(
-            visible = isSearchHistoryLoading,
-            enter = fadeIn(),
-            exit = fadeOut(animationSpec = tween(durationMillis = 500))
+        LazyColumn(
+            modifier = Modifier.padding(top = 16.dp)
         ) {
-            LoadingState(modifier = Modifier.fillMaxWidth())
-        }
-        AnimatedVisibility(
-            visible = !isSearchHistoryLoading,
-            enter = fadeIn(animationSpec = tween(delayMillis = 500)),
-            exit = fadeOut()
-        ) {
-            LazyColumn {
-                items(items = searchHistory) { item ->
-                    SearchItem(
-                        item = item,
-                        onSearchItemClicked = onSearchItemClicked
-                    )
-                }
+            items(items = searchHistory) { item ->
+                HistoryItem(
+                    item = item,
+                    onSearchItemClicked = onSearchItemClicked
+                )
             }
         }
     }
 }
 
 @Composable
-private fun SearchSuggestionsSection(
-    suggestionsList: List<String>,
-    onSearchItemClicked: (String) -> Unit
-) {
-    LazyColumn {
-        items(items = suggestionsList) { item ->
-            SearchItem(
-                item = item,
-                onSearchItemClicked = onSearchItemClicked
-            )
-        }
-    }
-}
-
-@Composable
-private fun SearchItem(
+private fun HistoryItem(
     item: String,
     onSearchItemClicked: (String) -> Unit,
 ) {
     Column(
         Modifier
-            .padding(top = 8.dp)
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null
-            ) {
-                onSearchItemClicked(item)
-            }
-
+            .fillMaxSize()
+            .clickable { onSearchItemClicked(item) }
     ) {
         Row(
-            Modifier.fillMaxWidth(),
+            Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp, horizontal = 24.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_search),
-                    contentDescription = "Search Icon"
-                )
-                Text(
-                    modifier = Modifier
-                        .padding(start = 16.dp)
-                        .fillMaxWidth(fraction = 0.95f),
-                    text = item,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
+            Icon(
+                painter = painterResource(id = R.drawable.ic_search),
+                tint = MaterialTheme.colorScheme.onBackground,
+                contentDescription = null,
+                modifier = Modifier.size(14.dp)
+            )
+
+            Text(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .weight(1f),
+                text = item,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+
             Icon(
                 painter = painterResource(id = R.drawable.ic_search_arrow),
-                contentDescription = "Arrow Icon"
+                tint = MaterialTheme.colorScheme.onBackground,
+                contentDescription = null,
+                modifier = Modifier.size(10.dp)
             )
         }
-        Spacer(modifier = Modifier.height(8.dp))
+
         HorizontalDivider(
             modifier = Modifier.fillMaxWidth(),
             thickness = 1.dp,
-            color = MaterialTheme.colorScheme.primary.copy(.1f)
+            color = Color(0xFFE6E6E6)
         )
     }
 }
@@ -298,5 +248,12 @@ private fun SearchItem(
 @Preview
 @Composable
 private fun SearchScreenPreview() {
-
+    EGTourGuideTheme {
+        SearchScreenContent(
+            uiState = SearchUIState(
+                isLoading = false,
+                searchHistory = (1..5).map { "Test  $it" }
+            )
+        )
+    }
 }

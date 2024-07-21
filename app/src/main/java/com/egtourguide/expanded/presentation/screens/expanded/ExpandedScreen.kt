@@ -771,7 +771,7 @@ private fun IncludedArtifactsSection(
                     isSaved = artifact.isSaved,
                     location = artifact.museumName,
                     artifactType = artifact.type,
-                    onItemClicked = { onArtifactClicked(artifact.id, ExpandedType.LANDMARK.name) },
+                    onItemClicked = { onArtifactClicked(artifact.id, ExpandedType.ARTIFACT.name) },
                     onSaveClicked = { onSaveClicked(artifact) },
                     modifier = Modifier.width(141.dp)
                 )
@@ -854,7 +854,7 @@ private fun RelatedArtifactsSection(
                     isSaved = artifact.isSaved,
                     location = artifact.museumName,
                     artifactType = artifact.type,
-                    onItemClicked = { onArtifactClicked(artifact.id, ExpandedType.LANDMARK.name) },
+                    onItemClicked = { onArtifactClicked(artifact.id, ExpandedType.ARTIFACT.name) },
                     onSaveClicked = { onSaveClicked(artifact) },
                     modifier = Modifier.width(141.dp)
                 )

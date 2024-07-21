@@ -1,4 +1,4 @@
-package com.egtourguide.home.presentation.screens.search_results
+package com.egtourguide.home.presentation.screens.searchResults
 
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
@@ -73,11 +73,12 @@ fun SearchResultsScreen(
 
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_CREATE) {
+            if (event == Lifecycle.Event.ON_CREATE && !uiState.isCallSent) {
                 viewModel.getSearchResults(query = query)
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
+
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
@@ -122,15 +123,6 @@ fun SearchResultsScreenContent(
             onSearchClicked = onSearchClicked
         )
 
-        DataScreenHeader(
-            title = stringResource(id = R.string.results_count, uiState.results.size),
-            onFilterClicked = onFilterClicked,
-            hasChanged = hasChanged,
-            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
         AnimatedVisibility(
             visible = uiState.isLoading,
             enter = fadeIn(),
@@ -140,7 +132,7 @@ fun SearchResultsScreenContent(
         }
 
         AnimatedVisibility(
-            visible = uiState.isShowEmptyState && uiState.results.isEmpty(),
+            visible = !uiState.isLoading && uiState.results.isEmpty(),
             enter = fadeIn(),
             exit = fadeOut()
         ) {
@@ -150,15 +142,26 @@ fun SearchResultsScreenContent(
         }
 
         AnimatedVisibility(
-            visible = !uiState.isLoading,
+            visible = !uiState.isLoading && uiState.results.isNotEmpty(),
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            ResultsSection(
-                results = uiState.results,
-                onResultClicked = onResultClicked,
-                onSaveClicked = onSaveClicked
-            )
+            Column {
+                DataScreenHeader(
+                    title = stringResource(id = R.string.results_count, uiState.results.size),
+                    onFilterClicked = onFilterClicked,
+                    hasChanged = hasChanged,
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                ResultsSection(
+                    results = uiState.results,
+                    onResultClicked = onResultClicked,
+                    onSaveClicked = onSaveClicked
+                )
+            }
         }
     }
 }
@@ -176,7 +179,7 @@ private fun ResultsSection(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         contentPadding = PaddingValues(bottom = 16.dp, start = 16.dp, end = 16.dp)
     ) {
-        items(items = results) { result ->
+        items(items = results, key = { it.id }) { result ->
             LargeCard(
                 itemType = result.itemType,
                 image = result.image,
@@ -205,7 +208,22 @@ private fun SearchResultsScreenPreview() {
     EGTourGuideTheme {
         SearchResultsScreenContent(
             hasChanged = true,
-            uiState = SearchResultsUIState()
+            uiState = SearchResultsUIState(
+                isLoading = false,
+                results = (0..4).map {
+                    SearchResult(
+                        id = "$it",
+                        name = "John Johnson",
+                        image = "pro",
+                        location = "Cairo",
+                        isSaved = false,
+                        rating = 6.7,
+                        ratingCount = 8388,
+                        itemType = ItemType.LANDMARK,
+                        artifactType = "Statue"
+                    )
+                }
+            )
         )
     }
 }
