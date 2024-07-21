@@ -7,6 +7,9 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.egtourguide.core.domain.usecases.DeleteFromDataStoreUseCase
+import com.egtourguide.core.utils.DataStoreKeys.IS_LOGGED_KEY
+import com.egtourguide.core.utils.DataStoreKeys.TOKEN_KEY
 import com.egtourguide.core.utils.onResponse
 import com.egtourguide.home.domain.usecases.DetectArtifactUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,8 +24,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class UserViewModel @Inject constructor(
-    private val detectArtifactUseCase: DetectArtifactUseCase
-): ViewModel() {
+    private val detectArtifactUseCase: DetectArtifactUseCase,
+    private val deleteFromDataStoreUseCase: DeleteFromDataStoreUseCase
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(UserScreenState())
     val uiState = _uiState.asStateFlow()
@@ -72,5 +76,12 @@ class UserViewModel @Inject constructor(
 
     fun clearDetectionSuccess() {
         _uiState.update { it.copy(detectedArtifact = null) }
+    }
+
+    fun logout() {
+        viewModelScope.launch(Dispatchers.IO) {
+            deleteFromDataStoreUseCase(key = IS_LOGGED_KEY)
+            deleteFromDataStoreUseCase(key = TOKEN_KEY)
+        }
     }
 }

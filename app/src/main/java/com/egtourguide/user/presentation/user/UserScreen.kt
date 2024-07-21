@@ -40,7 +40,7 @@ import com.egtourguide.core.presentation.components.DataRow
 import com.egtourguide.core.presentation.components.ScreenHeader
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 import com.egtourguide.home.domain.model.DetectedArtifact
-import com.egtourguide.home.presentation.screens.main.components.ArtifactDetectionDialog
+import com.egtourguide.home.presentation.main.components.ArtifactDetectionDialog
 
 @Preview
 @Composable
@@ -59,7 +59,8 @@ fun UserScreenRoot(
     navigateToMyTours: () -> Unit,
     navigateToChangePassword: () -> Unit,
     navigateToSettings: () -> Unit,
-    onNavigateToDetectedArtifact: (DetectedArtifact) -> Unit
+    onNavigateToDetectedArtifact: (DetectedArtifact) -> Unit,
+    navigateToAuth: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -108,7 +109,8 @@ fun UserScreenRoot(
         navigateToChangePassword = navigateToChangePassword,
         navigateToSettings = navigateToSettings,
         onLogoutClicked = {
-            // TODO: Here!!
+            viewModel.logout()
+            navigateToAuth()
         },
         onCaptureObjectClicked = { isArtifactDetectionDialogShown = true }
     )

@@ -20,28 +20,28 @@ import com.egtourguide.auth.presentation.screens.welcome.WelcomeScreen
 import com.egtourguide.core.presentation.ItemType
 import com.egtourguide.customTours.presentation.createTour.CreateTourScreenRoot
 import com.egtourguide.customTours.presentation.customExpanded.CustomExpandedScreenRoot
-import com.egtourguide.home.presentation.screens.main.screens.artifactsList.ArtifactsListScreen
+import com.egtourguide.home.presentation.main.screens.artifactsList.ArtifactsListScreen
 import com.egtourguide.expanded.presentation.screens.expanded.ExpandedScreenRoot
 import com.egtourguide.expanded.presentation.screens.expanded.ExpandedType
 import com.egtourguide.expanded.presentation.screens.expanded.WebViewScreen
-import com.egtourguide.home.presentation.screens.filter.FilterScreen
-import com.egtourguide.home.presentation.screens.main.MainScreen
-import com.egtourguide.home.presentation.screens.main.screens.home.HomeScreen
-import com.egtourguide.home.presentation.screens.main.screens.landmarksList.LandmarksListScreen
+import com.egtourguide.home.presentation.filter.FilterScreen
+import com.egtourguide.home.presentation.main.MainScreen
+import com.egtourguide.home.presentation.main.screens.home.HomeScreen
+import com.egtourguide.home.presentation.main.screens.landmarksList.LandmarksListScreen
 import com.egtourguide.expanded.presentation.screens.moreReviews.MoreReviewsScreenRoot
 import com.egtourguide.customTours.presentation.myTours.MyToursScreen
 import com.egtourguide.expanded.presentation.screens.review.ReviewScreenRoot
 import com.egtourguide.user.presentation.saved.SavedScreen
-import com.egtourguide.home.presentation.screens.search.SearchScreen
-import com.egtourguide.home.presentation.screens.searchResults.SearchResultsScreen
+import com.egtourguide.home.presentation.search.SearchScreen
+import com.egtourguide.home.presentation.searchResults.SearchResultsScreen
 import com.egtourguide.expanded.presentation.screens.toursPlan.ToursPlanScreenRoot
 import com.egtourguide.home.domain.model.DetectedArtifact
 import com.egtourguide.home.domain.model.toReviewsList
 import com.egtourguide.home.domain.model.toStringJson
-import com.egtourguide.home.presentation.screens.filter.FilterScreenViewModel
-import com.egtourguide.home.presentation.screens.filter.FilterType
-import com.egtourguide.home.presentation.screens.main.screens.toursList.ToursListScreen
-import com.egtourguide.home.presentation.screens.notifications.NotificationsScreenRoot
+import com.egtourguide.home.presentation.filter.FilterScreenViewModel
+import com.egtourguide.home.presentation.filter.FilterType
+import com.egtourguide.home.presentation.main.screens.toursList.ToursListScreen
+import com.egtourguide.home.presentation.notifications.NotificationsScreenRoot
 import com.egtourguide.user.presentation.changePassword.ChangePasswordScreenRoot
 import com.egtourguide.user.presentation.editProfile.EditProfileScreenRoot
 import com.egtourguide.user.presentation.settings.SettingsScreenRoot
@@ -82,6 +82,13 @@ fun AppNavigation(
                 },
                 navigateToMyTours = {
                     navController.navigate(route = AppGraph.CustomTours.route)
+                },
+                navigateToAuth = {
+                    navController.navigate(route = AppGraph.Auth.route) {
+                        popUpTo(route = AppGraph.Main.route) {
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }
@@ -222,7 +229,8 @@ fun NavGraphBuilder.authGraph(navController: NavHostController) {
 fun MainNavGraph(
     navController: NavHostController,
     navigateToExpanded: (String, String) -> Unit,
-    navigateToMyTours: () -> Unit
+    navigateToMyTours: () -> Unit,
+    navigateToAuth: () -> Unit
 ) {
     val toursFilterViewModel: FilterScreenViewModel = hiltViewModel(key = "tours")
     val landmarksFilterViewModel: FilterScreenViewModel = hiltViewModel(key = "landmarks")
@@ -364,7 +372,8 @@ fun MainNavGraph(
             onNavigateToDetectedArtifact = { artifact ->
                 navigateToExpanded(artifact.id, ExpandedType.ARTIFACT.name)
             },
-            navigateToExpanded = navigateToExpanded
+            navigateToExpanded = navigateToExpanded,
+            navigateToAuth = navigateToAuth
         )
 
         composable(route = AppScreen.Search.route) {
@@ -576,7 +585,8 @@ fun NavGraphBuilder.userGraph(
     navigateToMyTours: () -> Unit,
     navigateToNotifications: () -> Unit,
     onNavigateToDetectedArtifact: (DetectedArtifact) -> Unit,
-    navigateToExpanded: (String, String) -> Unit
+    navigateToExpanded: (String, String) -> Unit,
+    navigateToAuth: () -> Unit
 ) {
     navigation(
         route = AppGraph.User.route,
@@ -598,7 +608,8 @@ fun NavGraphBuilder.userGraph(
                 navigateToSettings = {
                     navController.navigate(route = AppScreen.Settings.route)
                 },
-                onNavigateToDetectedArtifact = onNavigateToDetectedArtifact
+                onNavigateToDetectedArtifact = onNavigateToDetectedArtifact,
+                navigateToAuth = navigateToAuth
             )
         }
 
