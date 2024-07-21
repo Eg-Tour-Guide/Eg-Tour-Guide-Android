@@ -17,6 +17,7 @@ import com.egtourguide.auth.presentation.screens.otp.OtpScreen
 import com.egtourguide.auth.presentation.screens.resetPassword.ResetPasswordScreen
 import com.egtourguide.auth.presentation.screens.signup.SignUpScreen
 import com.egtourguide.auth.presentation.screens.welcome.WelcomeScreen
+import com.egtourguide.core.presentation.ItemType
 import com.egtourguide.customTours.presentation.createTour.CreateTourScreenRoot
 import com.egtourguide.customTours.presentation.customExpanded.CustomExpandedScreenRoot
 import com.egtourguide.home.presentation.screens.main.screens.artifactsList.ArtifactsListScreen
@@ -30,7 +31,7 @@ import com.egtourguide.home.presentation.screens.main.screens.landmarksList.Land
 import com.egtourguide.expanded.presentation.screens.moreReviews.MoreReviewsScreenRoot
 import com.egtourguide.customTours.presentation.myTours.MyToursScreen
 import com.egtourguide.expanded.presentation.screens.review.ReviewScreenRoot
-import com.egtourguide.user.presentation.savedItems.SavedScreen
+import com.egtourguide.user.presentation.saved.SavedScreen
 import com.egtourguide.home.presentation.screens.search.SearchScreen
 import com.egtourguide.home.presentation.screens.search_results.SearchResultsScreen
 import com.egtourguide.expanded.presentation.screens.toursPlan.ToursPlanScreenRoot
@@ -362,7 +363,8 @@ fun MainNavGraph(
             },
             onNavigateToDetectedArtifact = { artifact ->
                 navigateToExpanded(artifact.id, ExpandedType.ARTIFACT.name)
-            }
+            },
+            navigateToExpanded = navigateToExpanded
         )
 
         composable(route = AppScreen.Search.route) {
@@ -560,6 +562,7 @@ fun NavGraphBuilder.expandedGraph(
                     navController.navigateUp()
                 },
                 navigateToLandmark = { landmarkId ->
+                    // TODO: Check this!!
                     navController.navigate(
                         route = AppGraph.Expanded.route
                             .replace("{id}", landmarkId)
@@ -575,7 +578,8 @@ fun NavGraphBuilder.userGraph(
     navController: NavHostController,
     navigateToMyTours: () -> Unit,
     navigateToNotifications: () -> Unit,
-    onNavigateToDetectedArtifact: (DetectedArtifact) -> Unit
+    onNavigateToDetectedArtifact: (DetectedArtifact) -> Unit,
+    navigateToExpanded: (String, String) -> Unit
 ) {
     navigation(
         route = AppGraph.User.route,
@@ -625,24 +629,20 @@ fun NavGraphBuilder.userGraph(
             )
         }
 
-        composable(route = AppScreen.Saved.route) { backStackEntry ->
-            val filtersJson = backStackEntry.arguments?.getString("filters")
-            var filters: HashMap<*, *>? = null
-
-            filtersJson?.let {
-                filters = Gson().fromJson(
-                    filtersJson.substringAfter('/'),
-                    HashMap::class.java
-                )
-            }
-
+        composable(route = AppScreen.Saved.route) {
+            // TODO: Add filters viewModel!!
             SavedScreen(
-                filters = filters,
                 onNavigateBack = {
                     navController.navigateUp()
                 },
-                onNavigateToSingleItem = { _ ->
-                    //TODO handel navigation here
+                onNavigateToSingleItem = { item ->
+                    val expandedType = when (item.savedItemType) {
+                        ItemType.LANDMARK -> ExpandedType.LANDMARK.name
+                        ItemType.TOUR -> ExpandedType.TOUR.name
+                        ItemType.ARTIFACT -> ExpandedType.ARTIFACT.name
+                    }
+
+                    navigateToExpanded(item.id, expandedType)
                 },
                 onNavigateToFilters = {
                     // TODO: Create own filters!!

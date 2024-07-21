@@ -541,7 +541,6 @@ private fun TitleSection(
                 if (expandedType == ExpandedType.LANDMARK.name || expandedType == ExpandedType.TOUR.name) {
                     DataRow(
                         icon = R.drawable.ic_rating_star,
-                        iconDescription = null,
                         text = stringResource(
                             id = R.string.reviews_average_total,
                             reviewsAverage,

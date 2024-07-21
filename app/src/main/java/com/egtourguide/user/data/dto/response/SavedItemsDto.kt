@@ -1,6 +1,7 @@
 package com.egtourguide.user.data.dto.response
 
-import com.egtourguide.user.domain.model.SavedItem
+import com.egtourguide.core.presentation.ItemType
+import com.egtourguide.user.domain.model.AbstractSavedItem
 
 data class SavedItemsDto(
     val artifacs: List<Artifac>,
@@ -15,14 +16,14 @@ data class SavedItemsDto(
         val name: String,
         val type: String
     ) {
-        fun toDomainSavedItem(): SavedItem {
-            return SavedItem(
+        fun toDomainSavedItem(): AbstractSavedItem {
+            return AbstractSavedItem(
                 id = _id,
                 image = image,
                 name = name,
                 artifactType = type,
                 location = museumName,
-                isArtifact = true
+                savedItemType = ItemType.ARTIFACT
             )
         }
     }
@@ -33,19 +34,19 @@ data class SavedItemsDto(
         val govName: String,
         val image: String,
         val name: String,
-        val ratingAverage: Int,
+        val ratingAverage: Double,
         val ratingQuantity: Int
     ) {
-        fun toDomainSavedItem(): SavedItem {
-            return SavedItem(
+        fun toDomainSavedItem(): AbstractSavedItem {
+            return AbstractSavedItem(
                 id = _id,
                 image = image,
                 name = name,
                 location = govName,
                 category = category,
-                rating = ratingAverage.toFloat(),
+                ratingAverage = ratingAverage,
                 ratingCount = ratingQuantity,
-                isArtifact = false
+                savedItemType = ItemType.LANDMARK
             )
         }
     }
@@ -55,23 +56,25 @@ data class SavedItemsDto(
         val image: String,
         val name: String,
         val duration: Int,
-        val ratingAverage: Int,
+        val ratingAverage: Double,
         val ratingQuantity: Int
     ) {
-        fun toDomainSavedItem(): SavedItem {
-            return SavedItem(
+        fun toDomainSavedItem(): AbstractSavedItem {
+            return AbstractSavedItem(
                 id = _id,
                 image = image,
                 name = name,
                 duration = duration,
-                rating = ratingAverage.toFloat(),
+                ratingAverage = ratingAverage,
                 ratingCount = ratingQuantity,
-                isTour = true
+                savedItemType = ItemType.TOUR
             )
         }
     }
 
-    fun toDomainSavedItems(): List<SavedItem> {
-        return places.map { it.toDomainSavedItem() } + artifacs.map { it.toDomainSavedItem() } + tours.map { it.toDomainSavedItem() }
+    fun toDomainSavedItems(): List<AbstractSavedItem> {
+        return places.map { it.toDomainSavedItem() } +
+                artifacs.map { it.toDomainSavedItem() } +
+                tours.map { it.toDomainSavedItem() }
     }
 }

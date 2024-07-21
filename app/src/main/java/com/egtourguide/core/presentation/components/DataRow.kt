@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -43,7 +44,8 @@ fun DataRow(
     iconTint: Color = MaterialTheme.colorScheme.onBackground,
     iconPadding: Dp = 6.dp,
     textStyle: TextStyle = MaterialTheme.typography.titleLarge,
-    textColor: Color = MaterialTheme.colorScheme.onBackground
+    textColor: Color = MaterialTheme.colorScheme.onBackground,
+    maxLines: Int = Int.MAX_VALUE
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -60,6 +62,8 @@ fun DataRow(
             text = text,
             style = textStyle,
             color = textColor,
+            maxLines = maxLines,
+            overflow = TextOverflow.Ellipsis,
             modifier = Modifier.padding(start = iconPadding)
         )
     }

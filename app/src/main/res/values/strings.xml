@@ -71,7 +71,7 @@
     <string name="artifact_type">Artifact Type</string>
     <string name="artifact_materials">Artifact Materials</string>
     <string name="related_artifacts">Related Artifacts</string>
-    <string name="reviews_count">" (%1$s Reviews)"</string>
+    <string name="reviews_count">" (%1$s Reviews)"</string> <!-- TODO: Remove this!! -->
     <string name="upcoming_events">Upcoming Events</string>
     <string name="suggested_for_you">Suggested For You</string>
     <string name="top_rated_places">Top Rated Places</string>
@@ -155,6 +155,8 @@
     <string name="tours_count">%s Tours</string>
     <string name="landmarks_count">%s Landmarks</string>
     <string name="artifacts_count">%s Artifacts</string>
+    <string name="saved_count">%s Saved</string>
     <string name="no_results_found">No Results Found</string>
     <string name="results_count">%1$s Results</string>
+    <string name="no_saved_items_found">No saved items found</string>
 </resources>
