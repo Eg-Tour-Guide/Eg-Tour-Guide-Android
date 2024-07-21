@@ -5,55 +5,42 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.egtourguide.R
-import com.egtourguide.core.presentation.components.MainImage
+import com.egtourguide.core.presentation.ItemType
+import com.egtourguide.core.presentation.components.DataScreenHeader
 import com.egtourguide.home.domain.model.SearchResult
 import com.egtourguide.core.presentation.components.EmptyState
+import com.egtourguide.core.presentation.components.LargeCard
 import com.egtourguide.core.presentation.components.LoadingState
 import com.egtourguide.core.presentation.components.ScreenHeader
+import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
+import com.egtourguide.expanded.presentation.screens.expanded.ExpandedType
 import com.egtourguide.home.presentation.screens.filter.FilterScreenViewModel
 
 @Composable
@@ -63,7 +50,7 @@ fun SearchResultsScreen(
     query: String,
     onNavigateToSearch: () -> Unit,
     onNavigateToFilters: () -> Unit,
-    onNavigateToSingleItem: (SearchResult) -> Unit
+    onNavigateToSingleItem: (String, String) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val filterState by filterViewModel.uiState.collectAsState()
@@ -120,7 +107,7 @@ fun SearchResultsScreenContent(
     hasChanged: Boolean = false,
     onSearchClicked: () -> Unit = {},
     onFilterClicked: () -> Unit = {},
-    onResultClicked: (SearchResult) -> Unit = {},
+    onResultClicked: (String, String) -> Unit = { _, _ -> },
     onSaveClicked: (SearchResult) -> Unit = {}
 ) {
     Column(
@@ -135,12 +122,11 @@ fun SearchResultsScreenContent(
             onSearchClicked = onSearchClicked
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        ResultsHeader(
-            resultsCount = uiState.results.size,
+        DataScreenHeader(
+            title = stringResource(id = R.string.results_count, uiState.results.size),
             onFilterClicked = onFilterClicked,
-            hasChanged = hasChanged
+            hasChanged = hasChanged,
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -178,44 +164,9 @@ fun SearchResultsScreenContent(
 }
 
 @Composable
-private fun ResultsHeader(
-    resultsCount: Int,
-    onFilterClicked: () -> Unit,
-    hasChanged: Boolean
-) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = stringResource(id = R.string.results_count, resultsCount),
-            style = MaterialTheme.typography.displaySmall,
-            color = MaterialTheme.colorScheme.onBackground
-        )
-        Icon(
-            modifier = Modifier
-                .size(20.dp)
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null
-                ) {
-                    onFilterClicked()
-                },
-            painter = painterResource(id = R.drawable.ic_filter),
-            contentDescription = stringResource(id = R.string.filters),
-            tint = if (hasChanged) MaterialTheme.colorScheme.outlineVariant
-            else MaterialTheme.colorScheme.onBackground
-        )
-    }
-}
-
-@Composable
 private fun ResultsSection(
     results: List<SearchResult>,
-    onResultClicked: (SearchResult) -> Unit,
+    onResultClicked: (String, String) -> Unit,
     onSaveClicked: (SearchResult) -> Unit
 ) {
     LazyVerticalGrid(
@@ -226,128 +177,24 @@ private fun ResultsSection(
         contentPadding = PaddingValues(bottom = 16.dp, start = 16.dp, end = 16.dp)
     ) {
         items(items = results) { result ->
-            ResultItem(
-                item = result,
-                onItemClicked = onResultClicked,
-                onSaveClicked = onSaveClicked
+            LargeCard(
+                itemType = result.itemType,
+                image = result.image,
+                name = result.name,
+                isSaved = result.isSaved,
+                location = result.location,
+                ratingAverage = result.rating,
+                ratingCount = result.ratingCount,
+                artifactType = result.artifactType,
+                onItemClicked = {
+                    onResultClicked(
+                        result.id,
+                        if (result.itemType == ItemType.LANDMARK) ExpandedType.LANDMARK.name
+                        else ExpandedType.ARTIFACT.name
+                    )
+                },
+                onSaveClicked = { onSaveClicked(result) }
             )
-        }
-    }
-}
-
-@Composable
-fun ResultItem(
-    item: SearchResult,
-    onItemClicked: (SearchResult) -> Unit,
-    onSaveClicked: (SearchResult) -> Unit
-) {
-    var isSaved by remember { mutableStateOf(item.isSaved) }
-    Column(
-        modifier = Modifier
-            .width(144.dp)
-            .height(205.dp)
-            .background(
-                color = MaterialTheme.colorScheme.primaryContainer,
-                shape = RoundedCornerShape(12.dp)
-            )
-            .padding(8.dp)
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null
-            ) {
-                onItemClicked(item)
-            }
-    ) {
-        MainImage(
-            modifier = Modifier
-                .height(105.dp)
-                .clip(RoundedCornerShape(4.dp)),
-            data = "${if (item.isArtifact) "artifacsImages/" else "placeImages/"}${item.image}"
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            modifier = Modifier.height(36.dp),
-            text = item.name,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onBackground
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    modifier = Modifier.padding(end = 2.dp),
-                    painter = painterResource(id = R.drawable.ic_location),
-                    tint = Color.Unspecified,
-                    contentDescription = "Location Icon"
-                )
-                Text(
-                    modifier = Modifier.fillMaxWidth(.90f),
-                    text = " ${item.location}",
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
-            IconButton(
-                modifier = Modifier.size(24.dp),
-                onClick = {
-                    isSaved = !isSaved
-                    onSaveClicked(item)
-                }
-            ) {
-                Icon(
-                    painter = painterResource(id = if (isSaved) R.drawable.ic_saved else R.drawable.ic_save),
-                    contentDescription = "Save Icon"
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(4.dp))
-        if (!item.isArtifact) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    modifier = Modifier.padding(end = 2.dp),
-                    painter = painterResource(id = R.drawable.ic_rating_star),
-                    tint = Color.Unspecified,
-                    contentDescription = "Location Icon"
-                )
-                Text(
-                    text = "%.2f".format(item.rating),
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-                Text(
-                    text = stringResource(R.string.reviews_count, item.ratingCount ?: 0),
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
-        } else {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    modifier = Modifier.padding(end = 2.dp),
-                    painter = painterResource(id = R.drawable.ic_artifacts_selected),
-                    tint = Color.Unspecified,
-                    contentDescription = "Location Icon"
-                )
-                Text(
-                    text = item.artifactType ?: "",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
         }
     }
 }
@@ -355,10 +202,10 @@ fun ResultItem(
 @Preview
 @Composable
 private fun SearchResultsScreenPreview() {
-    SearchResultsScreenContent(
-        hasChanged = true,
-        uiState = SearchResultsUIState(
-
+    EGTourGuideTheme {
+        SearchResultsScreenContent(
+            hasChanged = true,
+            uiState = SearchResultsUIState()
         )
-    )
+    }
 }

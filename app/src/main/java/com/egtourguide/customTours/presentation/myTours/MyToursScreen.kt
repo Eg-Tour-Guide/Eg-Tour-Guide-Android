@@ -1,6 +1,5 @@
 package com.egtourguide.customTours.presentation.myTours
 
-import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -40,14 +39,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.egtourguide.R
+import com.egtourguide.core.presentation.ItemType
 import com.egtourguide.home.domain.model.AbstractedTour
 import com.egtourguide.core.presentation.components.EmptyState
+import com.egtourguide.core.presentation.components.LargeCard
 import com.egtourguide.core.presentation.components.LoadingState
 import com.egtourguide.core.presentation.components.ScreenHeader
-import com.egtourguide.core.presentation.components.TourItem
 import java.util.HashMap
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MyToursScreen(
     viewModel: MyToursViewModel = hiltViewModel(),
@@ -203,10 +202,16 @@ private fun ToursSection(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(items = tours) { tour ->
-            TourItem(
-                tour = tour,
-                onTourClicked = onTourClicked,
-                onSaveClicked = onSaveClicked
+            LargeCard(
+                itemType = ItemType.TOUR,
+                image = tour.image,
+                name = tour.title,
+                isSaved = tour.isSaved,
+                duration = tour.duration,
+                ratingAverage = tour.rating,
+                ratingCount = tour.ratingCount,
+                onItemClicked = { onTourClicked(tour) },
+                onSaveClicked = { onSaveClicked(tour) }
             )
         }
     }

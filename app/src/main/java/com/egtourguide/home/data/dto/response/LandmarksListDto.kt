@@ -12,7 +12,7 @@ data class LandmarksListDto(
         val image: String,
         val name: String,
         val category: String,
-        val ratingAverage: Int,
+        val ratingAverage: Double,
         val ratingQuantity: Int,
         val saved: Boolean
     ) {
@@ -22,9 +22,8 @@ data class LandmarksListDto(
                 name = name,
                 location = govName,
                 image = image,
-                category = category,
                 isSaved = saved,
-                rating = ratingAverage.toFloat(),
+                rating = ratingAverage,
                 ratingCount = ratingQuantity
             )
         }

@@ -11,7 +11,7 @@ data class ToursListDto(
         val duration: Int,
         val image: String,
         val name: String,
-        val ratingAverage: Int,
+        val ratingAverage: Double,
         val ratingQuantity: Int,
         val saved: Boolean
     ) {
@@ -21,7 +21,7 @@ data class ToursListDto(
                 image = image,
                 title = name,
                 duration = duration,
-                rating = ratingAverage.toFloat(),
+                rating = ratingAverage,
                 ratingCount = ratingQuantity,
                 isSaved = saved
             )

@@ -6,6 +6,7 @@ import com.egtourguide.core.utils.onResponse
 import com.egtourguide.home.domain.model.SearchResult
 import com.egtourguide.core.domain.usecases.ChangeArtifactSavedStateUseCase
 import com.egtourguide.core.domain.usecases.ChangeLandmarkSavedStateUseCase
+import com.egtourguide.core.presentation.ItemType
 import com.egtourguide.home.domain.usecases.SearchUseCase
 import com.egtourguide.home.presentation.screens.filter.FilterScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -51,7 +52,7 @@ class SearchResultsViewModel @Inject constructor(
 
     fun onSaveClicked(item: SearchResult) {
         viewModelScope.launch(Dispatchers.IO) {
-            if (item.isArtifact) {
+            if (item.itemType == ItemType.ARTIFACT) {
                 item.isSaved = !item.isSaved
                 changeArtifactSavedStateUseCase(
                     artifactId = item.id

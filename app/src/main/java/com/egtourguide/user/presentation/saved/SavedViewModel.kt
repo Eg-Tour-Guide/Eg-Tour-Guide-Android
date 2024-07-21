@@ -49,7 +49,7 @@ class SavedViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             item.isSaved = !item.isSaved
 
-            when (item.savedItemType) {
+            when (item.itemType) {
                 ItemType.ARTIFACT -> {
                     changeArtifactSavedStateUseCase(
                         artifactId = item.id

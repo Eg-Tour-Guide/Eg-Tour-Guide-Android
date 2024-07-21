@@ -42,13 +42,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.egtourguide.R
+import com.egtourguide.core.presentation.ItemType
 import com.egtourguide.core.presentation.components.DataScreenHeader
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 import com.egtourguide.home.domain.model.AbstractedTour
 import com.egtourguide.core.presentation.components.EmptyState
+import com.egtourguide.core.presentation.components.LargeCard
 import com.egtourguide.core.presentation.components.LoadingState
 import com.egtourguide.core.presentation.components.ScreenHeader
-import com.egtourguide.core.presentation.components.TourItem
 import com.egtourguide.home.domain.model.DetectedArtifact
 import com.egtourguide.home.presentation.screens.filter.FilterScreenViewModel
 import com.egtourguide.home.presentation.screens.main.components.ArtifactDetectionDialog
@@ -268,10 +269,16 @@ private fun ToursSection(
         contentPadding = PaddingValues(bottom = 16.dp, start = 16.dp, end = 16.dp)
     ) {
         items(items = tours, key = { it.id }) { tour ->
-            TourItem(
-                tour = tour,
-                onTourClicked = onTourClicked,
-                onSaveClicked = onSaveClicked
+            LargeCard(
+                itemType = ItemType.TOUR,
+                image = tour.image,
+                name = tour.title,
+                isSaved = tour.isSaved,
+                duration = tour.duration,
+                ratingAverage = tour.rating,
+                ratingCount = tour.ratingCount,
+                onItemClicked = { onTourClicked(tour) },
+                onSaveClicked = { onSaveClicked(tour) }
             )
         }
     }
@@ -285,25 +292,25 @@ private fun ToursScreenPreview() {
             hasChanged = false,
             uiState = ToursListUIState(
                 isLoading = false,
-                displayedTours = emptyList(),
-//                (0..3).map {
-//                    AbstractedTour(
-//                        id = "$it",
-//                        image = "contentiones",
-//                        title = "eros",
-//                        duration = 3645,
-//                        rating = 10.11f,
-//                        ratingCount = 3276,
-//                        isSaved = false
-//                    )
-//                },
+//                displayedTours = emptyList(),
+                displayedTours = (0..3).map {
+                    AbstractedTour(
+                        id = "$it",
+                        image = "contentiones",
+                        title = "eros",
+                        duration = 3645,
+                        rating = 10.11,
+                        ratingCount = 3276,
+                        isSaved = false
+                    )
+                },
                 tours = (0..9).map {
                     AbstractedTour(
                         id = "$it",
                         image = "contentiones",
                         title = "eros",
                         duration = 3645,
-                        rating = 10.11f,
+                        rating = 10.11,
                         ratingCount = 3276,
                         isSaved = false
                     )

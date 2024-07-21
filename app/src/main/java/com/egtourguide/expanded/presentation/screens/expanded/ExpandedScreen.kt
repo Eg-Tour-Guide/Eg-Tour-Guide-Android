@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -52,6 +53,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.egtourguide.R
+import com.egtourguide.core.presentation.ItemType
 import com.egtourguide.core.presentation.components.MainButton
 import com.egtourguide.core.presentation.components.MainImage
 import com.egtourguide.core.presentation.components.MapItem
@@ -64,14 +66,12 @@ import com.egtourguide.home.domain.model.AbstractedArtifact
 import com.egtourguide.home.domain.model.AbstractedTour
 import com.egtourguide.home.domain.model.AbstractedLandmark
 import com.egtourguide.home.domain.model.Review
-import com.egtourguide.core.presentation.components.ArtifactItem
 import com.egtourguide.core.presentation.components.DataRow
 import com.egtourguide.core.presentation.components.LoadingState
-import com.egtourguide.core.presentation.components.LandmarkItem
+import com.egtourguide.core.presentation.components.MediumCard
 import com.egtourguide.expanded.presentation.components.ReviewItem
 import com.egtourguide.expanded.presentation.components.ReviewsHeader
 import com.egtourguide.core.presentation.components.ScreenHeader
-import com.egtourguide.core.presentation.components.TourItem
 import com.egtourguide.expanded.presentation.utils.convertDate
 
 @Preview(showBackground = true, heightDp = 1200)
@@ -395,8 +395,8 @@ private fun ExpandedScreen(
                 if (uiState.relatedTours.isNotEmpty()) {
                     item {
                         RelatedToursSection(
-                            artifacts = uiState.relatedTours,
-                            onArtifactClicked = navigateToSingleItem,
+                            tours = uiState.relatedTours,
+                            onTourClicked = navigateToSingleItem,
                             onSaveClicked = onSaveTour,
                             modifier = Modifier.padding(top = 24.dp)
                         )
@@ -763,13 +763,17 @@ private fun IncludedArtifactsSection(
                 .fillMaxWidth()
                 .padding(top = 8.dp)
         ) {
-            items(items = artifacts, key = { it.id }) {
-                ArtifactItem(
-                    artifact = it,
-                    onArtifactClicked = { artifact ->
-                        onArtifactClicked(artifact.id, ExpandedType.ARTIFACT.name)
-                    },
-                    onSaveClicked = onSaveClicked
+            items(items = artifacts, key = { it.id }) { artifact ->
+                MediumCard(
+                    itemType = ItemType.ARTIFACT,
+                    image = artifact.image,
+                    name = artifact.name,
+                    isSaved = artifact.isSaved,
+                    location = artifact.museumName,
+                    artifactType = artifact.type,
+                    onItemClicked = { onArtifactClicked(artifact.id, ExpandedType.LANDMARK.name) },
+                    onSaveClicked = { onSaveClicked(artifact) },
+                    modifier = Modifier.width(141.dp)
                 )
             }
         }
@@ -800,13 +804,18 @@ private fun RelatedPlacesSection(
                 .fillMaxWidth()
                 .padding(top = 8.dp)
         ) {
-            items(items = places, key = { it.id }) {
-                LandmarkItem(
-                    place = it,
-                    onPlaceClicked = { place ->
-                        onPlaceClicked(place.id, ExpandedType.LANDMARK.name)
-                    },
-                    onSaveClicked = onSaveClicked
+            items(items = places, key = { it.id }) { place ->
+                MediumCard(
+                    itemType = ItemType.LANDMARK,
+                    image = place.image,
+                    name = place.name,
+                    isSaved = place.isSaved,
+                    location = place.location,
+                    ratingAverage = place.rating,
+                    ratingCount = place.ratingCount,
+                    onItemClicked = { onPlaceClicked(place.id, ExpandedType.LANDMARK.name) },
+                    onSaveClicked = { onSaveClicked(place) },
+                    modifier = Modifier.width(141.dp)
                 )
             }
         }
@@ -837,13 +846,17 @@ private fun RelatedArtifactsSection(
                 .fillMaxWidth()
                 .padding(top = 8.dp)
         ) {
-            items(items = artifacts, key = { it.id }) {
-                ArtifactItem(
-                    artifact = it,
-                    onArtifactClicked = { artifact ->
-                        onArtifactClicked(artifact.id, ExpandedType.ARTIFACT.name)
-                    },
-                    onSaveClicked = onSaveClicked
+            items(items = artifacts, key = { it.id }) { artifact ->
+                MediumCard(
+                    itemType = ItemType.ARTIFACT,
+                    image = artifact.image,
+                    name = artifact.name,
+                    isSaved = artifact.isSaved,
+                    location = artifact.museumName,
+                    artifactType = artifact.type,
+                    onItemClicked = { onArtifactClicked(artifact.id, ExpandedType.LANDMARK.name) },
+                    onSaveClicked = { onSaveClicked(artifact) },
+                    modifier = Modifier.width(141.dp)
                 )
             }
         }
@@ -852,8 +865,8 @@ private fun RelatedArtifactsSection(
 
 @Composable
 private fun RelatedToursSection(
-    artifacts: List<AbstractedTour>,
-    onArtifactClicked: (String, String) -> Unit,
+    tours: List<AbstractedTour>,
+    onTourClicked: (String, String) -> Unit,
     onSaveClicked: (AbstractedTour) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -874,13 +887,18 @@ private fun RelatedToursSection(
                 .fillMaxWidth()
                 .padding(top = 8.dp)
         ) {
-            items(items = artifacts, key = { it.id }) {
-                TourItem(
-                    tour = it,
-                    onTourClicked = { tour ->
-                        onArtifactClicked(tour.id, ExpandedType.TOUR.name)
-                    },
-                    onSaveClicked = onSaveClicked
+            items(items = tours, key = { it.id }) { tour ->
+                MediumCard(
+                    itemType = ItemType.TOUR,
+                    image = tour.image,
+                    name = tour.title,
+                    isSaved = tour.isSaved,
+                    duration = tour.duration,
+                    ratingAverage = tour.rating,
+                    ratingCount = tour.ratingCount,
+                    onItemClicked = { onTourClicked(tour.id, ExpandedType.TOUR.name) },
+                    onSaveClicked = { onSaveClicked(tour) },
+                    modifier = Modifier.width(141.dp)
                 )
             }
         }

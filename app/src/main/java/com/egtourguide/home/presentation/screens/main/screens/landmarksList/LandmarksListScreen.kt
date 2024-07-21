@@ -42,12 +42,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.egtourguide.R
+import com.egtourguide.core.presentation.ItemType
 import com.egtourguide.core.presentation.components.DataScreenHeader
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 import com.egtourguide.home.domain.model.AbstractedLandmark
 import com.egtourguide.core.presentation.components.EmptyState
 import com.egtourguide.core.presentation.components.LoadingState
-import com.egtourguide.core.presentation.components.LandmarkItem
+import com.egtourguide.core.presentation.components.LargeCard
 import com.egtourguide.core.presentation.components.ScreenHeader
 import com.egtourguide.home.domain.model.DetectedArtifact
 import com.egtourguide.home.presentation.screens.filter.FilterScreenViewModel
@@ -268,10 +269,16 @@ private fun PlacesSection(
         contentPadding = PaddingValues(bottom = 16.dp, start = 16.dp, end = 16.dp)
     ) {
         items(items = places, key = { it.id }) { place ->
-            LandmarkItem(
-                place = place,
-                onPlaceClicked = onPlaceClicked,
-                onSaveClicked = onSaveClicked
+            LargeCard(
+                itemType = ItemType.LANDMARK,
+                image = place.image,
+                name = place.name,
+                isSaved = place.isSaved,
+                location = place.location,
+                ratingAverage = place.rating,
+                ratingCount = place.ratingCount,
+                onItemClicked = { onPlaceClicked(place) },
+                onSaveClicked = { onSaveClicked(place) }
             )
         }
     }
@@ -292,7 +299,7 @@ private fun LandmarksScreenPreview() {
                         image = "pro",
                         location = "Cairo",
                         isSaved = false,
-                        rating = 6.7f,
+                        rating = 6.7,
                         ratingCount = 8388
                     )
                 },
@@ -303,7 +310,7 @@ private fun LandmarksScreenPreview() {
                         image = "pro",
                         location = "Cairo",
                         isSaved = false,
-                        rating = 6.7f,
+                        rating = 6.7,
                         ratingCount = 8388
                     )
                 }

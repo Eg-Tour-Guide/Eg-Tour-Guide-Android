@@ -5,7 +5,7 @@ data class AbstractedTour(
     val image: String,
     val title: String,
     val duration: Int,
-    val rating: Float,
+    val rating: Double,
     val ratingCount: Int,
     var isSaved: Boolean
 )

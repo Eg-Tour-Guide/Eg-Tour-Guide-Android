@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -53,6 +54,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.egtourguide.R
+import com.egtourguide.core.presentation.ItemType
 import com.egtourguide.core.presentation.components.MainImage
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 import com.egtourguide.core.utils.Constants.LANDMARK_IMAGE_LINK_PREFIX
@@ -60,7 +62,7 @@ import com.egtourguide.home.domain.model.DetectedArtifact
 import com.egtourguide.home.domain.model.AbstractedEvent
 import com.egtourguide.home.domain.model.AbstractedLandmark
 import com.egtourguide.core.presentation.components.LoadingState
-import com.egtourguide.core.presentation.components.LandmarkItem
+import com.egtourguide.core.presentation.components.MediumCard
 import com.egtourguide.core.presentation.components.ScreenHeader
 import com.egtourguide.home.presentation.screens.main.components.ArtifactDetectionDialog
 import kotlinx.coroutines.delay
@@ -68,11 +70,11 @@ import kotlinx.coroutines.delay
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
-    onNavigateToSearch: () -> Unit = {},
+    onNavigateToSearch: () -> Unit,
     navigateToNotifications: () -> Unit,
-    onNavigateToSinglePlace: (AbstractedLandmark) -> Unit = {},
+    onNavigateToSinglePlace: (AbstractedLandmark) -> Unit,
     onNavigateToDetectedArtifact: (DetectedArtifact) -> Unit,
-    onNavigateToEvent: (AbstractedEvent) -> Unit = {}
+    onNavigateToEvent: (AbstractedEvent) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -409,17 +411,24 @@ private fun HomeSection(
             contentPadding = PaddingValues(horizontal = 16.dp)
         ) {
             items(items = sectionPlaces, key = { it.id }) { place ->
-                LandmarkItem(
-                    place = place,
-                    onPlaceClicked = onPlaceClicked,
-                    onSaveClicked = onSaveClicked
+                MediumCard(
+                    itemType = ItemType.LANDMARK,
+                    image = place.image,
+                    name = place.name,
+                    isSaved = place.isSaved,
+                    location = place.location,
+                    ratingAverage = place.rating,
+                    ratingCount = place.ratingCount,
+                    onItemClicked = { onPlaceClicked(place) },
+                    onSaveClicked = { onSaveClicked(place) },
+                    modifier = Modifier.width(141.dp)
                 )
             }
         }
     }
 }
 
-@Preview(showBackground = true, heightDp = 1600)
+@Preview(showBackground = true, heightDp = 1400)
 @Composable
 private fun HomePreview() {
     EGTourGuideTheme {
@@ -453,7 +462,7 @@ private fun HomePreview() {
                         image = "pro",
                         location = "affert",
                         isSaved = false,
-                        rating = 2.3f,
+                        rating = 2.3,
                         ratingCount = 6748
                     )
                 },
@@ -464,7 +473,7 @@ private fun HomePreview() {
                         image = "pro",
                         location = "affert",
                         isSaved = false,
-                        rating = 2.3f,
+                        rating = 2.3,
                         ratingCount = 6748
                     )
                 },
@@ -475,7 +484,7 @@ private fun HomePreview() {
                         image = "pro",
                         location = "affert",
                         isSaved = false,
-                        rating = 2.3f,
+                        rating = 2.3,
                         ratingCount = 6748
                     )
                 },
@@ -486,7 +495,7 @@ private fun HomePreview() {
                         image = "pro",
                         location = "affert",
                         isSaved = false,
-                        rating = 2.3f,
+                        rating = 2.3,
                         ratingCount = 6748
                     )
                 },
@@ -497,7 +506,7 @@ private fun HomePreview() {
                         image = "pro",
                         location = "affert",
                         isSaved = false,
-                        rating = 2.3f,
+                        rating = 2.3,
                         ratingCount = 6748
                     )
                 }

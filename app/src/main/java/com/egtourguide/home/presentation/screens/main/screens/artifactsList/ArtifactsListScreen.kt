@@ -42,11 +42,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.egtourguide.R
+import com.egtourguide.core.presentation.ItemType
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 import com.egtourguide.home.domain.model.AbstractedArtifact
-import com.egtourguide.core.presentation.components.ArtifactItem
 import com.egtourguide.core.presentation.components.DataScreenHeader
 import com.egtourguide.core.presentation.components.EmptyState
+import com.egtourguide.core.presentation.components.LargeCard
 import com.egtourguide.core.presentation.components.LoadingState
 import com.egtourguide.core.presentation.components.ScreenHeader
 import com.egtourguide.home.domain.model.DetectedArtifact
@@ -269,10 +270,15 @@ private fun ArtifactsSection(
         contentPadding = PaddingValues(bottom = 16.dp, start = 16.dp, end = 16.dp)
     ) {
         items(items = artifacts, key = { it.id }) { artifact ->
-            ArtifactItem(
-                artifact = artifact,
-                onArtifactClicked = onArtifactClicked,
-                onSaveClicked = onSaveClicked
+            LargeCard(
+                itemType = ItemType.ARTIFACT,
+                image = artifact.image,
+                name = artifact.name,
+                isSaved = artifact.isSaved,
+                location = artifact.museumName,
+                artifactType = artifact.type,
+                onItemClicked = { onArtifactClicked(artifact) },
+                onSaveClicked = { onSaveClicked(artifact) }
             )
         }
     }

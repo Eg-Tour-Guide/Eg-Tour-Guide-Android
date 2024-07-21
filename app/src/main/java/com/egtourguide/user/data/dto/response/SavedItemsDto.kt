@@ -23,7 +23,7 @@ data class SavedItemsDto(
                 name = name,
                 artifactType = type,
                 location = museumName,
-                savedItemType = ItemType.ARTIFACT
+                itemType = ItemType.ARTIFACT
             )
         }
     }
@@ -46,7 +46,7 @@ data class SavedItemsDto(
                 category = category,
                 ratingAverage = ratingAverage,
                 ratingCount = ratingQuantity,
-                savedItemType = ItemType.LANDMARK
+                itemType = ItemType.LANDMARK
             )
         }
     }
@@ -67,7 +67,7 @@ data class SavedItemsDto(
                 duration = duration,
                 ratingAverage = ratingAverage,
                 ratingCount = ratingQuantity,
-                savedItemType = ItemType.TOUR
+                itemType = ItemType.TOUR
             )
         }
     }

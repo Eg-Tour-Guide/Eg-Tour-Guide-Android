@@ -386,11 +386,8 @@ fun MainNavGraph(
                 onNavigateToSearch = {
                     navController.navigateUp()
                 },
-                onNavigateToSingleItem = { item ->
-                    navigateToExpanded(
-                        item.id,
-                        if (item.isArtifact) ExpandedType.ARTIFACT.name else ExpandedType.LANDMARK.name
-                    )
+                onNavigateToSingleItem = { itemId, expandedType ->
+                    navigateToExpanded(itemId, expandedType)
                 },
                 onNavigateToFilters = {
                     navController.navigate(route = AppScreen.SearchFilter.route)
@@ -636,7 +633,7 @@ fun NavGraphBuilder.userGraph(
                     navController.navigateUp()
                 },
                 onNavigateToSingleItem = { item ->
-                    val expandedType = when (item.savedItemType) {
+                    val expandedType = when (item.itemType) {
                         ItemType.LANDMARK -> ExpandedType.LANDMARK.name
                         ItemType.TOUR -> ExpandedType.TOUR.name
                         ItemType.ARTIFACT -> ExpandedType.ARTIFACT.name

@@ -172,7 +172,7 @@ fun MediumCard(
                 contentDescription = stringResource(id = if (isSavedState) R.string.unsave else R.string.save),
                 tint = MaterialTheme.colorScheme.onPrimaryContainer,
                 modifier = Modifier
-                    .padding(end = 2.dp)
+                    .padding(end = 2.dp, top = 8.dp)
                     .height(14.dp)
                     .width(11.dp)
                     .clickable {

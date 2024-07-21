@@ -31,7 +31,7 @@ data class HomeDto(
         val govName: String,
         val image: String,
         val name: String,
-        val ratingAverage: Int,
+        val ratingAverage: Double,
         val ratingQuantity: Int,
         val saved: Boolean
     ) {
@@ -42,7 +42,7 @@ data class HomeDto(
                 image = image,
                 location = govName,
                 isSaved = saved,
-                rating = ratingAverage.toFloat(),
+                rating = ratingAverage,
                 ratingCount = ratingQuantity
             )
         }
@@ -53,7 +53,7 @@ data class HomeDto(
         val govName: String,
         val image: String,
         val name: String,
-        val ratingAverage: Int,
+        val ratingAverage: Double,
         val ratingQuantity: Int,
         val saved: Boolean
     ) {
@@ -64,7 +64,7 @@ data class HomeDto(
                 image = image,
                 location = govName,
                 isSaved = saved,
-                rating = ratingAverage.toFloat(),
+                rating = ratingAverage,
                 ratingCount = ratingQuantity
             )
         }
@@ -75,7 +75,7 @@ data class HomeDto(
         val govName: String,
         val image: String,
         val name: String,
-        val ratingAverage: Int,
+        val ratingAverage: Double,
         val ratingQuantity: Int,
         val saved: Boolean
     ) {
@@ -86,7 +86,7 @@ data class HomeDto(
                 image = image,
                 location = govName,
                 isSaved = saved,
-                rating = ratingAverage.toFloat(),
+                rating = ratingAverage,
                 ratingCount = ratingQuantity
             )
         }
@@ -97,7 +97,7 @@ data class HomeDto(
         val govName: String,
         val image: String,
         val name: String,
-        val ratingAverage: Int,
+        val ratingAverage: Double,
         val ratingQuantity: Int,
         val saved: Boolean
     ) {
@@ -108,7 +108,7 @@ data class HomeDto(
                 image = image,
                 location = govName,
                 isSaved = saved,
-                rating = ratingAverage.toFloat(),
+                rating = ratingAverage,
                 ratingCount = ratingQuantity
             )
         }
@@ -119,7 +119,7 @@ data class HomeDto(
         val govName: String,
         val image: String,
         val name: String,
-        val ratingAverage: Int,
+        val ratingAverage: Double,
         val ratingQuantity: Int,
         val saved: Boolean
     ) {
@@ -130,7 +130,7 @@ data class HomeDto(
                 image = image,
                 location = govName,
                 isSaved = saved,
-                rating = ratingAverage.toFloat(),
+                rating = ratingAverage,
                 ratingCount = ratingQuantity
             )
         }

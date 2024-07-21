@@ -1,5 +1,6 @@
 package com.egtourguide.home.data.dto.response
 
+import com.egtourguide.core.presentation.ItemType
 import com.egtourguide.home.domain.model.SearchResult
 
 data class SearchResultsDto(
@@ -28,9 +29,7 @@ data class SearchResultsDto(
                     isSaved = saved,
                     material = material,
                     artifactType = type,
-                    isArtifact = true,
-                    rating = null,
-                    ratingCount = null
+                    itemType = ItemType.ARTIFACT
                 )
             }
         }
@@ -41,7 +40,7 @@ data class SearchResultsDto(
             val image: String,
             val category: String,
             val name: String,
-            val ratingAverage: Int,
+            val ratingAverage: Double,
             val ratingQuantity: Int,
             val saved: Boolean
         ) {
@@ -53,16 +52,14 @@ data class SearchResultsDto(
                     location = govName,
                     isSaved = saved,
                     category = category,
-                    isArtifact = false,
-                    rating = ratingAverage.toFloat(),
+                    itemType = ItemType.LANDMARK,
+                    rating = ratingAverage,
                     ratingCount = ratingQuantity
                 )
             }
         }
 
-        fun toDomainSearchResults(): List<SearchResult> {
-            val results = artifacs.map { it.toSearchResult() } + places.map { it.toSearchResult() }
-            return results
-        }
+        fun toDomainSearchResults() =
+            artifacs.map { it.toSearchResult() } + places.map { it.toSearchResult() }
     }
 }

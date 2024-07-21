@@ -171,7 +171,7 @@ private fun ItemsSection(
     ) {
         items(items = items, key = { it.id }) { item ->
             LargeCard(
-                itemType = item.savedItemType,
+                itemType = item.itemType,
                 image = item.image,
                 name = item.name,
                 isSaved = item.isSaved,
@@ -199,49 +199,49 @@ private fun SavedScreenPreview() {
                         id = "0",
                         image = "",
                         name = "Test",
-                        savedItemType = ItemType.LANDMARK
+                        itemType = ItemType.LANDMARK
                     ),
                     AbstractSavedItem(
                         id = "1",
                         image = "",
                         name = "Test",
-                        savedItemType = ItemType.LANDMARK
+                        itemType = ItemType.LANDMARK
                     ),
                     AbstractSavedItem(
                         id = "2",
                         image = "",
                         name = "Test",
-                        savedItemType = ItemType.LANDMARK
+                        itemType = ItemType.LANDMARK
                     ),
                     AbstractSavedItem(
                         id = "3",
                         image = "",
                         name = "Test",
-                        savedItemType = ItemType.LANDMARK
+                        itemType = ItemType.LANDMARK
                     ),
                     AbstractSavedItem(
                         id = "4",
                         image = "",
                         name = "Test",
-                        savedItemType = ItemType.LANDMARK
+                        itemType = ItemType.LANDMARK
                     ),
                     AbstractSavedItem(
                         id = "5",
                         image = "",
                         name = "Test",
-                        savedItemType = ItemType.LANDMARK
+                        itemType = ItemType.LANDMARK
                     ),
                     AbstractSavedItem(
                         id = "6",
                         image = "",
                         name = "Test",
-                        savedItemType = ItemType.LANDMARK
+                        itemType = ItemType.LANDMARK
                     ),
                     AbstractSavedItem(
                         id = "7",
                         image = "",
                         name = "Test",
-                        savedItemType = ItemType.LANDMARK
+                        itemType = ItemType.LANDMARK
                     ),
                 )
             )

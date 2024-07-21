@@ -7,7 +7,7 @@ data class AbstractSavedItem(
     val image: String,
     val name: String,
     var isSaved: Boolean = true,
-    val savedItemType: ItemType,
+    val itemType: ItemType,
     val location: String = "",
     val duration: Int = 0,
     val category: String = "",
