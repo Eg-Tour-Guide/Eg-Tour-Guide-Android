@@ -1,6 +1,5 @@
 package com.egtourguide.core.di
 
-import android.util.Log
 import com.egtourguide.core.domain.usecases.GetFromDataStoreUseCase
 import com.egtourguide.core.utils.Constants.BASE_URL
 import com.egtourguide.core.utils.Constants.NETWORK_TAG
@@ -19,6 +18,7 @@ import okhttp3.Route
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
@@ -33,7 +33,7 @@ object AppModule {
         tokenAuthenticator: TokenAuthenticator
     ): OkHttpClient {
         val httpClientLoggingInterceptor = HttpLoggingInterceptor { msg ->
-            Log.i(NETWORK_TAG, "Interceptor : $msg")
+            Timber.tag(NETWORK_TAG).e("Interceptor : $msg")
         }
         httpClientLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
 

@@ -53,21 +53,38 @@ fun ReviewScreenRoot(
         onChangeRating = viewModel::changeRating
     )
 
-    LaunchedEffect(key1 = uiState.errorMessage) {
-        uiState.errorMessage?.let {
-            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+    LaunchedEffect(key1 = uiState.error) {
+        if (uiState.error) {
+            Toast.makeText(
+                context,
+                context.getString(R.string.failed_to_submit_review_please_try_again),
+                Toast.LENGTH_SHORT
+            ).show()
+
+            viewModel.clearError()
+        }
+    }
+
+    LaunchedEffect(key1 = uiState.isRatingError) {
+        if (uiState.isRatingError) {
+            Toast.makeText(
+                context,
+                context.getString(R.string.review_score_is_required),
+                Toast.LENGTH_SHORT
+            ).show()
+
             viewModel.clearError()
         }
     }
 
     LaunchedEffect(key1 = uiState.isSuccess) {
-        // TODO: Ask about message!!
         if (uiState.isSuccess) {
             Toast.makeText(
                 context,
-                "You Rate with ${uiState.rating} stars",
+                context.getString(R.string.thank_you_for_your_review),
                 Toast.LENGTH_SHORT
             ).show()
+
             onSuccessReview()
         }
     }

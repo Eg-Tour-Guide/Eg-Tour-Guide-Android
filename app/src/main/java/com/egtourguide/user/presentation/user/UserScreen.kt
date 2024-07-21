@@ -60,7 +60,8 @@ fun UserScreenRoot(
     navigateToChangePassword: () -> Unit,
     navigateToSettings: () -> Unit,
     onNavigateToDetectedArtifact: (DetectedArtifact) -> Unit,
-    navigateToAuth: () -> Unit
+    navigateToAuth: () -> Unit,
+    onNavigateToSearch: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -99,9 +100,7 @@ fun UserScreenRoot(
     }
 
     UserScreenContent(
-        navigateToSearch = {
-            // TODO: Here!!
-        },
+        navigateToSearch = onNavigateToSearch,
         navigateToNotifications = navigateToNotifications,
         navigateToEditProfile = navigateToEditProfile,
         navigateToSaved = navigateToSaved,

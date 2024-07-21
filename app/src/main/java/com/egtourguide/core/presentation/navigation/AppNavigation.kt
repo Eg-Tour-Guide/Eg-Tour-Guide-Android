@@ -373,7 +373,10 @@ fun MainNavGraph(
                 navigateToExpanded(artifact.id, ExpandedType.ARTIFACT.name)
             },
             navigateToExpanded = navigateToExpanded,
-            navigateToAuth = navigateToAuth
+            navigateToAuth = navigateToAuth,
+            onNavigateToSearch = {
+                navController.navigate(route = AppScreen.Search.route)
+            }
         )
 
         composable(route = AppScreen.Search.route) {
@@ -586,7 +589,8 @@ fun NavGraphBuilder.userGraph(
     navigateToNotifications: () -> Unit,
     onNavigateToDetectedArtifact: (DetectedArtifact) -> Unit,
     navigateToExpanded: (String, String) -> Unit,
-    navigateToAuth: () -> Unit
+    navigateToAuth: () -> Unit,
+    onNavigateToSearch: () -> Unit
 ) {
     navigation(
         route = AppGraph.User.route,
@@ -609,7 +613,8 @@ fun NavGraphBuilder.userGraph(
                     navController.navigate(route = AppScreen.Settings.route)
                 },
                 onNavigateToDetectedArtifact = onNavigateToDetectedArtifact,
-                navigateToAuth = navigateToAuth
+                navigateToAuth = navigateToAuth,
+                onNavigateToSearch = onNavigateToSearch
             )
         }
 

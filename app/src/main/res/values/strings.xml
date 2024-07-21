@@ -162,4 +162,7 @@
     <string name="search_placeholder">What are you looking for?</string>
     <string name="camera">Camera</string>
     <string name="gallery">Gallery</string>
+    <string name="review_score_is_required">Review score is required</string>
+    <string name="failed_to_submit_review_please_try_again">Failed to submit review, Please try again</string>
+    <string name="thank_you_for_your_review">Thank you for your review.</string>
 </resources>

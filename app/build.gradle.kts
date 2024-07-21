@@ -114,4 +114,7 @@ dependencies {
 
     // Google Maps
     implementation(libs.maps.compose)
+
+    // Timber
+    implementation(libs.timber)
 }

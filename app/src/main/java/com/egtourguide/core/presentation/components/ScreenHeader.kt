@@ -3,6 +3,7 @@ package com.egtourguide.core.presentation.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,6 +16,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -156,7 +158,11 @@ fun ScreenHeader(
                     tint = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
                         .size(20.dp)
-                        .clickable { onSearchClicked() }
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() },
+                            onClick = onSearchClicked
+                        )
                 )
             }
 
@@ -170,20 +176,29 @@ fun ScreenHeader(
                     modifier = Modifier
                         .height(24.dp)
                         .width(22.dp)
-                        .clickable { onNotificationsClicked() }
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() },
+                            onClick = onNotificationsClicked
+                        )
                 )
             }
 
-            if (showActiveTour) {
+            // TODO: See what we will do!!
+            /*if (showActiveTour) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_active_tour),
                     contentDescription = stringResource(id = R.string.got_to_active_tour),
                     tint = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
                         .size(20.dp)
-                        .clickable { onActiveTourClicked() }
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() },
+                            onClick = onActiveTourClicked
+                        )
                 )
-            }
+            }*/
 
             if (showCaptureObject) {
                 Icon(
@@ -192,7 +207,11 @@ fun ScreenHeader(
                     tint = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
                         .size(20.dp)
-                        .clickable { onCaptureObjectClicked() }
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() },
+                            onClick = onCaptureObjectClicked
+                        )
                 )
             }
 
@@ -203,7 +222,11 @@ fun ScreenHeader(
                     tint = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
                         .size(20.dp)
-                        .clickable { onVrViewClicked() }
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() },
+                            onClick = onVrViewClicked
+                        )
                 )
             }
 
@@ -214,7 +237,11 @@ fun ScreenHeader(
                     tint = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
                         .size(20.dp)
-                        .clickable { onArViewClicked() }
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() },
+                            onClick = onArViewClicked
+                        )
                 )
             }
 
@@ -225,7 +252,11 @@ fun ScreenHeader(
                     tint = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
                         .size(20.dp)
-                        .clickable { onAddClicked() }
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() },
+                            onClick = onAddClicked
+                        )
                 )
             }
 
@@ -236,7 +267,11 @@ fun ScreenHeader(
                     tint = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
                         .size(20.dp)
-                        .clickable { onEditClicked() }
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() },
+                            onClick = onEditClicked
+                        )
                 )
             }
         }

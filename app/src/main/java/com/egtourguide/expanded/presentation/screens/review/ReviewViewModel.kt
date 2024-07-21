@@ -2,6 +2,7 @@ package com.egtourguide.expanded.presentation.screens.review
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.egtourguide.core.utils.ResultWrapper
 import com.egtourguide.core.utils.onResponse
 import com.egtourguide.expanded.domain.usecases.ReviewPlaceUseCase
 import com.egtourguide.expanded.domain.usecases.ReviewTourUseCase
@@ -27,17 +28,20 @@ class ReviewViewModel @Inject constructor(
     }
 
     fun changeReview(review: String) {
-        _uiState.update { it.copy(review = review) }
+        _uiState.update { it.copy(review = review, isRatingError = false) }
     }
 
     fun clearError() {
-        _uiState.update { it.copy(errorMessage = null) }
+        _uiState.update { it.copy(error = false, isRatingError = false) }
     }
 
     fun onSubmitClick(isLandMark: Boolean, id: String) {
-        // TODO: The user can review with 0 or not!!
-        if (isLandMark) reviewLandmark(id = id)
-        else reviewTour(id = id)
+        if (_uiState.value.rating == 0) {
+            _uiState.update { it.copy(isRatingError = true) }
+        } else {
+            if (isLandMark) reviewLandmark(id = id)
+            else reviewTour(id = id)
+        }
     }
 
     private fun reviewLandmark(id: String) {
@@ -48,13 +52,16 @@ class ReviewViewModel @Inject constructor(
                 review = _uiState.value.review
             ).onResponse(
                 onLoading = {
-                    _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+                    _uiState.update { it.copy(isLoading = true, error = false) }
                 },
                 onSuccess = {
                     _uiState.update { it.copy(isLoading = false, isSuccess = true) }
                 },
-                onFailure = { message ->
-                    _uiState.update { it.copy(isLoading = false, errorMessage = message) }
+                onFailure = {
+                    _uiState.update { it.copy(isLoading = false, error = true) }
+                },
+                onNetworkError = {
+                    _uiState.update { it.copy(isLoading = false, error = true) }
                 }
             )
         }
@@ -68,13 +75,16 @@ class ReviewViewModel @Inject constructor(
                 review = _uiState.value.review
             ).onResponse(
                 onLoading = {
-                    _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+                    _uiState.update { it.copy(isLoading = true, error = false) }
                 },
                 onSuccess = {
                     _uiState.update { it.copy(isLoading = false, isSuccess = true) }
                 },
-                onFailure = { message ->
-                    _uiState.update { it.copy(isLoading = false, errorMessage = message) }
+                onFailure = {
+                    _uiState.update { it.copy(isLoading = false, error = true) }
+                },
+                onNetworkError = {
+                    _uiState.update { it.copy(isLoading = false, error = true) }
                 }
             )
         }
