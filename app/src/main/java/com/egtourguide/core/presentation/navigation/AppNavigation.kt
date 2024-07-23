@@ -46,7 +46,6 @@ import com.egtourguide.user.presentation.changePassword.ChangePasswordScreenRoot
 import com.egtourguide.user.presentation.editProfile.EditProfileScreenRoot
 import com.egtourguide.user.presentation.settings.SettingsScreenRoot
 import com.egtourguide.user.presentation.user.UserScreenRoot
-import com.google.gson.Gson
 
 @Composable
 fun AppNavigation(
@@ -675,21 +674,11 @@ fun NavGraphBuilder.customToursGraph(navController: NavHostController) {
                 navController.getBackStackEntry(route = AppGraph.CustomTours.route)
             }
 
-            val isSelected = parentEntry.arguments?.getBoolean("isSelect") ?: false
-            val filtersJson = backStackEntry.arguments?.getString("filters")
-            var filters: HashMap<*, *>? = null
-
-            filtersJson?.let {
-                filters = Gson().fromJson(
-                    filtersJson.substringAfter('/'),
-                    HashMap::class.java
-                )
-            }
+            val isSelect = parentEntry.arguments?.getString("isSelect").toBoolean()
 
             MyToursScreen(
-                filters = filters,
                 onNavigateToSingleTour = { tour ->
-                    if (isSelected) {
+                    if (isSelect) {
                         navController.previousBackStackEntry?.savedStateHandle?.set(
                             "tourId",
                             tour.id

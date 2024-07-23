@@ -45,12 +45,10 @@ import com.egtourguide.core.presentation.components.EmptyState
 import com.egtourguide.core.presentation.components.LargeCard
 import com.egtourguide.core.presentation.components.LoadingState
 import com.egtourguide.core.presentation.components.ScreenHeader
-import java.util.HashMap
 
 @Composable
 fun MyToursScreen(
     viewModel: MyToursViewModel = hiltViewModel(),
-    filters: HashMap<*, *>? = null,
     onNavigateToCreateTour: () -> Unit = {},
     onNavigateToFilters: () -> Unit = {},
     onNavigateToSingleTour: (AbstractedTour) -> Unit = {},
@@ -59,8 +57,6 @@ fun MyToursScreen(
     val uiState by viewModel.uiState.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
-    viewModel.filters = filters
-
 
     MyToursScreenContent(
         uiState = uiState,
@@ -71,7 +67,6 @@ fun MyToursScreen(
         onBackClicked = onNavigateBack
     )
 
-
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_CREATE) {
@@ -79,11 +74,13 @@ fun MyToursScreen(
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
+
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
 
+    // TODO: Check this!!
     LaunchedEffect(key1 = uiState.isSaveSuccess, key2 = uiState.saveError) {
         val successMsg =
             if (uiState.isSave) "Tour Saved Successfully" else "Tour Unsaved Successfully"

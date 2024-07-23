@@ -9,7 +9,7 @@ data class MyToursDto(
     data class Tour(
         val _id: String,
         val duration: Int,
-        val image: String,
+        val image: String?,
         val name: String,
         val ratingAverage: Double,
         val ratingQuantity: Int,
@@ -19,7 +19,7 @@ data class MyToursDto(
             return AbstractedTour(
                 id = _id,
                 title = name,
-                image = image,
+                image = image ?: "",
                 duration = duration,
                 ratingCount = ratingQuantity,
                 rating = ratingAverage,

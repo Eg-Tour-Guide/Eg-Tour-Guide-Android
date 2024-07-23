@@ -9,7 +9,7 @@ data class ToursListDto(
     data class Tour(
         val _id: String,
         val duration: Int,
-        val image: String,
+        val image: String?,
         val name: String,
         val ratingAverage: Double,
         val ratingQuantity: Int,
@@ -18,7 +18,7 @@ data class ToursListDto(
         fun toDomainAbstractedTour(): AbstractedTour {
             return AbstractedTour(
                 id = _id,
-                image = image,
+                image = image ?: "",
                 title = name,
                 duration = duration,
                 rating = ratingAverage,
