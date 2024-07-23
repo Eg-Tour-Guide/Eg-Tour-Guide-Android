@@ -1,4 +1,4 @@
-package com.egtourguide.expanded.presentation.screens.expanded
+package com.egtourguide.core.utils
 
 enum class ExpandedType {
     EVENT,

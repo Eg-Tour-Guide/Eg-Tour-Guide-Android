@@ -119,7 +119,7 @@ fun TourPlanItem(
             DataRow(
                 icon = R.drawable.ic_timesheet,
                 iconDescription = stringResource(R.string.duration),
-                text = stringResource(id = R.string.hours, place.duration),
+                text = stringResource(id = R.string.hours_count, place.duration),
                 iconPadding = 4.dp,
                 iconSize = 10.dp,
                 textStyle = MaterialTheme.typography.labelLarge,

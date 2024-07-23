@@ -1,6 +1,6 @@
 package com.egtourguide.home.data.dto.response
 
-import com.egtourguide.core.presentation.ItemType
+import com.egtourguide.core.utils.ItemType
 import com.egtourguide.home.domain.model.SearchResult
 
 data class SearchResultsDto(

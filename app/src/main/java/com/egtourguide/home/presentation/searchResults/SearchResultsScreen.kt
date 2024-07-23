@@ -32,7 +32,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.egtourguide.R
-import com.egtourguide.core.presentation.ItemType
+import com.egtourguide.core.utils.ItemType
 import com.egtourguide.core.presentation.components.DataScreenHeader
 import com.egtourguide.home.domain.model.SearchResult
 import com.egtourguide.core.presentation.components.EmptyState
@@ -40,7 +40,7 @@ import com.egtourguide.core.presentation.components.LargeCard
 import com.egtourguide.core.presentation.components.LoadingState
 import com.egtourguide.core.presentation.components.ScreenHeader
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
-import com.egtourguide.expanded.presentation.screens.expanded.ExpandedType
+import com.egtourguide.core.utils.ExpandedType
 import com.egtourguide.home.presentation.filter.FilterScreenViewModel
 
 @Composable

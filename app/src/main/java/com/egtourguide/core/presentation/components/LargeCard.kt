@@ -27,7 +27,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.egtourguide.R
-import com.egtourguide.core.presentation.ItemType
+import com.egtourguide.core.utils.ItemType
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 import com.egtourguide.core.utils.Constants.ARTIFACT_IMAGE_LINK_PREFIX
 import com.egtourguide.core.utils.Constants.LANDMARK_IMAGE_LINK_PREFIX

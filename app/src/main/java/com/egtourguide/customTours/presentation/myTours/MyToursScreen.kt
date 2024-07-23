@@ -39,7 +39,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.egtourguide.R
-import com.egtourguide.core.presentation.ItemType
+import com.egtourguide.core.utils.ItemType
 import com.egtourguide.home.domain.model.AbstractedTour
 import com.egtourguide.core.presentation.components.EmptyState
 import com.egtourguide.core.presentation.components.LargeCard

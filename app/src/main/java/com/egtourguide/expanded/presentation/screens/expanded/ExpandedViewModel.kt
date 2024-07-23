@@ -14,7 +14,7 @@ import com.egtourguide.expanded.domain.usecases.GetArtifactUseCase
 import com.egtourguide.expanded.domain.usecases.GetEventUseCase
 import com.egtourguide.expanded.domain.usecases.GetLandmarkUseCase
 import com.egtourguide.expanded.domain.usecases.GetTourUseCase
-import com.egtourguide.expanded.presentation.screens.expanded.ExpandedType.*
+import com.egtourguide.core.utils.ExpandedType.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -283,7 +283,25 @@ class ExpandedViewModel @Inject constructor(
         }
     }
 
-    fun addToTour(duration: Int) {
+    fun addToTourClicked(duration: Int) {
+        if (!checkData(duration)) {
+            changeAddDialogVisibility()
+            addToTour(duration = duration)
+        }
+    }
+
+    private fun checkData(duration: Int): Boolean {
+        _uiState.update {
+            it.copy(
+                isDurationError = duration <= 0,
+                isTourError = it.tourID.isEmpty()
+            )
+        }
+
+        return _uiState.value.isDurationError || _uiState.value.isTourError
+    }
+
+    private fun addToTour(duration: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             addPlaceToTourUseCase(
                 tourId = _uiState.value.tourID,
@@ -291,19 +309,19 @@ class ExpandedViewModel @Inject constructor(
                 time = duration
             ).onResponse(
                 onLoading = {
-                    _uiState.update { it.copy(showLoadingDialog = true, errorMessage = null) }
+                    _uiState.update { it.copy(showLoadingDialog = true) }
                 },
                 onSuccess = {
                     _uiState.update { it.copy(showLoadingDialog = false, showAddSuccess = true) }
                 },
-                onFailure = { message ->
-                    _uiState.update { it.copy(showLoadingDialog = false, errorMessage = message) }
+                onFailure = {
+                    _uiState.update { it.copy(showLoadingDialog = false, showAddError = true) }
                 }
             )
         }
     }
 
-    fun clearSuccess() {
-        _uiState.update { it.copy(showAddSuccess = false) }
+    fun clearToasts() {
+        _uiState.update { it.copy(showAddSuccess = false, showAddError = false) }
     }
 }

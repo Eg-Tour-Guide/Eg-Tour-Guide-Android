@@ -1,4 +1,4 @@
-package com.egtourguide.core.presentation
+package com.egtourguide.core.utils
 
 enum class ItemType {
     TOUR,

@@ -1,6 +1,6 @@
 package com.egtourguide.user.data.dto.response
 
-import com.egtourguide.core.presentation.ItemType
+import com.egtourguide.core.utils.ItemType
 import com.egtourguide.user.domain.model.AbstractSavedItem
 
 data class SavedItemsDto(

@@ -1,4 +1,4 @@
-package com.egtourguide.expanded.presentation.screens.expanded
+package com.egtourguide.expanded.presentation.screens.webView
 
 import android.annotation.SuppressLint
 import android.view.ViewGroup

@@ -7,7 +7,7 @@ import com.egtourguide.user.domain.model.AbstractSavedItem
 import com.egtourguide.core.domain.usecases.ChangeArtifactSavedStateUseCase
 import com.egtourguide.core.domain.usecases.ChangeLandmarkSavedStateUseCase
 import com.egtourguide.core.domain.usecases.ChangeTourSavedStateUseCase
-import com.egtourguide.core.presentation.ItemType
+import com.egtourguide.core.utils.ItemType
 import com.egtourguide.user.domain.usecases.GetSavedItemsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

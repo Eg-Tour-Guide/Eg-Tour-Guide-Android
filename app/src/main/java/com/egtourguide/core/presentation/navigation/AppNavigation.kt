@@ -17,13 +17,13 @@ import com.egtourguide.auth.presentation.screens.otp.OtpScreen
 import com.egtourguide.auth.presentation.screens.resetPassword.ResetPasswordScreen
 import com.egtourguide.auth.presentation.screens.signup.SignUpScreen
 import com.egtourguide.auth.presentation.screens.welcome.WelcomeScreen
-import com.egtourguide.core.presentation.ItemType
+import com.egtourguide.core.utils.ItemType
 import com.egtourguide.customTours.presentation.createTour.CreateTourScreenRoot
 import com.egtourguide.customTours.presentation.customExpanded.CustomExpandedScreenRoot
 import com.egtourguide.home.presentation.main.screens.artifactsList.ArtifactsListScreen
 import com.egtourguide.expanded.presentation.screens.expanded.ExpandedScreenRoot
-import com.egtourguide.expanded.presentation.screens.expanded.ExpandedType
-import com.egtourguide.expanded.presentation.screens.expanded.WebViewScreen
+import com.egtourguide.core.utils.ExpandedType
+import com.egtourguide.expanded.presentation.screens.webView.WebViewScreen
 import com.egtourguide.home.presentation.filter.FilterScreen
 import com.egtourguide.home.presentation.main.MainScreen
 import com.egtourguide.home.presentation.main.screens.home.HomeScreen

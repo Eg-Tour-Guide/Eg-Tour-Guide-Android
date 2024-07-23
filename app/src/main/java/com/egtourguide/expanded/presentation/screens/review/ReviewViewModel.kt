@@ -2,7 +2,6 @@ package com.egtourguide.expanded.presentation.screens.review
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.egtourguide.core.utils.ResultWrapper
 import com.egtourguide.core.utils.onResponse
 import com.egtourguide.expanded.domain.usecases.ReviewPlaceUseCase
 import com.egtourguide.expanded.domain.usecases.ReviewTourUseCase

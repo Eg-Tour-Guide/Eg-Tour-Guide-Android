@@ -49,11 +49,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.egtourguide.R
-import com.egtourguide.core.presentation.ItemType
+import com.egtourguide.core.utils.ItemType
 import com.egtourguide.core.presentation.components.MainButton
 import com.egtourguide.core.presentation.components.MainImage
 import com.egtourguide.core.presentation.components.MapItem
@@ -72,6 +73,7 @@ import com.egtourguide.core.presentation.components.MediumCard
 import com.egtourguide.expanded.presentation.components.ReviewItem
 import com.egtourguide.expanded.presentation.components.ReviewsHeader
 import com.egtourguide.core.presentation.components.ScreenHeader
+import com.egtourguide.core.utils.ExpandedType
 import com.egtourguide.expanded.presentation.utils.convertDate
 
 @Preview(showBackground = true, heightDp = 1200)
@@ -84,6 +86,7 @@ private fun ExpandedScreenPreview() {
                 images = listOf("", "", "", ""),
                 title = "Pyramids",
                 location = "Giza",
+                reviewsCount = 2,
                 reviewsAverage = 4.5,
                 reviews = listOf(
                     Review(
@@ -159,10 +162,23 @@ fun ExpandedScreenRoot(
         if (uiState.showAddSuccess) {
             Toast.makeText(
                 context,
-                context.getString(R.string.added_successfully),
+                context.getString(R.string.landmark_added_to_your_tour),
                 Toast.LENGTH_SHORT
             ).show()
-            viewModel.clearSuccess()
+
+            viewModel.clearToasts()
+        }
+    }
+
+    LaunchedEffect(key1 = uiState.showAddError) {
+        if (uiState.showAddError) {
+            Toast.makeText(
+                context,
+                context.getString(R.string.failed_to_add_landmark_please_try_again),
+                Toast.LENGTH_SHORT
+            ).show()
+
+            viewModel.clearToasts()
         }
     }
 
@@ -178,30 +194,31 @@ fun ExpandedScreenRoot(
     }
 
     if (uiState.showAddDialog) {
-        Dialog(onDismissRequest = viewModel::changeAddDialogVisibility) {
-            AddDialog(
-                tourImage = uiState.tourImage,
-                tourName = uiState.tourName,
-                navigateToTours = {
-                    navigateToTours()
-                },
-                onCancelClicked = viewModel::changeAddDialogVisibility,
-                onAddClicked = { duration ->
-                    viewModel.addToTour(duration)
-                    viewModel.changeAddDialogVisibility()
-                }
-            )
-        }
+        AddToTourDialog(
+            onDismissRequest = viewModel::changeAddDialogVisibility,
+            tourImage = uiState.tourImage,
+            tourName = uiState.tourName,
+            isTourError = uiState.isTourError,
+            isDurationError = uiState.isDurationError,
+            navigateToTours = navigateToTours,
+            onCancelClicked = viewModel::changeAddDialogVisibility,
+            onAddClicked = viewModel::addToTourClicked
+        )
     }
 
     if (uiState.showLoadingDialog) {
-        Dialog(onDismissRequest = {}) {
+        Dialog(
+            onDismissRequest = {},
+            properties = DialogProperties(usePlatformDefaultWidth = false)
+        ) {
             Box(
                 modifier = Modifier
+                    .padding(horizontal = 16.dp)
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp))
+                    .clip(RoundedCornerShape(12.dp))
                     .background(MaterialTheme.colorScheme.background)
-                    .padding(24.dp)
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center
             ) {
                 LoadingState()
             }

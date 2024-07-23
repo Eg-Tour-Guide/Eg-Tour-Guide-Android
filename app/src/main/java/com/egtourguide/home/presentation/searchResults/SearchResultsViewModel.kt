@@ -6,7 +6,7 @@ import com.egtourguide.core.utils.onResponse
 import com.egtourguide.home.domain.model.SearchResult
 import com.egtourguide.core.domain.usecases.ChangeArtifactSavedStateUseCase
 import com.egtourguide.core.domain.usecases.ChangeLandmarkSavedStateUseCase
-import com.egtourguide.core.presentation.ItemType
+import com.egtourguide.core.utils.ItemType
 import com.egtourguide.home.domain.usecases.SearchUseCase
 import com.egtourguide.home.presentation.filter.FilterScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel

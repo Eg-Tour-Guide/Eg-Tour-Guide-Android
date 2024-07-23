@@ -1,6 +1,6 @@
 package com.egtourguide.home.domain.model
 
-import com.egtourguide.core.presentation.ItemType
+import com.egtourguide.core.utils.ItemType
 
 data class SearchResult(
     val id: String,

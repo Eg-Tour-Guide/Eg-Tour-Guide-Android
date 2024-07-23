@@ -6,12 +6,18 @@ import com.egtourguide.home.domain.model.AbstractedLandmark
 import com.egtourguide.home.domain.model.Review
 
 data class ExpandedScreenState(
-    val id: String = "",
+    // Loading
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val callIsSent: Boolean = false,
     val isSaveSuccess: Boolean = false,
     val isSaveCall: Boolean = false,
+
+    // All Data
+    val id: String = "",
+    val vrModel: String = "",
+    val arModel: String = "",
+    val date: String = "",
     val images: List<String> = emptyList(),
     val title: String = "",
     val reviewsAverage: Double = 0.0,
@@ -28,15 +34,17 @@ data class ExpandedScreenState(
     val includedArtifacts: List<AbstractedArtifact> = emptyList(),
     val relatedPlaces: List<AbstractedLandmark> = emptyList(),
     val relatedArtifacts: List<AbstractedArtifact> = emptyList(),
-    val vrModel: String = "",
-    val arModel: String = "",
+    val relatedTours: List<AbstractedTour> = emptyList(),
+
+    // Dialog
     val showAddDialog: Boolean = false,
+    val showLoadingDialog: Boolean = false,
+    val showAddSuccess: Boolean = false,
+    val showAddError: Boolean = false,
+    val isTourError: Boolean = false,
+    val isDurationError: Boolean = false,
     val tourID: String = "",
     val tourName: String = "",
     val tourImage: String = "",
-    val duration: Int = 0,
-    val date: String = "",
-    val relatedTours: List<AbstractedTour> = emptyList(),
-    val showLoadingDialog: Boolean = false,
-    val showAddSuccess: Boolean = false
+    val duration: Int = 0
 )
