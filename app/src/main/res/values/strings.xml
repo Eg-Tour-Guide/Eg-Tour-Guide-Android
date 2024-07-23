@@ -142,13 +142,11 @@
     <string name="enter_your_new_password">Enter your new password</string>
     <string name="push_notifications">Push Notifications</string>
     <string name="enter_tour_name">Enter tour name</string>
-    <string name="tour_name_empty_error">Please enter tour name!</string>
+    <string name="tour_name_empty_error">Name is required.</string>
     <string name="create_tour">Create Tour</string>
     <string name="write_tour_description">Write tour description</string>
     <string name="description_empty_error">Please enter tour description!</string>
     <string name="description_form_error">Description length must be more than 3 characters!</string>
-    <string name="created_successfully">Created Successfully</string>
-    <string name="edited_successfully">Edited Successfully</string>
     <string name="edit_icon">Edit icon</string>
     <string name="filters">Filters</string>
     <string name="tours_count">%s Tours</string>
@@ -161,10 +159,14 @@
     <string name="search_placeholder">What are you looking for?</string>
     <string name="camera">Camera</string>
     <string name="gallery">Gallery</string>
-    <string name="review_score_is_required">Review score is required</string>
-    <string name="failed_to_submit_review_please_try_again">Failed to submit review, Please try again</string>
+    <string name="review_score_is_required">Review score is required.</string>
+    <string name="failed_to_submit_review_please_try_again">Failed to submit review, Please try again.</string>
     <string name="thank_you_for_your_review">Thank you for your review.</string>
     <string name="hours">Hours</string>
     <string name="landmark_added_to_your_tour">Landmark added to your tour!</string>
-    <string name="failed_to_add_landmark_please_try_again">Failed to add landmark, Please try again</string>
+    <string name="failed_to_add_landmark_please_try_again">Failed to add landmark, Please try again.</string>
+    <string name="tour_updated_successfully">Tour updated successfully!</string>
+    <string name="failed_to_update_tour_please_try_again">Failed to update tour, Please try again.</string>
+    <string name="failed_to_create_tour_please_try_again">Failed to create tour, Please try again.</string>
+    <string name="tour_created_successfully">Tour created successfully!</string>
 </resources>

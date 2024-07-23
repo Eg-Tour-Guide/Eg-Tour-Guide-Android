@@ -49,5 +49,5 @@ object Routes {
     const val MY_TOURS_SCREEN_ROUTE = "MY_TOURS_SCREEN_ROUTE/{isSelect}"
     const val CREATE_TOUR_SCREEN_ROUTE =
         "CREATE_TOUR_SCREEN_ROUTE/{isCreate}/{tourId}/{name}/{description}"
-    const val CUSTOM_EXPANDED_SCREEN_ROUTE = "CUSTOM_EXPANDED_SCREEN_ROUTE/{tourId}"
+    const val CUSTOM_EXPANDED_SCREEN_ROUTE = "CUSTOM_EXPANDED_SCREEN_ROUTE/{tourId}/{isUpdated}"
 }

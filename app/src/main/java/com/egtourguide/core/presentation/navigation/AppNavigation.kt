@@ -734,17 +734,36 @@ fun NavGraphBuilder.customToursGraph(navController: NavHostController) {
                     }
                 },
                 navigateToExpanded = {
-                    // TODO: Navigate to custom expanded!!
+                    navController.navigate(
+                        route = AppScreen.CustomExpanded.route
+                            .replace("{tourId}", tourId)
+                            .replace("{isUpdated}", "true")
+                    ) {
+                        popUpTo(route = AppScreen.CustomExpanded.route) {
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }
 
         composable(route = AppScreen.CustomExpanded.route) { entry ->
             val tourId = entry.arguments?.getString("tourId") ?: ""
+            val isUpdated = entry.arguments?.getString("isUpdated").toBoolean()
 
             CustomExpandedScreenRoot(
                 tourId = tourId,
-                onBackClicked = { navController.navigateUp() },
+                onBackClicked = {
+                    if (isUpdated) {
+                        navController.navigate(route = AppScreen.MyTours.route) {
+                            popUpTo(route = AppScreen.MyTours.route) {
+                                inclusive = true
+                            }
+                        }
+                    } else {
+                        navController.navigateUp()
+                    }
+                },
                 onEditClicked = { name, description ->
                     navController.navigate(
                         route = AppScreen.CreateTour.route

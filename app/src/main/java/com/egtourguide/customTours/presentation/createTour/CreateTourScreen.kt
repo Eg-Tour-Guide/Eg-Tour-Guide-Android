@@ -71,9 +71,18 @@ fun CreateTourScreenRoot(
         }
     }
 
-    LaunchedEffect(key1 = uiState.errorMessage) {
-        uiState.errorMessage?.let {
-            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+    LaunchedEffect(key1 = uiState.isError) {
+        if (uiState.isError) {
+            Toast.makeText(
+                context,
+                context.getString(
+                    if (isCreate) R.string.failed_to_create_tour_please_try_again
+                    else R.string.failed_to_update_tour_please_try_again
+                ),
+                Toast.LENGTH_SHORT
+            ).show()
+
+            viewModel.clearError()
         }
     }
 
@@ -81,7 +90,7 @@ fun CreateTourScreenRoot(
         if (uiState.isCreateSuccess) {
             Toast.makeText(
                 context,
-                context.getString(R.string.created_successfully),
+                context.getString(R.string.tour_created_successfully),
                 Toast.LENGTH_SHORT
             ).show()
             navigateToMyTours()
@@ -92,7 +101,7 @@ fun CreateTourScreenRoot(
         if (uiState.isEditSuccess) {
             Toast.makeText(
                 context,
-                context.getString(R.string.edited_successfully),
+                context.getString(R.string.tour_updated_successfully),
                 Toast.LENGTH_SHORT
             ).show()
             navigateToExpanded()
@@ -156,6 +165,7 @@ private fun CreateTourContent(
                         .padding(top = 16.dp),
                     value = uiState.name,
                     onValueChanged = onNameChanged,
+                    isEnabled = !uiState.isLoading,
                     labelText = stringResource(id = R.string.name),
                     placeholderText = stringResource(id = R.string.enter_tour_name),
                     errorText = when (uiState.nameError) {
@@ -178,6 +188,7 @@ private fun CreateTourContent(
                         .fillMaxWidth()
                         .height(200.dp),
                     value = uiState.description,
+                    isEnabled = !uiState.isLoading,
                     singleLine = false,
                     imeAction = ImeAction.Default,
                     onValueChanged = onDescriptionChanged,

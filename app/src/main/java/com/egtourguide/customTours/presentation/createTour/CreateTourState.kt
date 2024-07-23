@@ -4,7 +4,7 @@ import com.egtourguide.core.domain.validation.ValidationCases
 
 data class CreateTourState(
     val isLoading: Boolean = false,
-    val errorMessage: String? = null,
+    val isError: Boolean = false,
     val isCreateSuccess: Boolean = false,
     val isEditSuccess: Boolean = false,
     val tourId: String = "",

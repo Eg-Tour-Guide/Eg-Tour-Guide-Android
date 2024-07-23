@@ -1,6 +1,7 @@
 package com.egtourguide.customTours.presentation.customExpanded
 
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -81,6 +82,10 @@ fun CustomExpandedScreenRoot(
     val uiState by viewModel.uiState.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
+
+    BackHandler {
+        onBackClicked()
+    }
 
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->

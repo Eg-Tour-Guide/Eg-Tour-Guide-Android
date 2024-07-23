@@ -90,13 +90,13 @@ class CreateTourViewModel @Inject constructor(
                 description = _uiState.value.description
             ).onResponse(
                 onLoading = {
-                    _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+                    _uiState.update { it.copy(isLoading = true, isError = false) }
                 },
                 onSuccess = {
                     _uiState.update { it.copy(isLoading = false, isCreateSuccess = true) }
                 },
-                onFailure = { message ->
-                    _uiState.update { it.copy(isLoading = false, errorMessage = message) }
+                onFailure = {
+                    _uiState.update { it.copy(isLoading = false, isError = true) }
                 }
             )
         }
@@ -110,15 +110,19 @@ class CreateTourViewModel @Inject constructor(
                 description = _uiState.value.description
             ).onResponse(
                 onLoading = {
-                    _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+                    _uiState.update { it.copy(isLoading = true, isError = false) }
                 },
                 onSuccess = {
                     _uiState.update { it.copy(isLoading = false, isEditSuccess = true) }
                 },
-                onFailure = { message ->
-                    _uiState.update { it.copy(isLoading = false, errorMessage = message) }
+                onFailure = {
+                    _uiState.update { it.copy(isLoading = false, isError = true) }
                 }
             )
         }
+    }
+
+    fun clearError() {
+        _uiState.update { it.copy(isError = false) }
     }
 }
