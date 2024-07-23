@@ -60,6 +60,7 @@ private fun ExpandedScreenPreview() {
     EGTourGuideTheme {
         CustomExpandedContent(
             uiState = CustomExpandedState(
+                id = "1",
                 images = listOf("", "", "", ""),
                 title = "Pyramids",
                 duration = 3,

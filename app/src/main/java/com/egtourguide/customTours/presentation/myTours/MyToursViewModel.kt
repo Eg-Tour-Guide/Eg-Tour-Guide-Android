@@ -27,17 +27,13 @@ class MyToursViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             getMyToursUseCase().onResponse(
                 onLoading = {
-                    _uiState.update { it.copy(isLoading = true, isShowEmptyState = false) }
+                    _uiState.update { it.copy(isLoading = true, isCallSent = true) }
                 },
                 onSuccess = { response ->
-                    _uiState.update {
-                        it.copy(isLoading = false, myTours = response, isShowEmptyState = true)
-                    }
+                    _uiState.update { it.copy(isLoading = false, myTours = response) }
                 },
                 onFailure = { error ->
-                    _uiState.update {
-                        it.copy(isLoading = false, error = error)
-                    }
+                    _uiState.update { it.copy(isLoading = false, error = error) }
                 }
             )
         }
@@ -63,5 +59,9 @@ class MyToursViewModel @Inject constructor(
 
     fun clearSaveError() {
         _uiState.update { it.copy(saveError = null) }
+    }
+
+    fun clearError() {
+        _uiState.update { it.copy(error = null) }
     }
 }

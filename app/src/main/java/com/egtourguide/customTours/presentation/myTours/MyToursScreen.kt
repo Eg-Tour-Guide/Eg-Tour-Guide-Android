@@ -5,12 +5,9 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,41 +15,38 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.egtourguide.R
+import com.egtourguide.core.presentation.components.DataScreenHeader
 import com.egtourguide.core.utils.ItemType
 import com.egtourguide.home.domain.model.AbstractedTour
 import com.egtourguide.core.presentation.components.EmptyState
 import com.egtourguide.core.presentation.components.LargeCard
 import com.egtourguide.core.presentation.components.LoadingState
 import com.egtourguide.core.presentation.components.ScreenHeader
+import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 
 @Composable
 fun MyToursScreen(
     viewModel: MyToursViewModel = hiltViewModel(),
-    onNavigateToCreateTour: () -> Unit = {},
-    onNavigateToFilters: () -> Unit = {},
-    onNavigateToSingleTour: (AbstractedTour) -> Unit = {},
-    onNavigateBack: () -> Unit = {}
+    onNavigateToCreateTour: () -> Unit,
+    onNavigateToFilters: () -> Unit,
+    onNavigateToSingleTour: (AbstractedTour) -> Unit,
+    onNavigateBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -69,7 +63,7 @@ fun MyToursScreen(
 
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_CREATE) {
+            if (event == Lifecycle.Event.ON_CREATE && !uiState.isCallSent) {
                 viewModel.getMyTours()
             }
         }
@@ -77,6 +71,13 @@ fun MyToursScreen(
 
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
+    LaunchedEffect(key1 = uiState.error) {
+        uiState.error?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            viewModel.clearError()
         }
     }
 
@@ -99,13 +100,13 @@ fun MyToursScreen(
 }
 
 @Composable
-fun MyToursScreenContent(
-    uiState: MyToursUIState,
-    onFilterClicked: () -> Unit,
-    onTourClicked: (AbstractedTour) -> Unit,
-    onSaveClicked: (AbstractedTour) -> Unit,
-    onAddClicked: () -> Unit,
-    onBackClicked: () -> Unit
+private fun MyToursScreenContent(
+    uiState: MyToursUIState = MyToursUIState(),
+    onFilterClicked: () -> Unit = {},
+    onTourClicked: (AbstractedTour) -> Unit = {},
+    onSaveClicked: (AbstractedTour) -> Unit = {},
+    onAddClicked: () -> Unit = {},
+    onBackClicked: () -> Unit = {}
 ) {
     Column(
         Modifier
@@ -113,18 +114,13 @@ fun MyToursScreenContent(
             .background(color = MaterialTheme.colorScheme.background)
     ) {
         ScreenHeader(
-            modifier = Modifier.height(61.dp),
+            modifier = Modifier.height(52.dp),
             showBack = true,
             showAdd = true,
             onBackClicked = onBackClicked,
             onAddClicked = onAddClicked
         )
-        Spacer(modifier = Modifier.height(18.dp))
-        ToursHeader(
-            toursCount = uiState.myTours.size,
-            onFilterClicked = onFilterClicked
-        )
-        Spacer(modifier = Modifier.height(16.dp))
+
         AnimatedVisibility(
             visible = uiState.isLoading,
             enter = fadeIn(),
@@ -132,84 +128,56 @@ fun MyToursScreenContent(
         ) {
             LoadingState(modifier = Modifier.fillMaxSize())
         }
+
         AnimatedVisibility(
-            visible = uiState.isShowEmptyState && uiState.myTours.isEmpty(),
+            visible = !uiState.isLoading && uiState.myTours.isEmpty(),
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            EmptyState(modifier = Modifier.fillMaxSize(), message = "No Tours Found")
+            // TODO: Change the message!!
+            EmptyState(
+                modifier = Modifier.fillMaxSize(),
+                message = "No Tours Found"
+            )
         }
+
         AnimatedVisibility(
-            visible = !uiState.isLoading,
+            visible = !uiState.isLoading && uiState.myTours.isNotEmpty(),
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            ToursSection(
-                tours = uiState.myTours,
-                onTourClicked = onTourClicked,
-                onSaveClicked = onSaveClicked
-            )
-        }
-    }
-}
+            Column {
+                DataScreenHeader(
+                    title = stringResource(id = R.string.tours_count, uiState.myTours.size),
+                    onFilterClicked = onFilterClicked,
+                    hasChanged = false,
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)
+                )
 
-@Composable
-private fun ToursHeader(
-    toursCount: Int,
-    onFilterClicked: () -> Unit
-) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = "$toursCount Tours",
-            style = MaterialTheme.typography.displaySmall,
-            color = MaterialTheme.colorScheme.onBackground
-        )
-        Icon(
-            modifier = Modifier.clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null
-            ) {
-                onFilterClicked()
-            },
-            painter = painterResource(id = R.drawable.ic_filter),
-            contentDescription = "Filter Icon",
-            tint = Color.Unspecified
-        )
-    }
-}
-
-@Composable
-private fun ToursSection(
-    tours: List<AbstractedTour>,
-    onTourClicked: (AbstractedTour) -> Unit,
-    onSaveClicked: (AbstractedTour) -> Unit
-) {
-    LazyVerticalGrid(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        columns = GridCells.Fixed(2),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        items(items = tours) { tour ->
-            LargeCard(
-                itemType = ItemType.TOUR,
-                image = tour.image,
-                name = tour.title,
-                isSaved = tour.isSaved,
-                duration = tour.duration,
-                ratingAverage = tour.rating,
-                ratingCount = tour.ratingCount,
-                onItemClicked = { onTourClicked(tour) },
-                onSaveClicked = { onSaveClicked(tour) }
-            )
+                LazyVerticalGrid(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                    columns = GridCells.Fixed(2),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                ) {
+                    items(items = uiState.myTours, key = { it.id }) { tour ->
+                        LargeCard(
+                            itemType = ItemType.TOUR,
+                            image = tour.image,
+                            name = tour.title,
+                            isSaved = tour.isSaved,
+                            duration = tour.duration,
+                            ratingAverage = tour.rating,
+                            ratingCount = tour.ratingCount,
+                            onItemClicked = { onTourClicked(tour) },
+                            onSaveClicked = { onSaveClicked(tour) }
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -217,5 +185,22 @@ private fun ToursSection(
 @Preview
 @Composable
 private fun MyToursScreenPreview() {
-    MyToursScreen()
+    EGTourGuideTheme {
+        MyToursScreenContent(
+            uiState = MyToursUIState(
+                isLoading = false,
+                myTours = (0..3).map {
+                    AbstractedTour(
+                        id = "$it",
+                        title = "Test $it",
+                        isSaved = true,
+                        image = "",
+                        duration = 3,
+                        ratingCount = 5,
+                        rating = 3.5
+                    )
+                }
+            )
+        )
+    }
 }
