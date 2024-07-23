@@ -548,7 +548,7 @@ private fun TitleSection(
                     DataRow(
                         icon = R.drawable.ic_timesheet,
                         iconDescription = stringResource(R.string.duration),
-                        text = stringResource(id = R.string.days, duration),
+                        text = stringResource(id = R.string.days_count, duration),
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = if (expandedType == ExpandedType.EVENT.name) 8.dp else 0.dp)

@@ -290,7 +290,7 @@ private fun DataSection(
                     DataRow(
                         icon = R.drawable.ic_timesheet,
                         iconDescription = stringResource(R.string.duration),
-                        text = stringResource(id = R.string.days, duration),
+                        text = stringResource(id = R.string.days_count, duration),
                         modifier = Modifier.fillMaxWidth()
                     )
                 }

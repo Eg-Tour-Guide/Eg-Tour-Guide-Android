@@ -120,7 +120,7 @@
     <string name="choose_tour">Choose Tour</string>
     <string name="add">Add</string>
     <string name="date">Date</string>
-    <string name="days">%s Days</string>
+    <string name="days_count">%s Days</string>
     <string name="tour_schedule">Tour Schedule</string>
     <string name="related_tours">Related Tours</string>
     <string name="add_icon">Add icon</string>
@@ -169,4 +169,6 @@
     <string name="failed_to_update_tour_please_try_again">Failed to update tour, Please try again.</string>
     <string name="failed_to_create_tour_please_try_again">Failed to create tour, Please try again.</string>
     <string name="tour_created_successfully">Tour created successfully!</string>
+    <string name="min">Min</string>
+    <string name="max">Max</string>
 </resources>

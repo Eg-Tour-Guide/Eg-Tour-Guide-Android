@@ -116,7 +116,7 @@ fun LargeCard(
                         iconSize = 10.dp,
                         iconDescription = stringResource(id = R.string.duration),
                         iconTint = MaterialTheme.colorScheme.onPrimaryContainer,
-                        text = stringResource(id = R.string.days, duration),
+                        text = stringResource(id = R.string.days_count, duration),
                         textColor = MaterialTheme.colorScheme.onPrimaryContainer,
                         textStyle = MaterialTheme.typography.labelLarge,
                         modifier = Modifier.padding(vertical = 2.dp)

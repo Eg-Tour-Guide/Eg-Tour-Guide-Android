@@ -11,12 +11,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -24,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.egtourguide.R
+import com.egtourguide.core.presentation.components.CustomTextField
 import com.egtourguide.core.presentation.components.MainButton
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 import com.egtourguide.core.presentation.components.ScreenHeader
@@ -145,25 +150,11 @@ private fun ScreenContent(
                     modifier = Modifier.padding(top = 32.dp)
                 )
 
-                // TODO: Change these texts!!
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.days, uiState.minDuration.toInt()),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-
-                    Text(
-                        text = stringResource(id = R.string.days, uiState.maxDuration.toInt()),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                }
+                DurationFields(
+                    minDuration = uiState.minDuration,
+                    maxDuration = uiState.maxDuration,
+                    onDurationChanged = onDurationChanged
+                )
 
                 CustomRangeSlider(
                     min = uiState.minDuration,
@@ -209,6 +200,84 @@ private fun ScreenContent(
             FilterFooter(
                 onApplyClick = onApplyClicked,
                 onResetClick = onResetClicked
+            )
+        }
+    }
+}
+
+@Composable
+private fun DurationFields(
+    minDuration: Float,
+    maxDuration: Float,
+    onDurationChanged: (Float, Float) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Column {
+            var isFocused by remember { mutableStateOf(false) }
+
+            Text(
+                text = stringResource(id = R.string.min),
+                style = MaterialTheme.typography.titleMedium,
+                color = if (isFocused) MaterialTheme.colorScheme.outlineVariant
+                else MaterialTheme.colorScheme.onBackground
+            )
+
+            CustomTextField(
+                value = if (minDuration == -1f) "" else minDuration.toInt()
+                    .toString(),
+                onValueChanged = { newValue ->
+                    if (newValue.isEmpty()) {
+                        onDurationChanged(-1f, maxDuration)
+                    } else {
+                        val intValue = newValue.toIntOrNull()
+                        if (intValue != null && intValue in 0..30) {
+                            onDurationChanged(newValue.toFloat(), maxDuration)
+                        }
+                    }
+                },
+                isFocused = isFocused,
+                onFocusChanged = { isFocused = it },
+                modifier = Modifier
+                    .padding(top = 4.dp)
+                    .height(33.dp)
+                    .width(50.dp)
+            )
+        }
+
+        Column {
+            var isFocused by remember { mutableStateOf(false) }
+
+            Text(
+                text = stringResource(id = R.string.max),
+                style = MaterialTheme.typography.titleMedium,
+                color = if (isFocused) MaterialTheme.colorScheme.outlineVariant
+                else MaterialTheme.colorScheme.onBackground
+            )
+
+            CustomTextField(
+                value = if (maxDuration == 31f) "" else maxDuration.toInt()
+                    .toString(),
+                onValueChanged = { newValue ->
+                    if (newValue.isEmpty()) {
+                        onDurationChanged(minDuration, 31f)
+                    } else {
+                        val intValue = newValue.toIntOrNull()
+                        if (intValue != null && intValue in 0..30) {
+                            onDurationChanged(minDuration, intValue.toFloat())
+                        }
+                    }
+                },
+                isFocused = isFocused,
+                onFocusChanged = { isFocused = it },
+                modifier = Modifier
+                    .padding(top = 4.dp)
+                    .height(33.dp)
+                    .width(50.dp)
             )
         }
     }
