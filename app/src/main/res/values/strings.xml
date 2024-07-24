@@ -71,7 +71,6 @@
     <string name="artifact_type">Artifact Type</string>
     <string name="artifact_materials">Artifact Materials</string>
     <string name="related_artifacts">Related Artifacts</string>
-    <string name="reviews_count">" (%1$s Reviews)"</string> <!-- TODO: Remove this!! -->
     <string name="upcoming_events">Upcoming Events</string>
     <string name="suggested_for_you">Suggested For You</string>
     <string name="top_rated_places">Top Rated Places</string>
@@ -175,4 +174,5 @@
     <string name="failed_to_register_please_try_again">Failed to register, Please try again.</string>
     <string name="a_new_verification_code_has_been_sent_to_your_email">A new verification code has been sent to your email.</string>
     <string name="failed_to_reset_password_please_try_again">Failed to reset password, Please try again.</string>
+    <string name="camera_access_denied">Camera access denied.</string>
 </resources>

@@ -1,12 +1,6 @@
 package com.egtourguide.user.presentation.user
 
-import android.Manifest
-import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.net.Uri
 import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,7 +27,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.egtourguide.R
 import com.egtourguide.core.presentation.components.DataRow
@@ -65,39 +58,7 @@ fun UserScreenRoot(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
-    var isArtifactDetectionDialogShown by remember { mutableStateOf(false) }
-
-    var hasCameraPermission by remember {
-        mutableStateOf(
-            ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.CAMERA
-            ) == PackageManager.PERMISSION_GRANTED
-        )
-    }
-
-    val cameraPermissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        hasCameraPermission = isGranted
-    }
-
-    val galleryImageLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        uri?.let {
-            val image = viewModel.getBitmapFromUri(context = context, uri = uri)
-            viewModel.detectArtifact(image = image!!, context = context)
-        }
-    }
-
-    val cameraImageLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.TakePicturePreview()
-    ) { bitmap: Bitmap? ->
-        bitmap?.let {
-            viewModel.detectArtifact(image = bitmap, context = context)
-        }
-    }
+    var isDetectionDialogShown by remember { mutableStateOf(false) }
 
     UserScreenContent(
         navigateToSearch = onNavigateToSearch,
@@ -111,34 +72,24 @@ fun UserScreenRoot(
             viewModel.logout()
             navigateToAuth()
         },
-        onCaptureObjectClicked = { isArtifactDetectionDialogShown = true }
+        onCaptureObjectClicked = { isDetectionDialogShown = true }
     )
 
     LaunchedEffect(key1 = uiState.detectedArtifact) {
         if (uiState.detectedArtifact != null) {
-            isArtifactDetectionDialogShown = false
+            isDetectionDialogShown = false
             onNavigateToDetectedArtifact(uiState.detectedArtifact!!)
             viewModel.clearDetectionSuccess()
             Toast.makeText(context, uiState.detectedArtifact!!.message, Toast.LENGTH_SHORT).show()
         }
     }
 
-    if (isArtifactDetectionDialogShown) {
-        ArtifactDetectionDialog(
-            isDetectionLoading = uiState.isDetectionLoading,
-            onDismissRequest = { isArtifactDetectionDialogShown = false },
-            onGalleryClicked = {
-                galleryImageLauncher.launch("image/*")
-            },
-            onCameraClicked = {
-                if (hasCameraPermission) {
-                    cameraImageLauncher.launch(null)
-                } else {
-                    cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
-                }
-            }
-        )
-    }
+    ArtifactDetectionDialog(
+        isShown = isDetectionDialogShown,
+        isDetectionLoading = uiState.isDetectionLoading,
+        onDismissRequest = { isDetectionDialogShown = false },
+        detectArtifact = viewModel::detectArtifact
+    )
 }
 
 @Composable

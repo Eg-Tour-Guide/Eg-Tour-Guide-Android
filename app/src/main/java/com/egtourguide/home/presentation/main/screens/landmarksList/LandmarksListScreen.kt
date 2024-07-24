@@ -1,12 +1,6 @@
 package com.egtourguide.home.presentation.main.screens.landmarksList
 
-import android.Manifest
-import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.net.Uri
 import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -37,7 +31,6 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -74,39 +67,7 @@ fun LandmarksListScreen(
         viewModel.filterLandmarks(filterState)
     }
 
-    var isArtifactDetectionDialogShown by remember { mutableStateOf(false) }
-
-    var hasCameraPermission by remember {
-        mutableStateOf(
-            ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.CAMERA
-            ) == PackageManager.PERMISSION_GRANTED
-        )
-    }
-
-    val cameraPermissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        hasCameraPermission = isGranted
-    }
-
-    val galleryImageLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        uri?.let {
-            val image = viewModel.getBitmapFromUri(context = context, uri = uri)
-            viewModel.detectArtifact(image = image!!, context = context)
-        }
-    }
-
-    val cameraImageLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.TakePicturePreview()
-    ) { bitmap: Bitmap? ->
-        bitmap?.let {
-            viewModel.detectArtifact(image = bitmap, context = context)
-        }
-    }
+    var isDetectionDialogShown by remember { mutableStateOf(false) }
 
     LandmarksListScreenContent(
         uiState = uiState,
@@ -116,7 +77,7 @@ fun LandmarksListScreen(
         onFilterClicked = onNavigateToFilters,
         onPlaceClicked = onNavigateToSinglePlace,
         onSaveClicked = viewModel::onSaveClicked,
-        onCaptureObjectClicked = { isArtifactDetectionDialogShown = true }
+        onCaptureObjectClicked = { isDetectionDialogShown = true }
     )
 
     DisposableEffect(key1 = lifecycleOwner) {
@@ -150,29 +111,19 @@ fun LandmarksListScreen(
 
     LaunchedEffect(key1 = uiState.detectedArtifact) {
         if (uiState.detectedArtifact != null) {
-            isArtifactDetectionDialogShown = false
+            isDetectionDialogShown = false
             onNavigateToDetectedArtifact(uiState.detectedArtifact!!)
             viewModel.clearDetectionSuccess()
             Toast.makeText(context, uiState.detectedArtifact!!.message, Toast.LENGTH_SHORT).show()
         }
     }
 
-    if (isArtifactDetectionDialogShown) {
-        ArtifactDetectionDialog(
-            isDetectionLoading = uiState.isDetectionLoading,
-            onDismissRequest = { isArtifactDetectionDialogShown = false },
-            onGalleryClicked = {
-                galleryImageLauncher.launch("image/*")
-            },
-            onCameraClicked = {
-                if (hasCameraPermission) {
-                    cameraImageLauncher.launch(null)
-                } else {
-                    cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
-                }
-            }
-        )
-    }
+    ArtifactDetectionDialog(
+        isShown = isDetectionDialogShown,
+        isDetectionLoading = uiState.isDetectionLoading,
+        onDismissRequest = { isDetectionDialogShown = false },
+        detectArtifact = viewModel::detectArtifact
+    )
 }
 
 @Composable
