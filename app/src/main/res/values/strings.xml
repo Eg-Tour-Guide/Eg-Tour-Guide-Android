@@ -29,7 +29,7 @@
     <string name="welcome_Back">Welcome Back!</string>
     <string name="login">Login</string>
     <string name="dont_have_account">Don’t Have An Account?</string>
-    <string name="regster_now">Register Now</string>
+    <string name="register_now">Register Now</string>
     <string name="welcome">Welcome!</string>
     <string name="lets_go">Let’s Go!</string>
     <string name="welcome_description">Explore ancient landmarks, vibrant\nculture, and timeless beauty!</string>
@@ -93,9 +93,9 @@
     <string name="recent_searches">Recent Searches</string>
     <string name="clear">Clear</string>
     <string name="search">Search</string>
-    <string name="catogry">Category</string>
+    <string name="category">Category</string>
     <string name="star">star</string>
-    <string name="sortby">Sort By</string>
+    <string name="sort_by">Sort By</string>
     <string name="tourism_type">Tourism Type</string>
     <string name="material">Material</string>
     <string name="duration">Duration</string>
@@ -128,7 +128,7 @@
     <string name="landmarks">Landmarks</string>
     <string name="artifacts">Artifacts</string>
     <string name="tours">Tours</string>
-    <string name="logged_in_successfully">Logged in successfully</string>
+    <string name="logged_in_successfully">Logged in successfully!</string>
     <string name="remembered_your_password">Remembered Your Password?</string>
     <string name="no_artifacts_found">No Artifacts Found</string>
     <string name="no_landmarks_found">No Landmarks Found</string>
@@ -171,4 +171,8 @@
     <string name="tour_created_successfully">Tour created successfully!</string>
     <string name="min">Min</string>
     <string name="max">Max</string>
+    <string name="network_error_toast">Network error, Try again later.</string>
+    <string name="failed_to_register_please_try_again">Failed to register, Please try again.</string>
+    <string name="a_new_verification_code_has_been_sent_to_your_email">A new verification code has been sent to your email.</string>
+    <string name="failed_to_reset_password_please_try_again">Failed to reset password, Please try again.</string>
 </resources>

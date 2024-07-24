@@ -26,10 +26,16 @@ import com.egtourguide.R
 import com.egtourguide.core.presentation.components.MainButton
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 
+@Preview(showBackground = true)
 @Composable
-fun WelcomeScreen(
-    onNavigateToLogin: () -> Unit
-) {
+private fun MainButtonPreview() {
+    EGTourGuideTheme {
+        WelcomeScreen(onNavigateToLogin = {})
+    }
+}
+
+@Composable
+fun WelcomeScreen(onNavigateToLogin: () -> Unit) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -73,13 +79,5 @@ fun WelcomeScreen(
                     .height(56.dp)
             )
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun MainButtonPreview() {
-    EGTourGuideTheme {
-        WelcomeScreen(onNavigateToLogin = {})
     }
 }

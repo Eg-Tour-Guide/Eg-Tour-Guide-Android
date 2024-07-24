@@ -19,7 +19,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -37,6 +36,14 @@ import com.egtourguide.auth.presentation.components.AuthHeader
 import com.egtourguide.core.presentation.components.MainButton
 import com.egtourguide.core.presentation.components.MainTextField
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
+
+@Preview(showBackground = true)
+@Composable
+private fun LoginScreenPreview() {
+    EGTourGuideTheme {
+        LoginContent()
+    }
+}
 
 @Composable
 fun LoginScreen(
@@ -65,8 +72,19 @@ fun LoginScreen(
                 Toast.LENGTH_SHORT
             ).show()
 
-            viewModel.clearSuccess()
             onNavigateToHome()
+        }
+    }
+
+    LaunchedEffect(key1 = uiState.isNetworkError) {
+        if (uiState.isNetworkError) {
+            Toast.makeText(
+                context,
+                context.getString(R.string.network_error_toast),
+                Toast.LENGTH_SHORT
+            ).show()
+
+            viewModel.clearNetworkError()
         }
     }
 
@@ -79,13 +97,13 @@ fun LoginScreen(
 }
 
 @Composable
-fun LoginContent(
-    uiState: LoginState,
-    onEmailChange: (String) -> Unit,
-    onPasswordChange: (String) -> Unit,
-    onLoginClicked: () -> Unit,
-    onNavigateToSignUp: () -> Unit,
-    onNavigateToForgetPassword: () -> Unit,
+private fun LoginContent(
+    uiState: LoginState = LoginState(),
+    onEmailChange: (String) -> Unit = {},
+    onPasswordChange: (String) -> Unit = {},
+    onLoginClicked: () -> Unit = {},
+    onNavigateToSignUp: () -> Unit = {},
+    onNavigateToForgetPassword: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
     val focusManager = LocalFocusManager.current
@@ -103,145 +121,95 @@ fun LoginContent(
             title = stringResource(id = R.string.welcome_Back)
         )
 
-        LoginDataSection(
-            focusManager = focusManager,
-            email = uiState.email,
-            password = uiState.password,
-            isLoading = uiState.isLoading,
-            emailError = uiState.emailError,
-            passwordError = uiState.passwordError,
-            onEmailChange = onEmailChange,
-            onPasswordChange = onPasswordChange,
-            onLoginClicked = onLoginClicked,
-            onNavigateToForgetPassword = onNavigateToForgetPassword
+        MainTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = uiState.email,
+            onValueChanged = onEmailChange,
+            isEnabled = !uiState.isLoading,
+            labelText = stringResource(id = R.string.email),
+            errorText = when (uiState.emailError) {
+                ValidationCases.EMPTY -> stringResource(id = R.string.email_empty_error)
+                ValidationCases.ERROR -> stringResource(id = R.string.email_form_error)
+                else -> null
+            },
+            placeholderText = stringResource(id = R.string.enter_your_email),
+            keyboardType = KeyboardType.Email
         )
 
-        LoginFooter(onNavigateToSignUp)
-    }
-}
+        MainTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = uiState.password,
+            onValueChanged = onPasswordChange,
+            isEnabled = !uiState.isLoading,
+            labelText = stringResource(id = R.string.password),
+            placeholderText = stringResource(id = R.string.enter_your_password),
+            keyboardType = KeyboardType.Password,
+            errorText = when (uiState.passwordError) {
+                ValidationCases.EMPTY -> stringResource(id = R.string.password_empty_error)
+                ValidationCases.ERROR -> stringResource(id = R.string.password_form_error)
+                else -> null
+            },
+            isPassword = true,
+            imeAction = ImeAction.Done,
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()
+                }
+            )
+        )
 
-@Composable
-private fun LoginDataSection(
-    focusManager: FocusManager,
-    email: String,
-    password: String,
-    emailError: ValidationCases,
-    passwordError: ValidationCases,
-    isLoading: Boolean,
-    onEmailChange: (String) -> Unit,
-    onPasswordChange: (String) -> Unit,
-    onLoginClicked: () -> Unit,
-    onNavigateToForgetPassword: () -> Unit
-) {
-    MainTextField(
-        modifier = Modifier.fillMaxWidth(),
-        value = email,
-        onValueChanged = onEmailChange,
-        labelText = stringResource(id = R.string.email),
-        errorText = when (emailError) {
-            ValidationCases.EMPTY -> stringResource(id = R.string.email_empty_error)
-            ValidationCases.ERROR -> stringResource(id = R.string.email_form_error)
-            else -> null
-        },
-        placeholderText = stringResource(id = R.string.enter_your_email),
-        keyboardType = KeyboardType.Email
-    )
+        ClickableText(
+            text = buildAnnotatedString {
+                append(stringResource(id = R.string.forgot_password))
+            },
+            onClick = { onNavigateToForgetPassword() },
+            style = MaterialTheme.typography.titleMedium.copy(
+                color = MaterialTheme.colorScheme.onBackground
+            )
+        )
 
-    MainTextField(
-        modifier = Modifier.fillMaxWidth(),
-        value = password,
-        onValueChanged = onPasswordChange,
-        labelText = stringResource(id = R.string.password),
-        placeholderText = stringResource(id = R.string.enter_your_password),
-        keyboardType = KeyboardType.Password,
-        errorText = when (passwordError) {
-            ValidationCases.EMPTY -> stringResource(id = R.string.password_empty_error)
-            ValidationCases.ERROR -> stringResource(id = R.string.password_form_error)
-            else -> null
-        },
-        isPassword = true,
-        imeAction = ImeAction.Done,
-        keyboardActions = KeyboardActions(
-            onDone = {
+        MainButton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+            text = stringResource(id = R.string.login),
+            onClick = {
                 focusManager.clearFocus()
+                onLoginClicked()
+            },
+            isLoading = uiState.isLoading,
+            isEnabled = !uiState.isLoading
+        )
+
+        val annotatedString = buildAnnotatedString {
+            withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onBackground)) {
+                append(stringResource(id = R.string.dont_have_account))
             }
-        )
-    )
 
-    ClickableText(
-        text = buildAnnotatedString {
-            append(stringResource(id = R.string.forgot_password))
-        },
-        onClick = { onNavigateToForgetPassword() },
-        style = MaterialTheme.typography.titleMedium.copy(
-            color = MaterialTheme.colorScheme.onBackground
-        )
-    )
+            append(" ")
 
-    MainButton(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(56.dp),
-        text = stringResource(id = R.string.login),
-        onClick = {
-            focusManager.clearFocus()
-            onLoginClicked()
-        },
-        isLoading = isLoading,
-        isEnabled = !isLoading
-    )
+            pushStringAnnotation(tag = "register", annotation = "register")
 
-}
+            withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.outlineVariant)) {
+                append(stringResource(id = R.string.register_now))
+            }
 
-@Composable
-private fun LoginFooter(onNavigateToSignUp: () -> Unit) {
-    val annotatedString = buildAnnotatedString {
-        withStyle(
-            style = SpanStyle(color = MaterialTheme.colorScheme.onBackground)
-        ) {
-            append(stringResource(id = R.string.dont_have_account))
+            pop()
         }
 
-        append(" ")
-
-        pushStringAnnotation(tag = "register", annotation = "register")
-
-        withStyle(
-            style = SpanStyle(color = MaterialTheme.colorScheme.outlineVariant)
-        ) {
-            append(stringResource(id = R.string.regster_now))
-        }
-
-        pop()
-    }
-
-    ClickableText(
-        text = annotatedString,
-        onClick = { offset ->
-            annotatedString.getStringAnnotations(
-                tag = "register",
-                start = offset,
-                end = offset
-            ).firstOrNull()?.let {
-                onNavigateToSignUp()
-            }
-        },
-        style = MaterialTheme.typography.titleMedium,
-        modifier = Modifier.padding(bottom = 16.dp)
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun LoginScreenPreview() {
-    EGTourGuideTheme {
-        LoginContent(
-            uiState = LoginState(),
-            onEmailChange = {},
-            onPasswordChange = {},
-            onLoginClicked = {},
-            onNavigateToSignUp = {},
-            onNavigateToForgetPassword = {}
+        ClickableText(
+            text = annotatedString,
+            onClick = { offset ->
+                annotatedString.getStringAnnotations(
+                    tag = "register",
+                    start = offset,
+                    end = offset
+                ).firstOrNull()?.let {
+                    onNavigateToSignUp()
+                }
+            },
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(bottom = 16.dp)
         )
     }
 }

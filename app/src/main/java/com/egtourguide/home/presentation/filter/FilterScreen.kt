@@ -96,7 +96,7 @@ private fun ScreenContent(
         if (filterType == FilterType.SEARCH) {
             item {
                 FlowFilterSection(
-                    title = stringResource(id = R.string.catogry),
+                    title = stringResource(id = R.string.category),
                     chipsTitles = categories,
                     selectedChips = listOf(uiState.selectedCategory),
                     onChipClicked = onCategoryChipClicked
@@ -189,7 +189,7 @@ private fun ScreenContent(
 
         item {
             FlowFilterSection(
-                title = stringResource(id = R.string.sortby),
+                title = stringResource(id = R.string.sort_by),
                 chipsTitles = sortWays,
                 selectedChips = listOf(uiState.selectedSortBy),
                 onChipClicked = onSortByChipClicked

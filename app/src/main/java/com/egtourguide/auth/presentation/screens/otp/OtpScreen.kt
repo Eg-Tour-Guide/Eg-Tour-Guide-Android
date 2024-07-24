@@ -72,7 +72,14 @@ fun OtpScreen(
         uiState = uiState,
         onCodeChanged = viewModel::changeCode,
         onVerifyClicked = viewModel::onVerifyClicked,
-        onResendClicked = { viewModel.resendCode(fromSignup = fromSignup) }
+        onResendClicked = {
+            viewModel.resendCode(fromSignup = fromSignup)
+            Toast.makeText(
+                context,
+                context.getString(R.string.a_new_verification_code_has_been_sent_to_your_email),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     )
 
     DisposableEffect(key1 = lifecycleOwner) {
@@ -108,7 +115,6 @@ fun OtpScreen(
 
     LaunchedEffect(key1 = uiState.isSignedSuccessfully) {
         if (uiState.isSignedSuccessfully) {
-            viewModel.clearSignSuccess()
             onNavigateToHome()
         }
     }
@@ -116,6 +122,18 @@ fun OtpScreen(
     LaunchedEffect(key1 = uiState.errorMessage) {
         uiState.errorMessage?.let {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    LaunchedEffect(key1 = uiState.isNetworkError) {
+        if (uiState.isNetworkError) {
+            Toast.makeText(
+                context,
+                context.getString(R.string.network_error_toast),
+                Toast.LENGTH_SHORT
+            ).show()
+
+            viewModel.clearNetworkError()
         }
     }
 }
@@ -127,13 +145,13 @@ private fun OtpContent(
     onVerifyClicked: () -> Unit = {},
     onResendClicked: () -> Unit = {}
 ) {
-    val scrollState = rememberScrollState()
+    val focusManager = LocalFocusManager.current
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .verticalScroll(scrollState)
+            .verticalScroll(rememberScrollState())
             .padding(horizontal = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -142,112 +160,75 @@ private fun OtpContent(
             title = stringResource(id = R.string.verification)
         )
 
-        OtpDataSection(
-            code = uiState.code,
-            onCodeChanged = onCodeChanged,
-            codeError = uiState.codeError,
-            isLoading = uiState.isLoading
+        Text(
+            text = stringResource(id = R.string.enter_verification_code_we_sent),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.onBackground
         )
 
-        OtpFooter(
-            onVerifyClicked = onVerifyClicked,
-            onResendClicked = onResendClicked,
-            isLoading = uiState.isLoading
+        MainTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = uiState.code,
+            isEnabled = !uiState.isLoading,
+            onValueChanged = onCodeChanged,
+            labelText = stringResource(id = R.string.verification_code),
+            placeholderText = stringResource(id = R.string.enter_verification_code),
+            imeAction = ImeAction.Done,
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()
+                }
+            ),
+            errorText = when (uiState.codeError) {
+                ValidationCases.EMPTY -> stringResource(id = R.string.code_empty_error)
+                ValidationCases.NOT_MATCHED -> stringResource(id = R.string.code_not_matched_error)
+                else -> null
+            }
         )
-    }
-}
 
-@Composable
-private fun OtpDataSection(
-    code: String,
-    onCodeChanged: (String) -> Unit,
-    codeError: ValidationCases,
-    isLoading: Boolean
-) {
-    val focusManager = LocalFocusManager.current
+        val annotatedString = buildAnnotatedString {
+            withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onBackground)) {
+                append(stringResource(id = R.string.didn_t_receive_code))
+            }
 
-    Text(
-        text = stringResource(id = R.string.enter_verification_code_we_sent),
-        textAlign = TextAlign.Center,
-        style = MaterialTheme.typography.titleSmall,
-        color = MaterialTheme.colorScheme.onBackground
-    )
+            append(" ")
 
-    MainTextField(
-        modifier = Modifier.fillMaxWidth(),
-        value = code,
-        isEnabled = !isLoading,
-        onValueChanged = onCodeChanged,
-        labelText = stringResource(id = R.string.verification_code),
-        placeholderText = stringResource(id = R.string.enter_verification_code),
-        imeAction = ImeAction.Done,
-        keyboardActions = KeyboardActions(
-            onDone = {
+            pushStringAnnotation(tag = "resend", annotation = "resend")
+
+            withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.outlineVariant)) {
+                append(stringResource(id = R.string.resend_code))
+            }
+
+            pop()
+        }
+
+        ClickableText(
+            text = annotatedString,
+            onClick = { offset ->
+                annotatedString.getStringAnnotations(
+                    tag = "resend",
+                    start = offset,
+                    end = offset
+                ).firstOrNull()?.let {
+                    onResendClicked()
+                }
+            },
+            style = MaterialTheme.typography.titleMedium
+        )
+
+        MainButton(
+            modifier = Modifier
+                .padding(bottom = 16.dp)
+                .fillMaxWidth()
+                .height(56.dp),
+            text = stringResource(id = R.string.verify),
+            onClick = {
                 focusManager.clearFocus()
-            }
-        ),
-        errorText = when (codeError) {
-            ValidationCases.EMPTY -> stringResource(id = R.string.code_empty_error)
-            ValidationCases.NOT_MATCHED -> stringResource(id = R.string.code_not_matched_error)
-            else -> null
-        }
-    )
-}
-
-@Composable
-private fun OtpFooter(
-    onVerifyClicked: () -> Unit,
-    onResendClicked: () -> Unit,
-    isLoading: Boolean
-) {
-    val focusManager = LocalFocusManager.current
-
-    val annotatedString = buildAnnotatedString {
-        withStyle(
-            style = SpanStyle(color = MaterialTheme.colorScheme.onBackground)
-        ) {
-            append(stringResource(id = R.string.didn_t_receive_code))
-        }
-
-        append(" ")
-
-        pushStringAnnotation(tag = "resend", annotation = "resend")
-
-        withStyle(
-            style = SpanStyle(color = MaterialTheme.colorScheme.outlineVariant)
-        ) {
-            append(stringResource(id = R.string.resend_code))
-        }
-
-        pop()
+                onVerifyClicked()
+            },
+            isLoading = uiState.isLoading,
+            isEnabled = !uiState.isLoading
+        )
     }
-
-    ClickableText(
-        text = annotatedString,
-        onClick = { offset ->
-            annotatedString.getStringAnnotations(
-                tag = "resend",
-                start = offset,
-                end = offset
-            ).firstOrNull()?.let {
-                // TODO: Check about this with others!!
-                onResendClicked()
-            }
-        },
-        style = MaterialTheme.typography.titleMedium
-    )
-
-    MainButton(
-        modifier = Modifier
-            .padding(bottom = 16.dp)
-            .fillMaxWidth()
-            .height(56.dp),
-        text = stringResource(id = R.string.verify),
-        onClick = {
-            focusManager.clearFocus()
-            onVerifyClicked()
-        },
-        isLoading = isLoading,
-        isEnabled = !isLoading
-    )
 }

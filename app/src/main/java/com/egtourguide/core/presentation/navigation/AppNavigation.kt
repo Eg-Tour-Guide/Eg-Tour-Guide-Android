@@ -209,17 +209,16 @@ fun NavGraphBuilder.authGraph(navController: NavHostController) {
         }
 
         composable(route = AppScreen.ResetPassword.route) { backStackEntry ->
-            val code = backStackEntry.arguments?.getString("code")
-            code?.let {
-                ResetPasswordScreen(
-                    code = it,
-                    onNavigateToLogin = {
-                        navController.navigate(route = AppScreen.Login.route) {
-                            popUpTo(route = AppScreen.Login.route)
-                        }
+            val code = backStackEntry.arguments?.getString("code") ?: ""
+
+            ResetPasswordScreen(
+                code = code,
+                onNavigateToLogin = {
+                    navController.navigate(route = AppScreen.Login.route) {
+                        popUpTo(route = AppScreen.Login.route)
                     }
-                )
-            }
+                }
+            )
         }
     }
 }

@@ -12,6 +12,7 @@ data class OtpUIState(
     val isLoading: Boolean = false,
     val isVerifiedSuccessfully: Boolean = false,
     val isSignedSuccessfully: Boolean = false,
+    val isNetworkError: Boolean = false,
     val errorMessage: String? = null,
     val codeError: ValidationCases = ValidationCases.CORRECT
 )

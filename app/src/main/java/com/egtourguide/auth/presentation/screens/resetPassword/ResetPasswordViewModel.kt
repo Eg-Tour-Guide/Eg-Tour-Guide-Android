@@ -2,7 +2,6 @@ package com.egtourguide.auth.presentation.screens.resetPassword
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.egtourguide.auth.data.dto.body.ResetPasswordRequestBody
 import com.egtourguide.auth.domain.usecases.ResetPasswordUseCase
 import com.egtourguide.core.domain.validation.Validation
 import com.egtourguide.core.domain.validation.ValidationCases
@@ -29,30 +28,6 @@ class ResetPasswordViewModel @Inject constructor(
 
     fun onConfirmPasswordChanged(confirmPassword: String) {
         _uiState.update { it.copy(confirmPassword = confirmPassword) }
-    }
-
-    fun resetPassword(code: String) {
-        val requestBody = ResetPasswordRequestBody(password = uiState.value.password)
-
-        viewModelScope.launch(Dispatchers.IO) {
-            resetPasswordUseCase(code = code, requestBody = requestBody).onResponse(
-                onLoading = {
-                    _uiState.update {
-                        it.copy(isLoading = true)
-                    }
-                },
-                onFailure = { msg ->
-                    _uiState.update {
-                        it.copy(isLoading = false, error = msg)
-                    }
-                },
-                onSuccess = {
-                    _uiState.update {
-                        it.copy(isPasswordResetSuccess = true)
-                    }
-                }
-            )
-        }
     }
 
     fun onResetClicked(code: String) {
@@ -85,11 +60,30 @@ class ResetPasswordViewModel @Inject constructor(
         return passwordErrorState == ValidationCases.CORRECT && confirmPasswordErrorState == ValidationCases.CORRECT
     }
 
-    fun clearSuccess() {
-        _uiState.update { it.copy(isPasswordResetSuccess = false) }
+    fun resetPassword(code: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            resetPasswordUseCase(code = code, password = _uiState.value.password).onResponse(
+                onLoading = {
+                    _uiState.update { it.copy(isLoading = true, isError = false) }
+                },
+                onSuccess = {
+                    _uiState.update { it.copy(isPasswordResetSuccess = true) }
+                },
+                onFailure = {
+                    _uiState.update { it.copy(isLoading = false, isError = true) }
+                },
+                onNetworkError = {
+                    _uiState.update { it.copy(isLoading = false, isNetworkError = true) }
+                }
+            )
+        }
     }
 
     fun clearError() {
-        _uiState.update { it.copy(error = null) }
+        _uiState.update { it.copy(isError = false) }
+    }
+
+    fun clearNetworkError() {
+        _uiState.update { it.copy(isNetworkError = false) }
     }
 }

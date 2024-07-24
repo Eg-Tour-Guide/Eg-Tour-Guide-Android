@@ -7,7 +7,7 @@ data class ForgotPasswordUIState(
     val emailError: ValidationCases = ValidationCases.CORRECT,
     val isLoading: Boolean = false,
     val error: String? = null,
-    val isCodeSentSuccessfully: Boolean = false,
     val successMessage: String? = null,
+    val isNetworkError: Boolean = false,
     val code: String = ""
 )

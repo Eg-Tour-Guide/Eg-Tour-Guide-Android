@@ -19,7 +19,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -38,11 +37,19 @@ import com.egtourguide.core.presentation.components.MainButton
 import com.egtourguide.core.presentation.components.MainTextField
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 
+@Preview
+@Composable
+private fun ForgotPasswordScreenPreview() {
+    EGTourGuideTheme {
+        ForgotPasswordScreenContent()
+    }
+}
+
 @Composable
 fun ForgotPasswordScreen(
     viewModel: ForgotPasswordViewModel = hiltViewModel(),
-    onNavigateUp: () -> Unit = {},
-    onNavigateToOTP: (String, String) -> Unit = { _, _ -> }
+    onNavigateUp: () -> Unit,
+    onNavigateToOTP: (String, String) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -61,20 +68,29 @@ fun ForgotPasswordScreen(
         }
     }
 
-    LaunchedEffect(key1 = uiState.isCodeSentSuccessfully) {
-        if (uiState.isCodeSentSuccessfully) {
-            uiState.successMessage?.let {
-                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-            }
+    LaunchedEffect(key1 = uiState.successMessage) {
+        uiState.successMessage?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
             onNavigateToOTP(uiState.code, uiState.email)
-            viewModel.clearSuccess()
+        }
+    }
+
+    LaunchedEffect(key1 = uiState.isNetworkError) {
+        if (uiState.isNetworkError) {
+            Toast.makeText(
+                context,
+                context.getString(R.string.network_error_toast),
+                Toast.LENGTH_SHORT
+            ).show()
+
+            viewModel.clearNetworkError()
         }
     }
 }
 
 @Composable
 private fun ForgotPasswordScreenContent(
-    uiState: ForgotPasswordUIState,
+    uiState: ForgotPasswordUIState = ForgotPasswordUIState(),
     onEmailChanged: (String) -> Unit = {},
     onBackToLoginClicked: () -> Unit = {},
     onNextClicked: () -> Unit = {}
@@ -95,117 +111,74 @@ private fun ForgotPasswordScreenContent(
             title = stringResource(R.string.forgot_password)
         )
 
-        ForgotPasswordDataSection(
-            email = uiState.email,
-            emailError = uiState.emailError,
-            onEmailChanged = onEmailChanged,
-            focusManager = focusManager
+        Text(
+            text = stringResource(R.string.enter_the_email_address_associated),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.onBackground
         )
 
-        ForgotPasswordFooter(
-            focusManager = focusManager,
-            onBackToLoginClicked = onBackToLoginClicked,
-            onNextClicked = onNextClicked,
-            isLoading = uiState.isLoading
+        MainTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = uiState.email,
+            onValueChanged = onEmailChanged,
+            isEnabled = !uiState.isLoading,
+            labelText = stringResource(id = R.string.email),
+            placeholderText = stringResource(id = R.string.email),
+            imeAction = ImeAction.Done,
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()
+                }
+            ),
+            errorText = when (uiState.emailError) {
+                ValidationCases.EMPTY -> stringResource(id = R.string.email_empty_error)
+                ValidationCases.ERROR -> stringResource(id = R.string.email_form_error)
+                else -> null
+            }
         )
-    }
-}
 
-@Composable
-private fun ForgotPasswordDataSection(
-    email: String,
-    emailError: ValidationCases,
-    onEmailChanged: (String) -> Unit,
-    focusManager: FocusManager
-) {
-    Text(
-        text = stringResource(R.string.enter_the_email_address_associated),
-        textAlign = TextAlign.Center,
-        style = MaterialTheme.typography.titleSmall,
-        color = MaterialTheme.colorScheme.onBackground
-    )
+        val annotatedString = buildAnnotatedString {
+            withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onBackground)) {
+                append(stringResource(id = R.string.remembered_your_password))
+            }
 
-    MainTextField(
-        modifier = Modifier.fillMaxWidth(),
-        value = email,
-        onValueChanged = onEmailChanged,
-        labelText = stringResource(id = R.string.email),
-        placeholderText = stringResource(id = R.string.email),
-        imeAction = ImeAction.Done,
-        keyboardActions = KeyboardActions(
-            onDone = {
+            append(" ")
+
+            pushStringAnnotation(tag = "login", annotation = "login")
+
+            withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.outlineVariant)) {
+                append(stringResource(id = R.string.login_now))
+            }
+
+            pop()
+        }
+
+        ClickableText(
+            text = annotatedString,
+            onClick = { offset ->
+                annotatedString.getStringAnnotations(
+                    tag = "login",
+                    start = offset,
+                    end = offset
+                ).firstOrNull()?.let {
+                    onBackToLoginClicked()
+                }
+            },
+            style = MaterialTheme.typography.titleMedium
+        )
+
+        MainButton(
+            modifier = Modifier
+                .padding(bottom = 16.dp)
+                .fillMaxWidth(),
+            text = stringResource(R.string.next),
+            onClick = {
                 focusManager.clearFocus()
-            }
-        ),
-        errorText = when (emailError) {
-            ValidationCases.EMPTY -> stringResource(id = R.string.email_empty_error)
-            ValidationCases.ERROR -> stringResource(id = R.string.email_form_error)
-            else -> null
-        }
-    )
-}
-
-@Composable
-private fun ForgotPasswordFooter(
-    focusManager: FocusManager,
-    onBackToLoginClicked: () -> Unit,
-    onNextClicked: () -> Unit,
-    isLoading: Boolean
-) {
-    val annotatedString = buildAnnotatedString {
-        withStyle(
-            style = SpanStyle(color = MaterialTheme.colorScheme.onBackground)
-        ) {
-            append(stringResource(id = R.string.remembered_your_password))
-        }
-
-        append(" ")
-
-        pushStringAnnotation(tag = "login", annotation = "login")
-
-        withStyle(
-            style = SpanStyle(color = MaterialTheme.colorScheme.outlineVariant)
-        ) {
-            append(stringResource(id = R.string.login_now))
-        }
-
-        pop()
-    }
-
-    ClickableText(
-        text = annotatedString,
-        onClick = { offset ->
-            annotatedString.getStringAnnotations(
-                tag = "login",
-                start = offset,
-                end = offset
-            ).firstOrNull()?.let {
-                onBackToLoginClicked()
-            }
-        },
-        style = MaterialTheme.typography.titleMedium
-    )
-
-    MainButton(
-        modifier = Modifier
-            .padding(bottom = 16.dp)
-            .fillMaxWidth(),
-        text = stringResource(R.string.next),
-        onClick = {
-            focusManager.clearFocus()
-            onNextClicked()
-        },
-        isLoading = isLoading,
-        isEnabled = !isLoading
-    )
-}
-
-@Preview
-@Composable
-private fun ForgotPasswordScreenPreview() {
-    EGTourGuideTheme {
-        ForgotPasswordScreenContent(
-            uiState = ForgotPasswordUIState()
+                onNextClicked()
+            },
+            isLoading = uiState.isLoading,
+            isEnabled = !uiState.isLoading
         )
     }
 }

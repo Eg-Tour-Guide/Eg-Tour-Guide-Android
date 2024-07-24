@@ -47,7 +47,11 @@ class SignUpViewModel @Inject constructor(
     }
 
     fun clearError() {
-        _uiState.update { it.copy(errorMessage = null) }
+        _uiState.update { it.copy(isError = false) }
+    }
+
+    fun clearNetworkError() {
+        _uiState.update { it.copy(isNetworkError = false) }
     }
 
     fun onRegisterClicked() {
@@ -97,13 +101,22 @@ class SignUpViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             sendCodeUseCase(email = _uiState.value.email).onResponse(
                 onLoading = {
-                    _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+                    _uiState.update { it.copy(isLoading = true, isError = false) }
                 },
                 onSuccess = { response ->
-                    _uiState.update { it.copy(isSuccess = true, code = response.code) }
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            isSuccess = true,
+                            code = response.code
+                        )
+                    }
                 },
-                onFailure = { msg ->
-                    _uiState.update { it.copy(isLoading = false, errorMessage = msg) }
+                onFailure = {
+                    _uiState.update { it.copy(isLoading = false, isError = true) }
+                },
+                onNetworkError = {
+                    _uiState.update { it.copy(isLoading = false, isNetworkError = true) }
                 }
             )
         }

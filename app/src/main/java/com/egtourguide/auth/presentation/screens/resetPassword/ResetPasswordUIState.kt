@@ -8,6 +8,7 @@ data class ResetPasswordUIState(
     val isLoading: Boolean = false,
     val passwordError: ValidationCases = ValidationCases.CORRECT,
     val confirmPasswordError: ValidationCases = ValidationCases.CORRECT,
-    val error: String? = null,
-    val isPasswordResetSuccess: Boolean = false
+    val isError: Boolean = false,
+    val isPasswordResetSuccess: Boolean = false,
+    val isNetworkError: Boolean = false
 )

@@ -17,7 +17,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -32,6 +31,14 @@ import com.egtourguide.core.presentation.components.MainButton
 import com.egtourguide.core.presentation.components.MainTextField
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 
+@Preview
+@Composable
+private fun ResetPasswordScreenPreview() {
+    EGTourGuideTheme {
+        ResetPasswordScreenContent()
+    }
+}
+
 @Composable
 fun ResetPasswordScreen(
     code: String = "",
@@ -40,6 +47,7 @@ fun ResetPasswordScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+
     ResetPasswordScreenContent(
         uiState = uiState,
         onPasswordChanged = viewModel::onPasswordChanged,
@@ -50,21 +58,37 @@ fun ResetPasswordScreen(
     LaunchedEffect(key1 = uiState.isPasswordResetSuccess) {
         if (uiState.isPasswordResetSuccess) {
             onNavigateToLogin()
-            viewModel.clearSuccess()
         }
     }
 
-    LaunchedEffect(key1 = uiState.error) {
-        uiState.error?.let {
-            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+    LaunchedEffect(key1 = uiState.isError) {
+        if (uiState.isError) {
+            Toast.makeText(
+                context,
+                context.getString(R.string.failed_to_reset_password_please_try_again),
+                Toast.LENGTH_SHORT
+            ).show()
+
             viewModel.clearError()
+        }
+    }
+
+    LaunchedEffect(key1 = uiState.isNetworkError) {
+        if (uiState.isNetworkError) {
+            Toast.makeText(
+                context,
+                context.getString(R.string.network_error_toast),
+                Toast.LENGTH_SHORT
+            ).show()
+
+            viewModel.clearNetworkError()
         }
     }
 }
 
 @Composable
 private fun ResetPasswordScreenContent(
-    uiState: ResetPasswordUIState,
+    uiState: ResetPasswordUIState = ResetPasswordUIState(),
     onPasswordChanged: (String) -> Unit = {},
     onConfirmPasswordChanged: (String) -> Unit = {},
     onResetPasswordClicked: () -> Unit = {}
@@ -85,102 +109,57 @@ private fun ResetPasswordScreenContent(
             title = stringResource(R.string.reset_password)
         )
 
-        ResetPasswordDataSection(
-            password = uiState.password,
-            passwordError = uiState.passwordError,
-            confirmPassword = uiState.confirmPassword,
-            confirmPasswordError = uiState.confirmPasswordError,
-            onPasswordChanged = onPasswordChanged,
-            onConfirmPasswordChanged = onConfirmPasswordChanged,
-            focusManager = focusManager
+        MainTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = uiState.password,
+            onValueChanged = onPasswordChanged,
+            labelText = stringResource(id = R.string.password),
+            placeholderText = stringResource(id = R.string.password),
+            imeAction = ImeAction.Next,
+            isPassword = true,
+            errorText = when (uiState.passwordError) {
+                ValidationCases.EMPTY -> stringResource(id = R.string.password_empty_error)
+                ValidationCases.ERROR -> stringResource(id = R.string.password_form_error)
+                else -> null
+            },
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()
+                }
+            )
         )
 
-        ResetPasswordFooter(
-            focusManager = focusManager,
-            onResetPasswordClicked = onResetPasswordClicked,
-            isLoading = uiState.isLoading
+        MainTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = uiState.confirmPassword,
+            onValueChanged = onConfirmPasswordChanged,
+            labelText = stringResource(id = R.string.confirm_password),
+            placeholderText = stringResource(id = R.string.confirm_password),
+            imeAction = ImeAction.Done,
+            isPassword = true,
+            errorText = when (uiState.confirmPasswordError) {
+                ValidationCases.EMPTY -> stringResource(id = R.string.confirm_password_empty_error)
+                ValidationCases.NOT_MATCHED -> stringResource(id = R.string.confirm_password_not_matched_error)
+                else -> null
+            },
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()
+                }
+            )
+        )
+
+        MainButton(
+            modifier = Modifier
+                .padding(bottom = 16.dp)
+                .fillMaxWidth(),
+            text = stringResource(id = R.string.reset_password),
+            onClick = {
+                focusManager.clearFocus()
+                onResetPasswordClicked()
+            },
+            isLoading = uiState.isLoading,
+            isEnabled = !uiState.isLoading
         )
     }
 }
-
-@Composable
-private fun ResetPasswordDataSection(
-    password: String,
-    passwordError: ValidationCases,
-    confirmPassword: String,
-    confirmPasswordError: ValidationCases,
-    onPasswordChanged: (String) -> Unit,
-    onConfirmPasswordChanged: (String) -> Unit,
-    focusManager: FocusManager
-) {
-    MainTextField(
-        modifier = Modifier.fillMaxWidth(),
-        value = password,
-        onValueChanged = onPasswordChanged,
-        labelText = stringResource(id = R.string.password),
-        placeholderText = stringResource(id = R.string.password),
-        imeAction = ImeAction.Next,
-        isPassword = true,
-        errorText = when (passwordError) {
-            ValidationCases.EMPTY -> stringResource(id = R.string.password_empty_error)
-            ValidationCases.ERROR -> stringResource(id = R.string.password_form_error)
-            else -> null
-        },
-        keyboardActions = KeyboardActions(
-            onDone = {
-                focusManager.clearFocus()
-            }
-        )
-    )
-
-    MainTextField(
-        modifier = Modifier.fillMaxWidth(),
-        value = confirmPassword,
-        onValueChanged = onConfirmPasswordChanged,
-        labelText = stringResource(id = R.string.confirm_password),
-        placeholderText = stringResource(id = R.string.confirm_password),
-        imeAction = ImeAction.Done,
-        isPassword = true,
-        errorText = when (confirmPasswordError) {
-            ValidationCases.EMPTY -> stringResource(id = R.string.confirm_password_empty_error)
-            ValidationCases.NOT_MATCHED -> stringResource(id = R.string.confirm_password_not_matched_error)
-            else -> null
-        },
-        keyboardActions = KeyboardActions(
-            onDone = {
-                focusManager.clearFocus()
-            }
-        )
-    )
-}
-
-@Composable
-private fun ResetPasswordFooter(
-    focusManager: FocusManager,
-    onResetPasswordClicked: () -> Unit,
-    isLoading: Boolean
-) {
-    MainButton(
-        modifier = Modifier
-            .padding(bottom = 16.dp)
-            .fillMaxWidth(),
-        text = stringResource(id = R.string.reset_password),
-        onClick = {
-            focusManager.clearFocus()
-            onResetPasswordClicked()
-        },
-        isLoading = isLoading,
-        isEnabled = !isLoading
-    )
-}
-
-@Preview
-@Composable
-private fun ResetPasswordScreenPreview() {
-    EGTourGuideTheme {
-        ResetPasswordScreenContent(
-            uiState = ResetPasswordUIState()
-        )
-    }
-}
-

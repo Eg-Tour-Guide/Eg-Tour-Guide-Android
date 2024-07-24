@@ -2,7 +2,6 @@ package com.egtourguide.auth.presentation.screens.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.egtourguide.auth.data.dto.body.LoginRequestBody
 import com.egtourguide.auth.domain.usecases.LoginUseCase
 import com.egtourguide.core.domain.validation.Validation
 import com.egtourguide.core.domain.validation.ValidationCases
@@ -35,49 +34,12 @@ class LoginViewModel @Inject constructor(
         _uiState.update { it.copy(password = password) }
     }
 
-    fun clearSuccess() {
-        _uiState.update { it.copy(isSuccess = false) }
-    }
-
     fun clearError() {
         _uiState.update { it.copy(error = null) }
     }
 
-    fun login() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val requestBody = LoginRequestBody(
-                email = _uiState.value.email,
-                password = _uiState.value.password
-            )
-
-            loginUseCase(
-                requestBody = requestBody
-            ).onResponse(
-                onLoading = {
-                    _uiState.update {
-                        it.copy(isLoading = true, error = null)
-                    }
-                },
-                onFailure = { msg ->
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            error = msg
-                        )
-                    }
-                },
-                onSuccess = { response ->
-                    saveData(response.token)
-
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            isSuccess = true
-                        )
-                    }
-                }
-            )
-        }
+    fun clearNetworkError() {
+        _uiState.update { it.copy(isNetworkError = false) }
     }
 
     fun onLoginClicked() {
@@ -107,6 +69,29 @@ class LoginViewModel @Inject constructor(
 
         return emailErrorState == ValidationCases.CORRECT &&
                 passwordErrorState == ValidationCases.CORRECT
+    }
+
+    fun login() {
+        viewModelScope.launch(Dispatchers.IO) {
+            loginUseCase(
+                email = _uiState.value.email,
+                password = _uiState.value.password
+            ).onResponse(
+                onLoading = {
+                    _uiState.update { it.copy(isLoading = true, error = null) }
+                },
+                onSuccess = { response ->
+                    saveData(response.token)
+                    _uiState.update { it.copy(isLoading = false, isSuccess = true) }
+                },
+                onFailure = { msg ->
+                    _uiState.update { it.copy(isLoading = false, error = msg) }
+                },
+                onNetworkError = {
+                    _uiState.update { it.copy(isLoading = false, isNetworkError = true) }
+                }
+            )
+        }
     }
 
     private fun saveData(token: String) {

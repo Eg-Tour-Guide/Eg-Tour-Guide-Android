@@ -2,7 +2,6 @@ package com.egtourguide.auth.presentation.screens.otp
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.egtourguide.auth.data.dto.body.ForgotPasswordRequestBody
 import com.egtourguide.auth.domain.usecases.GetForgotPasswordCodeUseCase
 import com.egtourguide.auth.domain.usecases.SendCodeUseCase
 import com.egtourguide.auth.domain.usecases.SignupUseCase
@@ -38,10 +37,6 @@ class OtpViewModel @Inject constructor(
         _uiState.update { it.copy(isVerifiedSuccessfully = false) }
     }
 
-    fun clearSignSuccess() {
-        _uiState.update { it.copy(isSignedSuccessfully = false) }
-    }
-
     fun resendCode(fromSignup: Boolean) {
         if (fromSignup) resendSignupCode()
         else resendForgotPasswordCode()
@@ -49,11 +44,7 @@ class OtpViewModel @Inject constructor(
 
     private fun resendForgotPasswordCode() {
         viewModelScope.launch(Dispatchers.IO) {
-            forgotPasswordCodeUseCase(
-                requestBody = ForgotPasswordRequestBody(
-                    email = _uiState.value.email
-                )
-            ).onResponse(
+            forgotPasswordCodeUseCase(email = _uiState.value.email).onResponse(
                 onLoading = {
                     _uiState.update { it.copy(isLoading = true, errorMessage = null) }
                 },
@@ -62,6 +53,9 @@ class OtpViewModel @Inject constructor(
                 },
                 onFailure = { message ->
                     _uiState.update { it.copy(isLoading = false, errorMessage = message) }
+                },
+                onNetworkError = {
+                    _uiState.update { it.copy(isLoading = false, isNetworkError = true) }
                 }
             )
         }
@@ -78,6 +72,9 @@ class OtpViewModel @Inject constructor(
                 },
                 onFailure = { message ->
                     _uiState.update { it.copy(isLoading = false, errorMessage = message) }
+                },
+                onNetworkError = {
+                    _uiState.update { it.copy(isLoading = false, isNetworkError = true) }
                 }
             )
         }
@@ -102,28 +99,6 @@ class OtpViewModel @Inject constructor(
         return isCodeCorrect == ValidationCases.CORRECT
     }
 
-    fun signup() {
-        viewModelScope.launch(Dispatchers.IO) {
-            signupUseCase(
-                name = _uiState.value.name,
-                email = _uiState.value.email,
-                phone = _uiState.value.phone,
-                password = _uiState.value.password
-            ).onResponse(
-                onLoading = {
-                    _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-                },
-                onSuccess = { response ->
-                    saveToken(token = response.token)
-                    _uiState.update { it.copy(isLoading = false, isSignedSuccessfully = true) }
-                },
-                onFailure = { msg ->
-                    _uiState.update { it.copy(isLoading = false, errorMessage = msg) }
-                }
-            )
-        }
-    }
-
     fun saveData(
         name: String,
         email: String,
@@ -142,10 +117,39 @@ class OtpViewModel @Inject constructor(
         }
     }
 
+    fun signup() {
+        viewModelScope.launch(Dispatchers.IO) {
+            signupUseCase(
+                name = _uiState.value.name,
+                email = _uiState.value.email,
+                phone = _uiState.value.phone,
+                password = _uiState.value.password
+            ).onResponse(
+                onLoading = {
+                    _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+                },
+                onSuccess = { response ->
+                    saveToken(token = response.token)
+                    _uiState.update { it.copy(isLoading = false, isSignedSuccessfully = true) }
+                },
+                onFailure = { msg ->
+                    _uiState.update { it.copy(isLoading = false, errorMessage = msg) }
+                },
+                onNetworkError = {
+                    _uiState.update { it.copy(isLoading = false, isNetworkError = true) }
+                }
+            )
+        }
+    }
+
     private fun saveToken(token: String) {
         viewModelScope.launch(Dispatchers.IO) {
             saveInDataStoreUseCase(key = DataStoreKeys.TOKEN_KEY, value = token)
             saveInDataStoreUseCase(key = DataStoreKeys.IS_LOGGED_KEY, value = true)
         }
+    }
+
+    fun clearNetworkError() {
+        _uiState.update { it.copy(isNetworkError = false) }
     }
 }

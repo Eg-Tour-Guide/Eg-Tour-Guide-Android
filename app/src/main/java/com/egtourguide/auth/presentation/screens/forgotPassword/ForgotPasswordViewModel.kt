@@ -2,7 +2,6 @@ package com.egtourguide.auth.presentation.screens.forgotPassword
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.egtourguide.auth.data.dto.body.ForgotPasswordRequestBody
 import com.egtourguide.auth.domain.usecases.GetForgotPasswordCodeUseCase
 import com.egtourguide.core.domain.validation.Validation
 import com.egtourguide.core.domain.validation.ValidationCases
@@ -27,66 +26,50 @@ class ForgotPasswordViewModel @Inject constructor(
         _uiState.update { it.copy(email = email) }
     }
 
+    fun onNextClicked() {
+        _uiState.update { it.copy(emailError = ValidationCases.CORRECT) }
+
+        if (checkData()) {
+            getForgotPasswordCode()
+        }
+    }
+
+    private fun checkData(): Boolean {
+        val emailErrorState = Validation.validateEmail(_uiState.value.email)
+        _uiState.update { it.copy(emailError = emailErrorState) }
+        return emailErrorState == ValidationCases.CORRECT
+    }
+
     private fun getForgotPasswordCode() {
-        val requestBody = ForgotPasswordRequestBody(email = uiState.value.email)
         viewModelScope.launch(Dispatchers.IO) {
-            getForgotPasswordCodeUseCase(
-                requestBody = requestBody
-            ).onResponse(
+            getForgotPasswordCodeUseCase(email = uiState.value.email).onResponse(
                 onLoading = {
-                    _uiState.update {
-                        it.copy(
-                            isLoading = true,
-                            error = null
-                        )
-                    }
-                },
-                onFailure = { errorMsg ->
-                    _uiState.update {
-                        it.copy(
-                            error = errorMsg,
-                            isLoading = false
-                        )
-                    }
+                    _uiState.update { it.copy(isLoading = true, error = null) }
                 },
                 onSuccess = { response ->
                     _uiState.update {
                         it.copy(
                             successMessage = response.message,
                             code = response.code,
-                            isCodeSentSuccessfully = true,
                             isLoading = false
                         )
                     }
+                },
+                onFailure = { errorMsg ->
+                    _uiState.update { it.copy(error = errorMsg, isLoading = false) }
+                },
+                onNetworkError = {
+                    _uiState.update { it.copy(isLoading = false, isNetworkError = true) }
                 }
             )
         }
-    }
-
-    fun onNextClicked() {
-        _uiState.update {
-            it.copy(emailError = ValidationCases.CORRECT)
-        }
-        if(checkData()){
-            getForgotPasswordCode()
-        }
-
-    }
-
-    private fun checkData(): Boolean {
-        val emailErrorState = Validation.validateEmail(_uiState.value.email)
-        _uiState.update {
-            it.copy(emailError = emailErrorState)
-        }
-        return emailErrorState == ValidationCases.CORRECT
-    }
-
-    fun clearSuccess() {
-        _uiState.update { it.copy(isCodeSentSuccessfully = false) }
     }
 
     fun clearError() {
         _uiState.update { it.copy(error = null) }
     }
 
+    fun clearNetworkError() {
+        _uiState.update { it.copy(isNetworkError = false) }
+    }
 }

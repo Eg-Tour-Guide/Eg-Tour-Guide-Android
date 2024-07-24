@@ -7,7 +7,8 @@ import javax.inject.Inject
 class GetForgotPasswordCodeUseCase @Inject constructor(
     private val authRepository: AuthRepository
 ) {
-    suspend operator fun invoke(requestBody: ForgotPasswordRequestBody) =
-        authRepository.getForgotPasswordCode(requestBody = requestBody)
-
+    suspend operator fun invoke(email: String) =
+        authRepository.getForgotPasswordCode(
+            requestBody = ForgotPasswordRequestBody(email = email)
+        )
 }
