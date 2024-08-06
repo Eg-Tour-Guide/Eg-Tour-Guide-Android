@@ -42,10 +42,47 @@ import com.egtourguide.home.domain.model.AbstractedLandmark
 import com.egtourguide.core.presentation.components.EmptyState
 import com.egtourguide.core.presentation.components.LoadingState
 import com.egtourguide.core.presentation.components.LargeCard
+import com.egtourguide.core.presentation.components.NetworkErrorScreen
 import com.egtourguide.core.presentation.components.ScreenHeader
 import com.egtourguide.home.domain.model.DetectedArtifact
 import com.egtourguide.home.presentation.filter.FilterScreenViewModel
 import com.egtourguide.home.presentation.main.components.ArtifactDetectionDialog
+
+@Preview
+@Composable
+private fun LandmarksScreenPreview() {
+    EGTourGuideTheme {
+        LandmarksListScreenContent(
+            hasChanged = true,
+            uiState = LandmarksListUIState(
+                isLoading = false,
+                isNetworkError = true,
+                displayedLandmarks = (0..4).map {
+                    AbstractedLandmark(
+                        id = "$it",
+                        name = "Terrence Kane",
+                        image = "pro",
+                        location = "Cairo",
+                        isSaved = false,
+                        rating = 6.7,
+                        ratingCount = 8388
+                    )
+                },
+                landmarks = (0..9).map {
+                    AbstractedLandmark(
+                        id = "$it",
+                        name = "Terrence Kane",
+                        image = "pro",
+                        location = "Cairo",
+                        isSaved = false,
+                        rating = 6.7,
+                        ratingCount = 8388
+                    )
+                }
+            )
+        )
+    }
+}
 
 @Composable
 fun LandmarksListScreen(
@@ -157,6 +194,14 @@ fun LandmarksListScreenContent(
         }
 
         AnimatedVisibility(
+            visible = !uiState.isLoading && uiState.isNetworkError,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            NetworkErrorScreen(modifier = Modifier.fillMaxSize())
+        }
+
+        AnimatedVisibility(
             visible = !uiState.isLoading && uiState.landmarks.isEmpty(),
             enter = fadeIn(),
             exit = fadeOut()
@@ -221,40 +266,5 @@ private fun PlacesSection(
                 onSaveClicked = { onSaveClicked(place) }
             )
         }
-    }
-}
-
-@Preview
-@Composable
-private fun LandmarksScreenPreview() {
-    EGTourGuideTheme {
-        LandmarksListScreenContent(
-            hasChanged = true,
-            uiState = LandmarksListUIState(
-                isLoading = false,
-                displayedLandmarks = (0..4).map {
-                    AbstractedLandmark(
-                        id = "$it",
-                        name = "Terrence Kane",
-                        image = "pro",
-                        location = "Cairo",
-                        isSaved = false,
-                        rating = 6.7,
-                        ratingCount = 8388
-                    )
-                },
-                landmarks = (0..9).map {
-                    AbstractedLandmark(
-                        id = "$it",
-                        name = "Terrence Kane",
-                        image = "pro",
-                        location = "Cairo",
-                        isSaved = false,
-                        rating = 6.7,
-                        ratingCount = 8388
-                    )
-                }
-            )
-        )
     }
 }

@@ -56,9 +56,85 @@ import com.egtourguide.home.domain.model.AbstractedEvent
 import com.egtourguide.home.domain.model.AbstractedLandmark
 import com.egtourguide.core.presentation.components.LoadingState
 import com.egtourguide.core.presentation.components.MediumCard
+import com.egtourguide.core.presentation.components.NetworkErrorScreen
 import com.egtourguide.core.presentation.components.ScreenHeader
 import com.egtourguide.home.presentation.main.components.ArtifactDetectionDialog
 import kotlinx.coroutines.delay
+
+@Preview(showBackground = true, heightDp = 1400)
+@Composable
+private fun HomePreview() {
+    EGTourGuideTheme {
+        HomeScreenContent(
+            uiState = HomeUIState(
+                isNetworkError = false,
+                isLoading = false,
+                events = listOf(
+                    AbstractedEvent(
+                        id = "0",
+                        images = listOf(),
+                        name = "Belinda Rodgers"
+                    )
+                ),
+                suggestedPlaces = (0..5).map {
+                    AbstractedLandmark(
+                        id = "$it",
+                        name = "Terrence Kane",
+                        image = "pro",
+                        location = "Giza",
+                        isSaved = false,
+                        rating = 2.3,
+                        ratingCount = 6748
+                    )
+                },
+                topRatedPlaces = (0..5).map {
+                    AbstractedLandmark(
+                        id = "$it",
+                        name = "Terrence Kane",
+                        image = "pro",
+                        location = "Giza",
+                        isSaved = false,
+                        rating = 2.3,
+                        ratingCount = 6748
+                    )
+                },
+                explorePlaces = (0..5).map {
+                    AbstractedLandmark(
+                        id = "$it",
+                        name = "Terrence Kane",
+                        image = "pro",
+                        location = "Giza",
+                        isSaved = false,
+                        rating = 2.3,
+                        ratingCount = 6748
+                    )
+                },
+                recentlyAddedPlaces = (0..5).map {
+                    AbstractedLandmark(
+                        id = "$it",
+                        name = "Terrence Kane",
+                        image = "pro",
+                        location = "Giza",
+                        isSaved = false,
+                        rating = 2.3,
+                        ratingCount = 6748
+                    )
+                },
+                recentlyViewedPlaces = (0..5).map {
+                    AbstractedLandmark(
+                        id = "$it",
+                        name = "Terrence Kane",
+                        image = "pro",
+                        location = "Giza",
+                        isSaved = false,
+                        rating = 2.3,
+                        ratingCount = 6748
+                    )
+                }
+            )
+        )
+    }
+}
 
 @Composable
 fun HomeScreen(
@@ -163,7 +239,15 @@ private fun HomeScreenContent(
         }
 
         AnimatedVisibility(
-            visible = !uiState.isLoading,
+            visible = !uiState.isLoading && uiState.isNetworkError,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            NetworkErrorScreen(modifier = Modifier.fillMaxSize())
+        }
+
+        AnimatedVisibility(
+            visible = !uiState.isLoading && !uiState.isNetworkError,
             enter = fadeIn(),
             exit = fadeOut()
         ) {
@@ -314,7 +398,9 @@ private fun UpcomingEventsSection(
                     ) {
                         onEventClicked(events[pos])
                     },
-                data = "$LANDMARK_IMAGE_LINK_PREFIX/${events[pos].images.firstOrNull()}"
+                data = "$LANDMARK_IMAGE_LINK_PREFIX/${events[pos].images.firstOrNull()}",
+                placeHolderImage = R.drawable.event_image,
+                errorImage = R.drawable.event_image
             )
         }
     }
@@ -361,78 +447,5 @@ private fun HomeSection(
                 )
             }
         }
-    }
-}
-
-@Preview(showBackground = true, heightDp = 1400)
-@Composable
-private fun HomePreview() {
-    EGTourGuideTheme {
-        HomeScreenContent(
-            uiState = HomeUIState(
-                events = listOf(
-                    AbstractedEvent(
-                        id = "0",
-                        images = listOf(),
-                        name = "Belinda Rodgers"
-                    )
-                ),
-                suggestedPlaces = (0..5).map {
-                    AbstractedLandmark(
-                        id = "$it",
-                        name = "Terrence Kane",
-                        image = "pro",
-                        location = "Giza",
-                        isSaved = false,
-                        rating = 2.3,
-                        ratingCount = 6748
-                    )
-                },
-                topRatedPlaces = (0..5).map {
-                    AbstractedLandmark(
-                        id = "$it",
-                        name = "Terrence Kane",
-                        image = "pro",
-                        location = "Giza",
-                        isSaved = false,
-                        rating = 2.3,
-                        ratingCount = 6748
-                    )
-                },
-                explorePlaces = (0..5).map {
-                    AbstractedLandmark(
-                        id = "$it",
-                        name = "Terrence Kane",
-                        image = "pro",
-                        location = "Giza",
-                        isSaved = false,
-                        rating = 2.3,
-                        ratingCount = 6748
-                    )
-                },
-                recentlyAddedPlaces = (0..5).map {
-                    AbstractedLandmark(
-                        id = "$it",
-                        name = "Terrence Kane",
-                        image = "pro",
-                        location = "Giza",
-                        isSaved = false,
-                        rating = 2.3,
-                        ratingCount = 6748
-                    )
-                },
-                recentlyViewedPlaces = (0..5).map {
-                    AbstractedLandmark(
-                        id = "$it",
-                        name = "Terrence Kane",
-                        image = "pro",
-                        location = "Giza",
-                        isSaved = false,
-                        rating = 2.3,
-                        ratingCount = 6748
-                    )
-                }
-            )
-        )
     }
 }

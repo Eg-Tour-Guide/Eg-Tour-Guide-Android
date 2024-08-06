@@ -7,6 +7,7 @@ import com.egtourguide.home.domain.model.AbstractedLandmark
 data class HomeUIState(
     val callIsSent: Boolean = false,
     val isLoading: Boolean = true,
+    val isNetworkError: Boolean = false,
     val isDetectionLoading: Boolean = false,
     val detectedArtifact: DetectedArtifact? = null,
     val isSaveSuccess: Boolean = false,

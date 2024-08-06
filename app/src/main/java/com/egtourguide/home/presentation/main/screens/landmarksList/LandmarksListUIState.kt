@@ -5,6 +5,7 @@ import com.egtourguide.home.domain.model.DetectedArtifact
 
 data class LandmarksListUIState(
     val callIsSent: Boolean = false,
+    val isNetworkError: Boolean = false,
     val isLoading: Boolean = true,
     val landmarks: List<AbstractedLandmark> = emptyList(),
     val displayedLandmarks: List<AbstractedLandmark> = emptyList(),

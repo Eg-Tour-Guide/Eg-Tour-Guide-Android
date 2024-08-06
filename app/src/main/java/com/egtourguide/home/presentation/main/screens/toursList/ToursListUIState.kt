@@ -6,6 +6,7 @@ import com.egtourguide.home.domain.model.DetectedArtifact
 data class ToursListUIState(
     val callIsSent: Boolean = false,
     val isLoading: Boolean = true,
+    val isNetworkError: Boolean = false,
     val error: String? = null,
     val tours: List<AbstractedTour> = emptyList(),
     val displayedTours: List<AbstractedTour> = emptyList(),

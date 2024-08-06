@@ -42,10 +42,48 @@ import com.egtourguide.home.domain.model.AbstractedTour
 import com.egtourguide.core.presentation.components.EmptyState
 import com.egtourguide.core.presentation.components.LargeCard
 import com.egtourguide.core.presentation.components.LoadingState
+import com.egtourguide.core.presentation.components.NetworkErrorScreen
 import com.egtourguide.core.presentation.components.ScreenHeader
 import com.egtourguide.home.domain.model.DetectedArtifact
 import com.egtourguide.home.presentation.filter.FilterScreenViewModel
 import com.egtourguide.home.presentation.main.components.ArtifactDetectionDialog
+
+@Preview
+@Composable
+private fun ToursScreenPreview() {
+    EGTourGuideTheme {
+        ToursListScreenContent(
+            hasChanged = false,
+            uiState = ToursListUIState(
+                isLoading = false,
+                isNetworkError = false,
+//                displayedTours = emptyList(),
+                displayedTours = (0..3).map {
+                    AbstractedTour(
+                        id = "$it",
+                        image = "0",
+                        title = "eros",
+                        duration = 3645,
+                        rating = 10.11,
+                        ratingCount = 3276,
+                        isSaved = false
+                    )
+                },
+                tours = (0..9).map {
+                    AbstractedTour(
+                        id = "$it",
+                        image = "0",
+                        title = "eros",
+                        duration = 3645,
+                        rating = 10.11,
+                        ratingCount = 3276,
+                        isSaved = false
+                    )
+                },
+            )
+        )
+    }
+}
 
 @Composable
 fun ToursListScreen(
@@ -157,6 +195,14 @@ fun ToursListScreenContent(
         }
 
         AnimatedVisibility(
+            visible = !uiState.isLoading && uiState.isNetworkError,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            NetworkErrorScreen(modifier = Modifier.fillMaxSize())
+        }
+
+        AnimatedVisibility(
             visible = !uiState.isLoading && uiState.tours.isEmpty(),
             enter = fadeIn(),
             exit = fadeOut()
@@ -221,41 +267,5 @@ private fun ToursSection(
                 onSaveClicked = { onSaveClicked(tour) }
             )
         }
-    }
-}
-
-@Preview
-@Composable
-private fun ToursScreenPreview() {
-    EGTourGuideTheme {
-        ToursListScreenContent(
-            hasChanged = false,
-            uiState = ToursListUIState(
-                isLoading = false,
-//                displayedTours = emptyList(),
-                displayedTours = (0..3).map {
-                    AbstractedTour(
-                        id = "$it",
-                        image = "0",
-                        title = "eros",
-                        duration = 3645,
-                        rating = 10.11,
-                        ratingCount = 3276,
-                        isSaved = false
-                    )
-                },
-                tours = (0..9).map {
-                    AbstractedTour(
-                        id = "$it",
-                        image = "0",
-                        title = "eros",
-                        duration = 3645,
-                        rating = 10.11,
-                        ratingCount = 3276,
-                        isSaved = false
-                    )
-                },
-            )
-        )
     }
 }

@@ -47,6 +47,9 @@ class HomeViewModel @Inject constructor(
                             recentlyViewedPlaces = response.recentlyViewed
                         )
                     }
+                },
+                onNetworkError = {
+                    _uiState.update { it.copy(isNetworkError = true, isLoading = false) }
                 }
             )
         }

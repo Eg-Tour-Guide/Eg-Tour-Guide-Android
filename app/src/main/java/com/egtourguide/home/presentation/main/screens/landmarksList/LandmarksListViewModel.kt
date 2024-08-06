@@ -49,9 +49,6 @@ class LandmarksListViewModel @Inject constructor(
                 onLoading = {
                     _uiState.update { it.copy(isLoading = true, callIsSent = true, error = null) }
                 },
-                onFailure = { error ->
-                    _uiState.update { it.copy(isLoading = false, error = error) }
-                },
                 onSuccess = { response ->
                     _uiState.update {
                         it.copy(
@@ -60,6 +57,12 @@ class LandmarksListViewModel @Inject constructor(
                             displayedLandmarks = response
                         )
                     }
+                },
+                onFailure = { error ->
+                    _uiState.update { it.copy(isLoading = false, error = error) }
+                },
+                onNetworkError = {
+                    _uiState.update { it.copy(isNetworkError = true, isLoading = false) }
                 }
             )
         }

@@ -42,10 +42,47 @@ import com.egtourguide.core.presentation.components.DataScreenHeader
 import com.egtourguide.core.presentation.components.EmptyState
 import com.egtourguide.core.presentation.components.LargeCard
 import com.egtourguide.core.presentation.components.LoadingState
+import com.egtourguide.core.presentation.components.NetworkErrorScreen
 import com.egtourguide.core.presentation.components.ScreenHeader
 import com.egtourguide.home.domain.model.DetectedArtifact
 import com.egtourguide.home.presentation.filter.FilterScreenViewModel
 import com.egtourguide.home.presentation.main.components.ArtifactDetectionDialog
+
+@Preview
+@Composable
+private fun ArtifactsScreenPreview() {
+    EGTourGuideTheme {
+        ArtifactsListScreenContent(
+            hasChanged = true,
+            uiState = ArtifactsListUIState(
+                isLoading = false,
+                isNetworkError = false,
+                displayedArtifacts = (0..6).map {
+                    AbstractedArtifact(
+                        id = "$it",
+                        name = "Yolanda Koch",
+                        image = "",
+                        isSaved = false,
+                        type = "eam",
+                        material = "Stone",
+                        museumName = "Jeanie Norris"
+                    )
+                },
+                artifacts = (0..9).map {
+                    AbstractedArtifact(
+                        id = "$it",
+                        name = "Yolanda Koch",
+                        image = "",
+                        isSaved = false,
+                        type = "eam",
+                        material = "Stone",
+                        museumName = "Jeanie Norris"
+                    )
+                }
+            )
+        )
+    }
+}
 
 @Composable
 fun ArtifactsListScreen(
@@ -158,6 +195,14 @@ fun ArtifactsListScreenContent(
         }
 
         AnimatedVisibility(
+            visible = !uiState.isLoading && uiState.isNetworkError,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            NetworkErrorScreen(modifier = Modifier.fillMaxSize())
+        }
+
+        AnimatedVisibility(
             visible = !uiState.isLoading && uiState.artifacts.isEmpty(),
             enter = fadeIn(),
             exit = fadeOut()
@@ -221,40 +266,5 @@ private fun ArtifactsSection(
                 onSaveClicked = { onSaveClicked(artifact) }
             )
         }
-    }
-}
-
-@Preview
-@Composable
-private fun ArtifactsScreenPreview() {
-    EGTourGuideTheme {
-        ArtifactsListScreenContent(
-            hasChanged = true,
-            uiState = ArtifactsListUIState(
-                isLoading = false,
-                displayedArtifacts = (0..6).map {
-                    AbstractedArtifact(
-                        id = "$it",
-                        name = "Yolanda Koch",
-                        image = "",
-                        isSaved = false,
-                        type = "eam",
-                        material = "Stone",
-                        museumName = "Jeanie Norris"
-                    )
-                },
-                artifacts = (0..9).map {
-                    AbstractedArtifact(
-                        id = "$it",
-                        name = "Yolanda Koch",
-                        image = "",
-                        isSaved = false,
-                        type = "eam",
-                        material = "Stone",
-                        museumName = "Jeanie Norris"
-                    )
-                }
-            )
-        )
     }
 }
