@@ -52,7 +52,6 @@ fun ToursListScreen(
     viewModel: ToursListViewModel = hiltViewModel(),
     filterViewModel: FilterScreenViewModel,
     onNavigateToSearch: () -> Unit,
-    navigateToNotifications: () -> Unit,
     onNavigateToFilters: () -> Unit,
     onNavigateToSingleTour: (AbstractedTour) -> Unit,
     onNavigateToDetectedArtifact: (DetectedArtifact) -> Unit
@@ -73,7 +72,6 @@ fun ToursListScreen(
         uiState = uiState,
         hasChanged = hasChanged,
         onSearchClicked = onNavigateToSearch,
-        onNotificationsClicked = navigateToNotifications,
         onFilterClicked = onNavigateToFilters,
         onTourClicked = onNavigateToSingleTour,
         onSaveClicked = viewModel::onSaveClicked,
@@ -131,7 +129,6 @@ fun ToursListScreenContent(
     uiState: ToursListUIState = ToursListUIState(),
     hasChanged: Boolean = false,
     onSearchClicked: () -> Unit = {},
-    onNotificationsClicked: () -> Unit = {},
     onFilterClicked: () -> Unit = {},
     onTourClicked: (AbstractedTour) -> Unit = {},
     onSaveClicked: (AbstractedTour) -> Unit = {},
@@ -146,17 +143,9 @@ fun ToursListScreenContent(
             modifier = Modifier.height(61.dp),
             showLogo = true,
             showSearch = true,
-            showNotifications = true,
-            // TODO: Implement notifications, active tour, and active tour logic!!
-//            showNotificationsBadge = true,
-            showActiveTour = true,
             showCaptureObject = true,
             onSearchClicked = onSearchClicked,
-            onCaptureObjectClicked = onCaptureObjectClicked,
-            onNotificationsClicked = onNotificationsClicked,
-            onActiveTourClicked = {
-                // TODO: Here!!
-            }
+            onCaptureObjectClicked = onCaptureObjectClicked
         )
 
         AnimatedVisibility(
@@ -247,7 +236,7 @@ private fun ToursScreenPreview() {
                 displayedTours = (0..3).map {
                     AbstractedTour(
                         id = "$it",
-                        image = "contentiones",
+                        image = "0",
                         title = "eros",
                         duration = 3645,
                         rating = 10.11,
@@ -258,7 +247,7 @@ private fun ToursScreenPreview() {
                 tours = (0..9).map {
                     AbstractedTour(
                         id = "$it",
-                        image = "contentiones",
+                        image = "0",
                         title = "eros",
                         duration = 3645,
                         rating = 10.11,

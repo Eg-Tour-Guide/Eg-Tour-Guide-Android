@@ -46,7 +46,6 @@ private fun UserScreenRoot() {
 @Composable
 fun UserScreenRoot(
     viewModel: UserViewModel = hiltViewModel(),
-    navigateToNotifications: () -> Unit,
     navigateToEditProfile: () -> Unit,
     navigateToSaved: () -> Unit,
     navigateToMyTours: () -> Unit,
@@ -62,7 +61,6 @@ fun UserScreenRoot(
 
     UserScreenContent(
         navigateToSearch = onNavigateToSearch,
-        navigateToNotifications = navigateToNotifications,
         navigateToEditProfile = navigateToEditProfile,
         navigateToSaved = navigateToSaved,
         navigateToMyTours = navigateToMyTours,
@@ -95,7 +93,6 @@ fun UserScreenRoot(
 @Composable
 private fun UserScreenContent(
     navigateToSearch: () -> Unit = {},
-    navigateToNotifications: () -> Unit = {},
     navigateToEditProfile: () -> Unit = {},
     navigateToSaved: () -> Unit = {},
     navigateToMyTours: () -> Unit = {},
@@ -113,17 +110,9 @@ private fun UserScreenContent(
             modifier = Modifier.height(61.dp),
             showLogo = true,
             showSearch = true,
-            showNotifications = true,
-            // TODO: Implement notifications, active tour, and active tour logic!!
-//            showNotificationsBadge = true,
-            showActiveTour = true,
             showCaptureObject = true,
             onSearchClicked = navigateToSearch,
-            onCaptureObjectClicked = onCaptureObjectClicked,
-            onNotificationsClicked = navigateToNotifications,
-            onActiveTourClicked = {
-                // TODO: Here!!
-            }
+            onCaptureObjectClicked = onCaptureObjectClicked
         )
 
         Image(

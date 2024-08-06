@@ -52,7 +52,6 @@ fun ArtifactsListScreen(
     viewModel: ArtifactsListViewModel = hiltViewModel(),
     filterViewModel: FilterScreenViewModel,
     onNavigateToSearch: () -> Unit = {},
-    navigateToNotifications: () -> Unit,
     onNavigateToFilters: () -> Unit = {},
     onNavigateToSingleArtifact: (AbstractedArtifact) -> Unit = {},
     onNavigateToDetectedArtifact: (DetectedArtifact) -> Unit
@@ -73,7 +72,6 @@ fun ArtifactsListScreen(
         uiState = uiState,
         hasChanged = hasChanged,
         onSearchClicked = onNavigateToSearch,
-        onNotificationsClicked = navigateToNotifications,
         onFilterClicked = onNavigateToFilters,
         onArtifactClicked = onNavigateToSingleArtifact,
         onSaveClicked = viewModel::onSaveClicked,
@@ -132,7 +130,6 @@ fun ArtifactsListScreenContent(
     uiState: ArtifactsListUIState,
     hasChanged: Boolean = false,
     onSearchClicked: () -> Unit = {},
-    onNotificationsClicked: () -> Unit = {},
     onFilterClicked: () -> Unit = {},
     onArtifactClicked: (AbstractedArtifact) -> Unit = {},
     onSaveClicked: (AbstractedArtifact) -> Unit = {},
@@ -147,17 +144,9 @@ fun ArtifactsListScreenContent(
             modifier = Modifier.height(61.dp),
             showLogo = true,
             showSearch = true,
-            showNotifications = true,
-            // TODO: Implement notifications, active tour, and active tour logic!!
-//            showNotificationsBadge = true,
-            showActiveTour = true,
             showCaptureObject = true,
             onSearchClicked = onSearchClicked,
-            onCaptureObjectClicked = onCaptureObjectClicked,
-            onNotificationsClicked = onNotificationsClicked,
-            onActiveTourClicked = {
-                // TODO: Here!!
-            }
+            onCaptureObjectClicked = onCaptureObjectClicked
         )
 
         AnimatedVisibility(

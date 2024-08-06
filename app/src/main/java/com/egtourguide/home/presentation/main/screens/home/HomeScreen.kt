@@ -64,7 +64,6 @@ import kotlinx.coroutines.delay
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onNavigateToSearch: () -> Unit,
-    navigateToNotifications: () -> Unit,
     onNavigateToSinglePlace: (AbstractedLandmark) -> Unit,
     onNavigateToDetectedArtifact: (DetectedArtifact) -> Unit,
     onNavigateToEvent: (AbstractedEvent) -> Unit
@@ -74,56 +73,16 @@ fun HomeScreen(
     val context = LocalContext.current
     var isDetectionDialogShown by remember { mutableStateOf(false) }
 
-    Column(
-        Modifier
-            .fillMaxSize()
-            .background(color = MaterialTheme.colorScheme.background)
-    ) {
-        ScreenHeader(
-            modifier = Modifier.height(61.dp),
-            showLogo = true,
-            showSearch = true,
-            showNotifications = true,
-            // TODO: Implement notifications & active tour logic!!
-//            showNotificationsBadge = true,
-            showActiveTour = true,
-            showCaptureObject = true,
-            onSearchClicked = onNavigateToSearch,
-            onCaptureObjectClicked = {
-                isDetectionDialogShown = true
-            },
-            onNotificationsClicked = navigateToNotifications,
-            onActiveTourClicked = {
-                // TODO: Here!!
-            }
-        )
-
-        AnimatedVisibility(
-            visible = uiState.isLoading,
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
-            LoadingState(modifier = Modifier.fillMaxSize())
-        }
-
-        AnimatedVisibility(
-            visible = !uiState.isLoading,
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
-            HomeScreenContent(
-                events = uiState.events,
-                suggestedPlaces = uiState.suggestedPlaces,
-                topRatedPlaces = uiState.topRatedPlaces,
-                explorePlaces = uiState.explorePlaces,
-                recentlyAddedPlaces = uiState.recentlyAddedPlaces,
-                recentlyViewedPlaces = uiState.recentlyViewedPlaces,
-                onPlaceClicked = onNavigateToSinglePlace,
-                onEventClicked = onNavigateToEvent,
-                onSaveClicked = viewModel::onSaveClicked
-            )
-        }
-    }
+    HomeScreenContent(
+        uiState = uiState,
+        onNavigateToSearch = onNavigateToSearch,
+        onCaptureObjectClicked = {
+            isDetectionDialogShown = true
+        },
+        onPlaceClicked = onNavigateToSinglePlace,
+        onEventClicked = onNavigateToEvent,
+        onSaveClicked = viewModel::onSaveClicked
+    )
 
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -174,96 +133,122 @@ fun HomeScreen(
 
 @Composable
 private fun HomeScreenContent(
-    events: List<AbstractedEvent> = emptyList(),
-    suggestedPlaces: List<AbstractedLandmark> = emptyList(),
-    topRatedPlaces: List<AbstractedLandmark> = emptyList(),
-    explorePlaces: List<AbstractedLandmark> = emptyList(),
-    recentlyAddedPlaces: List<AbstractedLandmark> = emptyList(),
-    recentlyViewedPlaces: List<AbstractedLandmark> = emptyList(),
+    uiState: HomeUIState = HomeUIState(),
+    onNavigateToSearch: () -> Unit = {},
+    onCaptureObjectClicked: () -> Unit = {},
     onEventClicked: (AbstractedEvent) -> Unit = {},
     onPlaceClicked: (AbstractedLandmark) -> Unit = {},
     onSaveClicked: (AbstractedLandmark) -> Unit = {}
 ) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(bottom = 16.dp)
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.background)
     ) {
-        if (events.isNotEmpty()) {
-            item {
-                UpcomingEventsSection(
-                    events = events,
-                    onEventClicked = onEventClicked
-                )
-            }
+        ScreenHeader(
+            modifier = Modifier.height(61.dp),
+            showLogo = true,
+            showSearch = true,
+            showCaptureObject = true,
+            onSearchClicked = onNavigateToSearch,
+            onCaptureObjectClicked = onCaptureObjectClicked
+        )
+
+        AnimatedVisibility(
+            visible = uiState.isLoading,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            LoadingState(modifier = Modifier.fillMaxSize())
         }
 
-        // Suggested Places
-        if (suggestedPlaces.isNotEmpty()) {
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
+        AnimatedVisibility(
+            visible = !uiState.isLoading,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(bottom = 16.dp)
+            ) {
+                if (uiState.events.isNotEmpty()) {
+                    item {
+                        UpcomingEventsSection(
+                            events = uiState.events,
+                            onEventClicked = onEventClicked
+                        )
+                    }
+                }
 
-                HomeSection(
-                    sectionTitle = stringResource(id = R.string.suggested_for_you),
-                    sectionPlaces = suggestedPlaces,
-                    onPlaceClicked = onPlaceClicked,
-                    onSaveClicked = onSaveClicked
-                )
-            }
-        }
+                // Suggested Places
+                if (uiState.suggestedPlaces.isNotEmpty()) {
+                    item {
+                        Spacer(modifier = Modifier.height(16.dp))
 
-        // Top Rated Places
-        if (topRatedPlaces.isNotEmpty()) {
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
+                        HomeSection(
+                            sectionTitle = stringResource(id = R.string.suggested_for_you),
+                            sectionPlaces = uiState.suggestedPlaces,
+                            onPlaceClicked = onPlaceClicked,
+                            onSaveClicked = onSaveClicked
+                        )
+                    }
+                }
 
-                HomeSection(
-                    sectionTitle = stringResource(id = R.string.top_rated_places),
-                    sectionPlaces = topRatedPlaces,
-                    onPlaceClicked = onPlaceClicked,
-                    onSaveClicked = onSaveClicked
-                )
-            }
-        }
+                // Top Rated Places
+                if (uiState.topRatedPlaces.isNotEmpty()) {
+                    item {
+                        Spacer(modifier = Modifier.height(16.dp))
 
-        // LandMarks
-        if (explorePlaces.isNotEmpty()) {
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
+                        HomeSection(
+                            sectionTitle = stringResource(id = R.string.top_rated_places),
+                            sectionPlaces = uiState.topRatedPlaces,
+                            onPlaceClicked = onPlaceClicked,
+                            onSaveClicked = onSaveClicked
+                        )
+                    }
+                }
 
-                HomeSection(
-                    sectionTitle = stringResource(R.string.explore_egypt_s_landmarks),
-                    sectionPlaces = explorePlaces,
-                    onPlaceClicked = onPlaceClicked,
-                    onSaveClicked = onSaveClicked
-                )
-            }
-        }
+                // LandMarks
+                if (uiState.explorePlaces.isNotEmpty()) {
+                    item {
+                        Spacer(modifier = Modifier.height(16.dp))
 
-        // Recently Added
-        if (recentlyAddedPlaces.isNotEmpty()) {
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
+                        HomeSection(
+                            sectionTitle = stringResource(R.string.explore_egypt_s_landmarks),
+                            sectionPlaces = uiState.explorePlaces,
+                            onPlaceClicked = onPlaceClicked,
+                            onSaveClicked = onSaveClicked
+                        )
+                    }
+                }
 
-                HomeSection(
-                    sectionTitle = stringResource(R.string.recently_added),
-                    sectionPlaces = recentlyAddedPlaces,
-                    onPlaceClicked = onPlaceClicked,
-                    onSaveClicked = onSaveClicked
-                )
-            }
-        }
+                // Recently Added
+                if (uiState.recentlyAddedPlaces.isNotEmpty()) {
+                    item {
+                        Spacer(modifier = Modifier.height(16.dp))
 
-        // Recently Viewed
-        if (recentlyViewedPlaces.isNotEmpty()) {
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
+                        HomeSection(
+                            sectionTitle = stringResource(R.string.recently_added),
+                            sectionPlaces = uiState.recentlyAddedPlaces,
+                            onPlaceClicked = onPlaceClicked,
+                            onSaveClicked = onSaveClicked
+                        )
+                    }
+                }
 
-                HomeSection(
-                    sectionTitle = stringResource(R.string.recently_viewed),
-                    sectionPlaces = recentlyViewedPlaces,
-                    onPlaceClicked = onPlaceClicked,
-                    onSaveClicked = onSaveClicked
-                )
+                // Recently Viewed
+                if (uiState.recentlyViewedPlaces.isNotEmpty()) {
+                    item {
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        HomeSection(
+                            sectionTitle = stringResource(R.string.recently_viewed),
+                            sectionPlaces = uiState.recentlyViewedPlaces,
+                            onPlaceClicked = onPlaceClicked,
+                            onSaveClicked = onSaveClicked
+                        )
+                    }
+                }
             }
         }
     }
@@ -383,27 +368,13 @@ private fun HomeSection(
 @Composable
 private fun HomePreview() {
     EGTourGuideTheme {
-        Column(
-            Modifier
-                .fillMaxSize()
-                .background(color = MaterialTheme.colorScheme.background)
-        ) {
-            ScreenHeader(
-                modifier = Modifier.height(61.dp),
-                showLogo = true,
-                showSearch = true,
-                showNotifications = true,
-                showNotificationsBadge = true,
-                showActiveTour = true,
-                showCaptureObject = true,
-                onSearchClicked = {},
-                onCaptureObjectClicked = {}
-            )
-
-            HomeScreenContent(
+        HomeScreenContent(
+            uiState = HomeUIState(
                 events = listOf(
                     AbstractedEvent(
-                        id = "nominavi", images = listOf(), name = "Belinda Rodgers"
+                        id = "0",
+                        images = listOf(),
+                        name = "Belinda Rodgers"
                     )
                 ),
                 suggestedPlaces = (0..5).map {
@@ -411,7 +382,7 @@ private fun HomePreview() {
                         id = "$it",
                         name = "Terrence Kane",
                         image = "pro",
-                        location = "affert",
+                        location = "Giza",
                         isSaved = false,
                         rating = 2.3,
                         ratingCount = 6748
@@ -422,7 +393,7 @@ private fun HomePreview() {
                         id = "$it",
                         name = "Terrence Kane",
                         image = "pro",
-                        location = "affert",
+                        location = "Giza",
                         isSaved = false,
                         rating = 2.3,
                         ratingCount = 6748
@@ -433,7 +404,7 @@ private fun HomePreview() {
                         id = "$it",
                         name = "Terrence Kane",
                         image = "pro",
-                        location = "affert",
+                        location = "Giza",
                         isSaved = false,
                         rating = 2.3,
                         ratingCount = 6748
@@ -444,7 +415,7 @@ private fun HomePreview() {
                         id = "$it",
                         name = "Terrence Kane",
                         image = "pro",
-                        location = "affert",
+                        location = "Giza",
                         isSaved = false,
                         rating = 2.3,
                         ratingCount = 6748
@@ -455,13 +426,13 @@ private fun HomePreview() {
                         id = "$it",
                         name = "Terrence Kane",
                         image = "pro",
-                        location = "affert",
+                        location = "Giza",
                         isSaved = false,
                         rating = 2.3,
                         ratingCount = 6748
                     )
                 }
             )
-        }
+        )
     }
 }

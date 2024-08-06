@@ -41,7 +41,6 @@ import com.egtourguide.home.domain.model.toStringJson
 import com.egtourguide.home.presentation.filter.FilterScreenViewModel
 import com.egtourguide.home.presentation.filter.FilterType
 import com.egtourguide.home.presentation.main.screens.toursList.ToursListScreen
-import com.egtourguide.home.presentation.notifications.NotificationsScreenRoot
 import com.egtourguide.user.presentation.changePassword.ChangePasswordScreenRoot
 import com.egtourguide.user.presentation.editProfile.EditProfileScreenRoot
 import com.egtourguide.user.presentation.settings.SettingsScreenRoot
@@ -262,9 +261,6 @@ fun MainNavGraph(
                 onNavigateToSearch = {
                     navController.navigate(route = AppScreen.Search.route)
                 },
-                navigateToNotifications = {
-                    navController.navigate(route = AppScreen.Notification.route)
-                },
                 onNavigateToSinglePlace = { place ->
                     navigateToExpanded(place.id, ExpandedType.LANDMARK.name)
                 },
@@ -282,9 +278,6 @@ fun MainNavGraph(
                 filterViewModel = toursFilterViewModel,
                 onNavigateToSearch = {
                     navController.navigate(route = AppScreen.Search.route)
-                },
-                navigateToNotifications = {
-                    navController.navigate(route = AppScreen.Notification.route)
                 },
                 onNavigateToFilters = {
                     navController.navigate(route = AppScreen.ToursFilter.route)
@@ -311,9 +304,6 @@ fun MainNavGraph(
                 onNavigateToSearch = {
                     navController.navigate(route = AppScreen.Search.route)
                 },
-                navigateToNotifications = {
-                    navController.navigate(route = AppScreen.Notification.route)
-                },
                 onNavigateToFilters = {
                     navController.navigate(route = AppScreen.LandmarksFilter.route)
                 },
@@ -339,9 +329,6 @@ fun MainNavGraph(
                 onNavigateToSearch = {
                     navController.navigate(route = AppScreen.Search.route)
                 },
-                navigateToNotifications = {
-                    navController.navigate(route = AppScreen.Notification.route)
-                },
                 onNavigateToFilters = {
                     navController.navigate(route = AppScreen.ArtifactsFilter.route)
                 },
@@ -364,9 +351,6 @@ fun MainNavGraph(
         userGraph(
             navController = navController,
             navigateToMyTours = navigateToMyTours,
-            navigateToNotifications = {
-                navController.navigate(route = AppScreen.Notification.route)
-            },
             onNavigateToDetectedArtifact = { artifact ->
                 navigateToExpanded(artifact.id, ExpandedType.ARTIFACT.name)
             },
@@ -409,14 +393,6 @@ fun MainNavGraph(
             FilterScreen(
                 viewModel = searchFilterViewModel,
                 onNavigateBack = { navController.navigateUp() }
-            )
-        }
-
-        composable(route = AppScreen.Notification.route) {
-            NotificationsScreenRoot(
-                onBackClicked = {
-                    navController.navigateUp()
-                }
             )
         }
     }
@@ -584,7 +560,6 @@ fun NavGraphBuilder.expandedGraph(
 fun NavGraphBuilder.userGraph(
     navController: NavHostController,
     navigateToMyTours: () -> Unit,
-    navigateToNotifications: () -> Unit,
     onNavigateToDetectedArtifact: (DetectedArtifact) -> Unit,
     navigateToExpanded: (String, String) -> Unit,
     navigateToAuth: () -> Unit,
@@ -596,7 +571,6 @@ fun NavGraphBuilder.userGraph(
     ) {
         composable(route = AppScreen.User.route) {
             UserScreenRoot(
-                navigateToNotifications = navigateToNotifications,
                 navigateToEditProfile = {
                     navController.navigate(route = AppScreen.EditProfile.route)
                 },

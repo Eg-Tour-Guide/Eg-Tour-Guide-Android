@@ -52,7 +52,6 @@ fun LandmarksListScreen(
     viewModel: LandmarksListViewModel = hiltViewModel(),
     filterViewModel: FilterScreenViewModel,
     onNavigateToSearch: () -> Unit = {},
-    navigateToNotifications: () -> Unit,
     onNavigateToFilters: () -> Unit = {},
     onNavigateToSinglePlace: (AbstractedLandmark) -> Unit = {},
     onNavigateToDetectedArtifact: (DetectedArtifact) -> Unit
@@ -72,7 +71,6 @@ fun LandmarksListScreen(
     LandmarksListScreenContent(
         uiState = uiState,
         hasChanged = hasChanged,
-        navigateToNotifications = navigateToNotifications,
         onSearchClicked = onNavigateToSearch,
         onFilterClicked = onNavigateToFilters,
         onPlaceClicked = onNavigateToSinglePlace,
@@ -131,7 +129,6 @@ fun LandmarksListScreenContent(
     uiState: LandmarksListUIState,
     hasChanged: Boolean = false,
     onSearchClicked: () -> Unit = {},
-    navigateToNotifications: () -> Unit = {},
     onFilterClicked: () -> Unit = {},
     onPlaceClicked: (AbstractedLandmark) -> Unit = {},
     onSaveClicked: (AbstractedLandmark) -> Unit = {},
@@ -146,17 +143,9 @@ fun LandmarksListScreenContent(
             modifier = Modifier.height(61.dp),
             showLogo = true,
             showSearch = true,
-            showNotifications = true,
-            // TODO: Implement notifications, active tour, and active tour logic!!
-//            showNotificationsBadge = true,
-            showActiveTour = true,
             showCaptureObject = true,
             onSearchClicked = onSearchClicked,
-            onCaptureObjectClicked = onCaptureObjectClicked,
-            onNotificationsClicked = navigateToNotifications,
-            onActiveTourClicked = {
-                // TODO: Here!!
-            }
+            onCaptureObjectClicked = onCaptureObjectClicked
         )
 
         AnimatedVisibility(
