@@ -207,10 +207,7 @@ fun ArtifactsListScreenContent(
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            EmptyState(
-                modifier = Modifier.fillMaxSize(),
-                message = stringResource(id = R.string.no_artifacts_found)
-            )
+            EmptyState(modifier = Modifier.fillMaxSize())
         }
 
         AnimatedVisibility(

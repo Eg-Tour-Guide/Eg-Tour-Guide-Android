@@ -12,6 +12,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -83,7 +85,7 @@ private fun ExpandedScreenPreview() {
         ExpandedScreen(
             uiState = ExpandedScreenState(
                 id = "0",
-                images = listOf("", "", "", ""),
+                images = (1..25).map { "" },
                 title = "Pyramids",
                 location = "Giza",
                 reviewsCount = 2,
@@ -425,7 +427,7 @@ private fun ExpandedScreen(
 }
 
 @Composable
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
 private fun ImagesSection(
     images: List<String>,
     imageLinkPrefix: String,
@@ -454,17 +456,17 @@ private fun ImagesSection(
             )
         }
 
-        Row(
+        FlowRow(
             Modifier
                 .fillMaxWidth()
-                .padding(top = 8.dp, start = 16.dp, end = 16.dp),
+                .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.Center
         ) {
             repeat(pagerState.pageCount) { iteration ->
                 if (pagerState.currentPage == iteration) {
                     Box(
                         modifier = Modifier
-                            .padding(horizontal = 4.dp)
+                            .padding(start = 4.dp, end = 4.dp, top = 8.dp)
                             .size(10.dp)
                             .clip(CircleShape)
                             .background(MaterialTheme.colorScheme.primary)
@@ -472,7 +474,7 @@ private fun ImagesSection(
                 } else {
                     Box(
                         modifier = Modifier
-                            .padding(horizontal = 4.dp)
+                            .padding(start = 4.dp, end = 4.dp, top = 8.dp)
                             .size(10.dp)
                             .clip(CircleShape)
                             .border(

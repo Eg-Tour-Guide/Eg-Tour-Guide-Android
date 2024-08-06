@@ -32,14 +32,14 @@ private fun MoreReviewsScreenPreview() {
         MoreReviewsScreen(
             reviews = listOf(
                 Review(
-                    id = "",
+                    id = "0",
                     authorName = "Abdo Sharaf",
                     authorImage = "",
                     rating = 3,
                     description = getLoremString(words = 20)
                 ),
                 Review(
-                    id = "",
+                    id = "1",
                     authorName = "Abdo Sharaf",
                     authorImage = "",
                     rating = 3,

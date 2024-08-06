@@ -136,9 +136,7 @@ fun SearchResultsScreenContent(
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            EmptyState(
-                message = stringResource(id = R.string.no_results_found)
-            )
+            EmptyState(modifier = Modifier.fillMaxSize())
         }
 
         AnimatedVisibility(

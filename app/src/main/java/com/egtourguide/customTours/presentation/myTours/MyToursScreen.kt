@@ -134,11 +134,7 @@ private fun MyToursScreenContent(
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            // TODO: Change the message!!
-            EmptyState(
-                modifier = Modifier.fillMaxSize(),
-                message = "No Tours Found"
-            )
+            EmptyState(modifier = Modifier.fillMaxSize())
         }
 
         AnimatedVisibility(

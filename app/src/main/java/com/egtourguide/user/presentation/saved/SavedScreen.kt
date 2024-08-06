@@ -41,6 +41,26 @@ import com.egtourguide.core.presentation.components.LargeCard
 import com.egtourguide.core.presentation.components.LoadingState
 import com.egtourguide.core.presentation.components.ScreenHeader
 
+@Preview
+@Composable
+private fun SavedScreenPreview() {
+    EGTourGuideTheme {
+        SavedScreenContent(
+            uiState = SavedScreenUIState(
+                isLoading = false,
+                savedList = (1..5).map {
+                    AbstractSavedItem(
+                        id = "$it",
+                        image = "",
+                        name = "Test",
+                        itemType = ItemType.LANDMARK
+                    )
+                }
+            )
+        )
+    }
+}
+
 // TODO: Filters logic!!
 @Composable
 fun SavedScreen(
@@ -125,10 +145,7 @@ fun SavedScreenContent(
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            EmptyState(
-                modifier = Modifier.fillMaxSize(),
-                message = stringResource(id = R.string.no_saved_items_found)
-            )
+            EmptyState(modifier = Modifier.fillMaxSize())
         }
 
         AnimatedVisibility(
@@ -184,67 +201,5 @@ private fun ItemsSection(
                 onSaveClicked = { onSaveClicked(item) }
             )
         }
-    }
-}
-
-@Preview
-@Composable
-private fun SavedScreenPreview() {
-    EGTourGuideTheme {
-        SavedScreenContent(
-            uiState = SavedScreenUIState(
-                isLoading = false,
-                savedList = listOf(
-                    AbstractSavedItem(
-                        id = "0",
-                        image = "",
-                        name = "Test",
-                        itemType = ItemType.LANDMARK
-                    ),
-                    AbstractSavedItem(
-                        id = "1",
-                        image = "",
-                        name = "Test",
-                        itemType = ItemType.LANDMARK
-                    ),
-                    AbstractSavedItem(
-                        id = "2",
-                        image = "",
-                        name = "Test",
-                        itemType = ItemType.LANDMARK
-                    ),
-                    AbstractSavedItem(
-                        id = "3",
-                        image = "",
-                        name = "Test",
-                        itemType = ItemType.LANDMARK
-                    ),
-                    AbstractSavedItem(
-                        id = "4",
-                        image = "",
-                        name = "Test",
-                        itemType = ItemType.LANDMARK
-                    ),
-                    AbstractSavedItem(
-                        id = "5",
-                        image = "",
-                        name = "Test",
-                        itemType = ItemType.LANDMARK
-                    ),
-                    AbstractSavedItem(
-                        id = "6",
-                        image = "",
-                        name = "Test",
-                        itemType = ItemType.LANDMARK
-                    ),
-                    AbstractSavedItem(
-                        id = "7",
-                        image = "",
-                        name = "Test",
-                        itemType = ItemType.LANDMARK
-                    ),
-                )
-            )
-        )
     }
 }

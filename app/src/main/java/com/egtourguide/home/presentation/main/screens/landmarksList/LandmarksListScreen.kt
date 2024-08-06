@@ -206,10 +206,7 @@ fun LandmarksListScreenContent(
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            EmptyState(
-                modifier = Modifier.fillMaxSize(),
-                message = stringResource(id = R.string.no_landmarks_found)
-            )
+            EmptyState(modifier = Modifier.fillMaxSize())
         }
 
         AnimatedVisibility(

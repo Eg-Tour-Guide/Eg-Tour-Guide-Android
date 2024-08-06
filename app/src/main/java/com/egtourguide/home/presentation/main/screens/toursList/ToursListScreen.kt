@@ -207,10 +207,7 @@ fun ToursListScreenContent(
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            EmptyState(
-                modifier = Modifier.fillMaxSize(),
-                message = stringResource(id = R.string.no_tours_found)
-            )
+            EmptyState(modifier = Modifier.fillMaxSize())
         }
 
         AnimatedVisibility(

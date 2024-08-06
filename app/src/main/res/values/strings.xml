@@ -129,9 +129,6 @@
     <string name="tours">Tours</string>
     <string name="logged_in_successfully">Logged in successfully!</string>
     <string name="remembered_your_password">Remembered Your Password?</string>
-    <string name="no_artifacts_found">No Artifacts Found</string>
-    <string name="no_landmarks_found">No Landmarks Found</string>
-    <string name="no_tours_found">No Tours Found</string>
     <string name="edit_profile">Edit Profile</string>
     <string name="data_changed_successfully">Data changed successfully</string>
     <string name="old_password">Old Password</string>
@@ -153,8 +150,6 @@
     <string name="artifacts_count">%s Artifacts</string>
     <string name="saved_count">%s Saved</string>
     <string name="results_count">%s Results</string>
-    <string name="no_results_found">No Results Found</string>
-    <string name="no_saved_items_found">No saved items found</string>
     <string name="search_placeholder">What are you looking for?</string>
     <string name="camera">Camera</string>
     <string name="gallery">Gallery</string>
@@ -176,4 +171,5 @@
     <string name="failed_to_reset_password_please_try_again">Failed to reset password, Please try again.</string>
     <string name="camera_access_denied">Camera access denied.</string>
     <string name="internet_connection_error">Unable to connect, Check your internet connection</string>
+    <string name="no_content_available">No content available</string>
 </resources>
