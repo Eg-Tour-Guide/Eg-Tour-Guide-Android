@@ -63,6 +63,10 @@ class CustomExpandedViewModel @Inject constructor(
                 },
                 onFailure = { message ->
                     _uiState.update { it.copy(errorMessage = message) }
+                },
+                onNetworkError = {
+                    // TODO: Show save error!!
+                    _uiState.update { it.copy(isLoading = false) }
                 }
             )
         }

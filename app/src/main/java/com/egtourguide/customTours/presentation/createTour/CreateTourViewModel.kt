@@ -97,6 +97,9 @@ class CreateTourViewModel @Inject constructor(
                 },
                 onFailure = {
                     _uiState.update { it.copy(isLoading = false, isError = true) }
+                },
+                onNetworkError = {
+                    _uiState.update { it.copy(isLoading = false, isNetworkError = true) }
                 }
             )
         }
@@ -117,6 +120,9 @@ class CreateTourViewModel @Inject constructor(
                 },
                 onFailure = {
                     _uiState.update { it.copy(isLoading = false, isError = true) }
+                },
+                onNetworkError = {
+                    _uiState.update { it.copy(isLoading = false, isNetworkError = true) }
                 }
             )
         }
@@ -124,5 +130,9 @@ class CreateTourViewModel @Inject constructor(
 
     fun clearError() {
         _uiState.update { it.copy(isError = false) }
+    }
+
+    fun clearNetworkError() {
+        _uiState.update { it.copy(isNetworkError = false) }
     }
 }

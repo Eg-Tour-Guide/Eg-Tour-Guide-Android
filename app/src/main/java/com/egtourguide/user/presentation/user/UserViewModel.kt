@@ -41,6 +41,10 @@ class UserViewModel @Inject constructor(
                 },
                 onFailure = { error ->
                     _uiState.update { it.copy(isDetectionLoading = false, error = error) }
+                },
+                onNetworkError = {
+                    // TODO: Show detection error!!
+                    _uiState.update { it.copy(isDetectionLoading = false) }
                 }
             )
         }

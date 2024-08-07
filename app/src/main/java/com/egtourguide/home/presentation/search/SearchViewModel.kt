@@ -38,6 +38,10 @@ class SearchViewModel @Inject constructor(
                 },
                 onFailure = { error ->
                     _uiState.update { it.copy(isLoading = false, error = error) }
+                },
+                onNetworkError = {
+                    // TODO: Show save error!!
+                    _uiState.update { it.copy(isLoading = false) }
                 }
             )
         }
@@ -68,6 +72,10 @@ class SearchViewModel @Inject constructor(
                             isClearHistoryLoading = false
                         )
                     }
+                },
+                onNetworkError = {
+                    // TODO: Show clear history error!!
+                    _uiState.update { it.copy(isClearHistoryLoading = false) }
                 }
             )
         }

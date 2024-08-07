@@ -210,6 +210,10 @@ class ExpandedViewModel @Inject constructor(
                 },
                 onFailure = { message ->
                     _uiState.update { it.copy(errorMessage = message) }
+                },
+                onNetworkError = {
+                    // TODO: Show save error!!
+                    _uiState.update { it.copy(isLoading = false) }
                 }
             )
         }
@@ -227,6 +231,10 @@ class ExpandedViewModel @Inject constructor(
                 },
                 onFailure = { message ->
                     _uiState.update { it.copy(errorMessage = message) }
+                },
+                onNetworkError = {
+                    // TODO: Show save error!!
+                    _uiState.update { it.copy(isLoading = false) }
                 }
             )
         }
@@ -244,6 +252,10 @@ class ExpandedViewModel @Inject constructor(
                 },
                 onFailure = { message ->
                     _uiState.update { it.copy(errorMessage = message) }
+                },
+                onNetworkError = {
+                    // TODO: Show save error!!
+                    _uiState.update { it.copy(isLoading = false) }
                 }
             )
         }
@@ -261,6 +273,10 @@ class ExpandedViewModel @Inject constructor(
                 },
                 onFailure = { message ->
                     _uiState.update { it.copy(errorMessage = message) }
+                },
+                onNetworkError = {
+                    // TODO: Show save error!!
+                    _uiState.update { it.copy(isLoading = false) }
                 }
             )
         }
@@ -327,6 +343,9 @@ class ExpandedViewModel @Inject constructor(
                     _uiState.update { it.copy(showLoadingDialog = false, showAddSuccess = true) }
                 },
                 onFailure = {
+                    _uiState.update { it.copy(showLoadingDialog = false, showAddError = true) }
+                },
+                onNetworkError = {
                     _uiState.update { it.copy(showLoadingDialog = false, showAddError = true) }
                 }
             )

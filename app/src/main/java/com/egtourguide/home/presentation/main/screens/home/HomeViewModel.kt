@@ -65,6 +65,10 @@ class HomeViewModel @Inject constructor(
                 },
                 onFailure = { error ->
                     _uiState.update { it.copy(saveError = error) }
+                },
+                onNetworkError = {
+                    // TODO: Show save error!!
+                    _uiState.update { it.copy(isLoading = false) }
                 }
             )
         }
@@ -88,6 +92,10 @@ class HomeViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(isDetectionLoading = false, error = error)
                     }
+                },
+                onNetworkError = {
+                    // TODO: Show detection error!!
+                    _uiState.update { it.copy(isDetectionLoading = false) }
                 }
             )
         }

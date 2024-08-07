@@ -72,6 +72,9 @@ class SearchResultsViewModel @Inject constructor(
                     },
                     onFailure = { error ->
                         _uiState.update { it.copy(saveError = error) }
+                    },
+                    onNetworkError = {
+                        // TODO: Show save error!!
                     }
                 )
             } else {
@@ -83,6 +86,9 @@ class SearchResultsViewModel @Inject constructor(
                     },
                     onFailure = { error ->
                         _uiState.update { it.copy(saveError = error) }
+                    },
+                    onNetworkError = {
+                        // TODO: Show save error!!
                     }
                 )
             }

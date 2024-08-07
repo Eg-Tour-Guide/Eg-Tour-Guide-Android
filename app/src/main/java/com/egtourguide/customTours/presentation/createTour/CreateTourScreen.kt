@@ -108,6 +108,17 @@ fun CreateTourScreenRoot(
         }
     }
 
+    LaunchedEffect(key1 = uiState.isNetworkError) {
+        if (uiState.isNetworkError) {
+            Toast.makeText(
+                context,
+                context.getString(R.string.network_error_toast),
+                Toast.LENGTH_SHORT
+            ).show()
+            viewModel.clearNetworkError()
+        }
+    }
+
     CreateTourContent(
         uiState = uiState,
         isCreate = isCreate,

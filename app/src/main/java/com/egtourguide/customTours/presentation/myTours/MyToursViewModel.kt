@@ -51,6 +51,10 @@ class MyToursViewModel @Inject constructor(
                 },
                 onFailure = { error ->
                     _uiState.update { it.copy(saveError = error) }
+                },
+                onNetworkError = {
+                    // TODO: Show save error!!
+                    _uiState.update { it.copy(isLoading = false) }
                 }
             )
         }

@@ -7,7 +7,7 @@ suspend fun <T> Flow<ResultWrapper<T>>.onResponse(
     onLoading: () -> Unit,
     onSuccess: (T) -> Unit,
     onFailure: (String) -> Unit,
-    onNetworkError: () -> Unit = {} // TODO: Use this!!
+    onNetworkError: () -> Unit
 ) {
     this.collectLatest { response ->
         when (response) {
