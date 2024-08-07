@@ -24,7 +24,13 @@ class ToursPlanViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             getTourDetailsUseCase(tourId = id).onResponse(
                 onLoading = {
-                    _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+                    _uiState.update {
+                        it.copy(
+                            isLoading = true,
+                            errorMessage = null,
+                            callIsSent = true
+                        )
+                    }
                 },
                 onSuccess = { response ->
                     _uiState.update {
@@ -32,9 +38,7 @@ class ToursPlanViewModel @Inject constructor(
                             id = id,
                             isLoading = false,
                             title = response.name,
-                            days = response.days,
-                            callIsSent = false,
-                            showDatePicker = false
+                            days = response.days
                         )
                     }
                 },
@@ -46,5 +50,9 @@ class ToursPlanViewModel @Inject constructor(
                 }
             )
         }
+    }
+
+    fun changeChosenDay(day: Int) {
+        _uiState.update { it.copy(chosenDay = day) }
     }
 }

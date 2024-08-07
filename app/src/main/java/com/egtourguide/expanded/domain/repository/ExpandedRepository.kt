@@ -3,7 +3,6 @@ package com.egtourguide.expanded.domain.repository
 import com.egtourguide.core.utils.ResultWrapper
 import com.egtourguide.expanded.data.dto.body.AddPlaceBody
 import com.egtourguide.expanded.data.dto.body.ReviewRequestBody
-import com.egtourguide.expanded.data.dto.body.TourDetailsBody
 import com.egtourguide.expanded.domain.model.Artifact
 import com.egtourguide.expanded.domain.model.Landmark
 import com.egtourguide.expanded.domain.model.SingleEvent
@@ -37,9 +36,4 @@ interface ExpandedRepository {
     ): Flow<ResultWrapper<Unit>>
 
     suspend fun getTourDetails(tourId: String): Flow<ResultWrapper<TourDetails>>
-
-    suspend fun updateTourDetails(
-        tourId: String,
-        tourDetails: TourDetailsBody
-    ): Flow<ResultWrapper<String>> // TODO: Change This!!
 }

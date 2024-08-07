@@ -5,7 +5,6 @@ import com.egtourguide.expanded.data.ExpandedApi
 import com.egtourguide.expanded.domain.repository.ExpandedRepository
 import com.egtourguide.expanded.data.dto.body.AddPlaceBody
 import com.egtourguide.expanded.data.dto.body.ReviewRequestBody
-import com.egtourguide.expanded.data.dto.body.TourDetailsBody
 import javax.inject.Inject
 
 class ExpandedRepositoryImpl @Inject constructor(
@@ -52,12 +51,5 @@ class ExpandedRepositoryImpl @Inject constructor(
 
     override suspend fun getTourDetails(tourId: String) = safeCall {
         expandedApi.getTourDetails(tourId).toTourDetails()
-    }
-
-    override suspend fun updateTourDetails(
-        tourId: String,
-        tourDetails: TourDetailsBody
-    ) = safeCall {
-        expandedApi.updateTourDetails(tourId = tourId, tourDetails = tourDetails)
     }
 }

@@ -85,7 +85,6 @@ class ToursListViewModel @Inject constructor(
         }
     }
 
-    // TODO: This!!
     fun detectArtifact(image: Bitmap) {
         viewModelScope.launch(Dispatchers.IO) {
             detectArtifactUseCase(bitmap = image).onResponse(

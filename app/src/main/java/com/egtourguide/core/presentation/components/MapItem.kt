@@ -2,6 +2,9 @@ package com.egtourguide.core.presentation.components
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -20,6 +23,7 @@ fun MapItem(
     longitude: Double,
     modifier: Modifier = Modifier
 ) {
+    // TODO: Use remember to disable flashes!!
     val context = LocalContext.current
     val place = LatLng(latitude, longitude)
     val cameraPositionState = rememberCameraPositionState {
@@ -34,7 +38,11 @@ fun MapItem(
         }
     }
 
-    GoogleMap(
+    Box(
+        modifier = modifier.background(MaterialTheme.colorScheme.primaryContainer)
+    )
+
+    /*GoogleMap(
         modifier = modifier,
         cameraPositionState = cameraPositionState,
         uiSettings = MapUiSettings(
@@ -55,5 +63,5 @@ fun MapItem(
                 false
             }
         )
-    }
+    }*/
 }

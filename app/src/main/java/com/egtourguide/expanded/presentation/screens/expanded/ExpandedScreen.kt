@@ -362,8 +362,7 @@ private fun ExpandedScreen(
                     }
                 }
 
-                // TODO: When we get a working key!!
-                /*if (expandedType != ExpandedType.TOUR.name && uiState.latitute != 0.0 && uiState.longitude != 0.0) {
+                if (expandedType != ExpandedType.TOUR.name && uiState.latitute != 0.0 && uiState.longitude != 0.0) {
                     item {
                         LocationSection(
                             title = uiState.title,
@@ -372,7 +371,7 @@ private fun ExpandedScreen(
                             modifier = Modifier.padding(top = 24.dp, start = 16.dp, end = 16.dp)
                         )
                     }
-                }*/
+                }
 
                 if (expandedType == ExpandedType.LANDMARK.name || expandedType == ExpandedType.TOUR.name) {
                     item {

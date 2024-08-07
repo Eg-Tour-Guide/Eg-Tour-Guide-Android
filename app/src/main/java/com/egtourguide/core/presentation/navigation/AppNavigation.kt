@@ -545,7 +545,6 @@ fun NavGraphBuilder.expandedGraph(
                     navController.navigateUp()
                 },
                 navigateToLandmark = { landmarkId ->
-                    // TODO: Check this!!
                     navController.navigate(
                         route = AppGraph.Expanded.route
                             .replace("{id}", landmarkId)

@@ -10,7 +10,6 @@ suspend fun <T> safeCall(call: suspend () -> T): Flow<ResultWrapper<T>> = flow {
     try {
         emit(ResultWrapper.Success(data = call.invoke()))
     } catch (e: HttpException) {
-        // TODO: Extract message!!
         e.printStackTrace()
         emit(ResultWrapper.Failure(message = e.message ?: ""))
     } catch (e: IOException) {

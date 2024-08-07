@@ -77,7 +77,8 @@ fun ToursPlanScreenRoot(
     ToursPlanScreenContent(
         uiState = uiState,
         onBackClicked = onBackClicked,
-        onPlaceClicked = navigateToLandmark
+        onPlaceClicked = navigateToLandmark,
+        changeChosenDay = viewModel::changeChosenDay
     )
 }
 
