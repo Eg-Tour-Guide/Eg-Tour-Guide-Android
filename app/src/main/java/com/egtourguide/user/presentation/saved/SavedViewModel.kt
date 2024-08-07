@@ -32,13 +32,16 @@ class SavedViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             getSavedItemsUseCase().onResponse(
                 onLoading = {
-                    _uiState.update { it.copy(isLoading = true, error = null) }
+                    _uiState.update { it.copy(isLoading = true, error = null, isCallSent = true) }
                 },
                 onSuccess = { response ->
                     _uiState.update { it.copy(isLoading = false, savedList = response) }
                 },
                 onFailure = { error ->
                     _uiState.update { it.copy(isLoading = false, error = error) }
+                },
+                onNetworkError = {
+                    _uiState.update { it.copy(isLoading = false, isNetworkError = true) }
                 }
             )
         }

@@ -55,6 +55,7 @@ import com.egtourguide.core.utils.Constants.LANDMARK_IMAGE_LINK_PREFIX
 import com.egtourguide.core.utils.getLoremString
 import com.egtourguide.core.presentation.components.DataRow
 import com.egtourguide.core.presentation.components.LoadingState
+import com.egtourguide.core.presentation.components.NetworkErrorScreen
 import com.egtourguide.core.presentation.components.ScreenHeader
 
 @Preview(showBackground = true)
@@ -166,7 +167,15 @@ private fun CustomExpandedContent(
         }
 
         AnimatedVisibility(
-            visible = !uiState.isLoading,
+            visible = !uiState.isLoading && uiState.isNetworkError,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            NetworkErrorScreen(modifier = Modifier.fillMaxSize())
+        }
+
+        AnimatedVisibility(
+            visible = !uiState.isLoading && uiState.id.isNotEmpty() && !uiState.isNetworkError,
             enter = fadeIn(),
             exit = fadeOut()
         ) {

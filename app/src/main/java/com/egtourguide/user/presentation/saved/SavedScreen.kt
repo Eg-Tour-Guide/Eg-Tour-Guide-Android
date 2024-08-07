@@ -39,6 +39,7 @@ import com.egtourguide.user.domain.model.AbstractSavedItem
 import com.egtourguide.core.presentation.components.EmptyState
 import com.egtourguide.core.presentation.components.LargeCard
 import com.egtourguide.core.presentation.components.LoadingState
+import com.egtourguide.core.presentation.components.NetworkErrorScreen
 import com.egtourguide.core.presentation.components.ScreenHeader
 
 @Preview
@@ -81,10 +82,9 @@ fun SavedScreen(
         onBackClicked = onNavigateBack
     )
 
-    // TODO: Don't load each time!!
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_CREATE) {
+            if (event == Lifecycle.Event.ON_CREATE && !uiState.isCallSent) {
                 viewModel.getSavedItems()
             }
         }
@@ -141,7 +141,15 @@ fun SavedScreenContent(
         }
 
         AnimatedVisibility(
-            visible = !uiState.isLoading && uiState.savedList.isEmpty(),
+            visible = !uiState.isLoading && uiState.isNetworkError,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            NetworkErrorScreen(modifier = Modifier.fillMaxSize())
+        }
+
+        AnimatedVisibility(
+            visible = !uiState.isLoading && uiState.savedList.isEmpty() && !uiState.isNetworkError,
             enter = fadeIn(),
             exit = fadeOut()
         ) {
@@ -149,7 +157,7 @@ fun SavedScreenContent(
         }
 
         AnimatedVisibility(
-            visible = !uiState.isLoading,
+            visible = !uiState.isLoading && !uiState.isNetworkError,
             enter = fadeIn(),
             exit = fadeOut()
         ) {

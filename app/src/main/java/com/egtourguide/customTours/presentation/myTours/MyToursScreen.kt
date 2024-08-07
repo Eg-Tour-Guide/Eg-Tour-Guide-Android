@@ -37,6 +37,7 @@ import com.egtourguide.home.domain.model.AbstractedTour
 import com.egtourguide.core.presentation.components.EmptyState
 import com.egtourguide.core.presentation.components.LargeCard
 import com.egtourguide.core.presentation.components.LoadingState
+import com.egtourguide.core.presentation.components.NetworkErrorScreen
 import com.egtourguide.core.presentation.components.ScreenHeader
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 
@@ -116,7 +117,7 @@ private fun MyToursScreenContent(
         ScreenHeader(
             modifier = Modifier.height(52.dp),
             showBack = true,
-            showAdd = true,
+            showAdd = (!uiState.isNetworkError && !uiState.isLoading),
             onBackClicked = onBackClicked,
             onAddClicked = onAddClicked
         )
@@ -130,7 +131,15 @@ private fun MyToursScreenContent(
         }
 
         AnimatedVisibility(
-            visible = !uiState.isLoading && uiState.myTours.isEmpty(),
+            visible = !uiState.isLoading && uiState.isNetworkError,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            NetworkErrorScreen(modifier = Modifier.fillMaxSize())
+        }
+
+        AnimatedVisibility(
+            visible = !uiState.isLoading && uiState.myTours.isEmpty() && !uiState.isNetworkError,
             enter = fadeIn(),
             exit = fadeOut()
         ) {
@@ -138,7 +147,7 @@ private fun MyToursScreenContent(
         }
 
         AnimatedVisibility(
-            visible = !uiState.isLoading && uiState.myTours.isNotEmpty(),
+            visible = !uiState.isLoading && uiState.myTours.isNotEmpty() && !uiState.isNetworkError,
             enter = fadeIn(),
             exit = fadeOut()
         ) {

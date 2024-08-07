@@ -4,6 +4,7 @@ import com.egtourguide.expanded.domain.model.TourDetailsPlace
 
 data class ToursPlanScreenState(
     val isLoading: Boolean = false,
+    val isNetworkError: Boolean = false,
     val errorMessage: String? = null,
     val id: String = "",
     val title: String = "",

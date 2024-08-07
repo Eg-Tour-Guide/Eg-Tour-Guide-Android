@@ -2,6 +2,7 @@ package com.egtourguide.customTours.presentation.customExpanded
 
 data class CustomExpandedState(
     val isLoading: Boolean = false,
+    val isNetworkError: Boolean = false,
     val errorMessage: String? = null,
     val callIsSent: Boolean = false,
     val isSaveSuccess: Boolean = false,

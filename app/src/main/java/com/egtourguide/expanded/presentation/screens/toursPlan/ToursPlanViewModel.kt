@@ -29,6 +29,7 @@ class ToursPlanViewModel @Inject constructor(
                 onSuccess = { response ->
                     _uiState.update {
                         it.copy(
+                            id = id,
                             isLoading = false,
                             title = response.name,
                             days = response.days,
@@ -39,6 +40,9 @@ class ToursPlanViewModel @Inject constructor(
                 },
                 onFailure = { message ->
                     _uiState.update { it.copy(isLoading = false, errorMessage = message) }
+                },
+                onNetworkError = {
+                    _uiState.update { it.copy(isLoading = false, isNetworkError = true) }
                 }
             )
         }

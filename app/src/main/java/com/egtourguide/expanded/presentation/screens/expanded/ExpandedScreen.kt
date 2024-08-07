@@ -72,6 +72,7 @@ import com.egtourguide.home.domain.model.Review
 import com.egtourguide.core.presentation.components.DataRow
 import com.egtourguide.core.presentation.components.LoadingState
 import com.egtourguide.core.presentation.components.MediumCard
+import com.egtourguide.core.presentation.components.NetworkErrorScreen
 import com.egtourguide.expanded.presentation.components.ReviewItem
 import com.egtourguide.expanded.presentation.components.ReviewsHeader
 import com.egtourguide.core.presentation.components.ScreenHeader
@@ -304,6 +305,14 @@ private fun ExpandedScreen(
             LoadingState(
                 modifier = Modifier.fillMaxSize()
             )
+        }
+
+        AnimatedVisibility(
+            visible = !uiState.isLoading && uiState.isNetworkError,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            NetworkErrorScreen(modifier = Modifier.fillMaxSize())
         }
 
         AnimatedVisibility(

@@ -38,6 +38,7 @@ import com.egtourguide.home.domain.model.SearchResult
 import com.egtourguide.core.presentation.components.EmptyState
 import com.egtourguide.core.presentation.components.LargeCard
 import com.egtourguide.core.presentation.components.LoadingState
+import com.egtourguide.core.presentation.components.NetworkErrorScreen
 import com.egtourguide.core.presentation.components.ScreenHeader
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 import com.egtourguide.core.utils.ExpandedType
@@ -132,7 +133,15 @@ fun SearchResultsScreenContent(
         }
 
         AnimatedVisibility(
-            visible = !uiState.isLoading && uiState.results.isEmpty(),
+            visible = !uiState.isLoading && uiState.isNetworkError,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            NetworkErrorScreen(modifier = Modifier.fillMaxSize())
+        }
+
+        AnimatedVisibility(
+            visible = !uiState.isLoading && uiState.results.isEmpty() && !uiState.isNetworkError,
             enter = fadeIn(),
             exit = fadeOut()
         ) {

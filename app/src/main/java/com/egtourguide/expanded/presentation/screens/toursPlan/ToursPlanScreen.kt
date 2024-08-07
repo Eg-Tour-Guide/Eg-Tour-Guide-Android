@@ -1,5 +1,8 @@
 package com.egtourguide.expanded.presentation.screens.toursPlan
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -35,6 +38,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import com.egtourguide.R
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 import com.egtourguide.core.presentation.components.LoadingState
+import com.egtourguide.core.presentation.components.NetworkErrorScreen
 import com.egtourguide.core.presentation.components.ScreenHeader
 
 @Preview
@@ -95,13 +99,29 @@ fun ToursPlanScreenContent(
             modifier = Modifier.height(52.dp)
         )
 
-        if (uiState.isLoading) {
+        AnimatedVisibility(
+            visible = uiState.isLoading,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
             LoadingState(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxSize()
             )
-        } else {
+        }
+
+        AnimatedVisibility(
+            visible = !uiState.isLoading && uiState.isNetworkError,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            NetworkErrorScreen(modifier = Modifier.fillMaxSize())
+        }
+
+        AnimatedVisibility(
+            visible = !uiState.isLoading && uiState.id.isNotEmpty() && !uiState.isNetworkError,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
