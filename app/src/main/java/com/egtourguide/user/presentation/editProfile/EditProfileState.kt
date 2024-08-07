@@ -4,7 +4,7 @@ import com.egtourguide.core.domain.validation.ValidationCases
 
 data class EditProfileState(
     val isLoading: Boolean = false,
-    val errorMessage: String? = null,
+    val isError: Boolean = false,
     val isSuccess: Boolean = false,
     val name: String = "",
     val phone: String = "",

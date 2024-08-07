@@ -52,16 +52,20 @@ fun ChangePasswordScreenRoot(
         if (uiState.isSuccess) {
             Toast.makeText(
                 context,
-                context.getString(R.string.data_changed_successfully),
+                context.getString(R.string.password_changed_successfully),
                 Toast.LENGTH_SHORT
             ).show()
-            viewModel.clearSuccess()
+            onBackClicked()
         }
     }
 
-    LaunchedEffect(key1 = uiState.errorMessage) {
-        uiState.errorMessage?.let {
-            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+    LaunchedEffect(key1 = uiState.isError) {
+        if (uiState.isError) {
+            Toast.makeText(
+                context,
+                context.getString(R.string.failed_to_change_password_please_try_again),
+                Toast.LENGTH_SHORT
+            ).show()
             viewModel.clearError()
         }
     }

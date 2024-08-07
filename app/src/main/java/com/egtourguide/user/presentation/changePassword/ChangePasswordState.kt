@@ -4,7 +4,7 @@ import com.egtourguide.core.domain.validation.ValidationCases
 
 data class ChangePasswordState(
     val isLoading: Boolean = false,
-    val errorMessage: String? = null,
+    val isError: Boolean = false,
     val isSuccess: Boolean = false,
     val oldPassword: String = "",
     val newPassword: String = "",
