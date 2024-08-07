@@ -11,6 +11,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -62,7 +64,7 @@ private fun ExpandedScreenPreview() {
         CustomExpandedContent(
             uiState = CustomExpandedState(
                 id = "1",
-                images = listOf("", "", "", ""),
+                images = (1..25).map { "" },
                 title = "Pyramids",
                 duration = 3,
                 description = getLoremString(words = 50)
@@ -196,7 +198,7 @@ private fun CustomExpandedContent(
 }
 
 @Composable
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
 private fun ImagesSection(
     images: List<String>,
     title: String
@@ -220,21 +222,23 @@ private fun ImagesSection(
                     .fillMaxWidth()
                     .height(246.dp)
                     .clip(RoundedCornerShape(16.dp)),
-                contentScale = ContentScale.FillBounds
+                contentScale = ContentScale.FillBounds,
+                placeholderImage = R.drawable.ic_expanded,
+                errorImage = R.drawable.ic_expanded
             )
         }
 
-        Row(
+        FlowRow(
             Modifier
                 .fillMaxWidth()
-                .padding(top = 8.dp, start = 16.dp, end = 16.dp),
+                .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.Center
         ) {
             repeat(pagerState.pageCount) { iteration ->
                 if (pagerState.currentPage == iteration) {
                     Box(
                         modifier = Modifier
-                            .padding(horizontal = 4.dp)
+                            .padding(start = 4.dp, end = 4.dp, top = 8.dp)
                             .size(10.dp)
                             .clip(CircleShape)
                             .background(MaterialTheme.colorScheme.primary)
@@ -242,7 +246,7 @@ private fun ImagesSection(
                 } else {
                     Box(
                         modifier = Modifier
-                            .padding(horizontal = 4.dp)
+                            .padding(start = 4.dp, end = 4.dp, top = 8.dp)
                             .size(10.dp)
                             .clip(CircleShape)
                             .border(

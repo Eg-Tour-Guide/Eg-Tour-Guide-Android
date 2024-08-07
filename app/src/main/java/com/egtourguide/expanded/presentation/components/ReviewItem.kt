@@ -54,7 +54,7 @@ fun ReviewItem(
             MainImage(
                 data = review.authorImage,
                 errorImage = R.drawable.ic_profile_pic,
-                placeHolderImage = R.drawable.ic_profile_pic,
+                placeholderImage = R.drawable.ic_profile_pic,
                 contentDescription = stringResource(id = R.string.profile_picture),
                 modifier = Modifier
                     .size(24.dp)

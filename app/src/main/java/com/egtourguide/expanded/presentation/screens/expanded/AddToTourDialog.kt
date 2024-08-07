@@ -151,6 +151,8 @@ private fun TourSection(
             ) {
                 MainImage(
                     data = "$LANDMARK_IMAGE_LINK_PREFIX$tourImage",
+                    placeholderImage = R.drawable.ic_expanded,
+                    errorImage = R.drawable.ic_expanded,
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)

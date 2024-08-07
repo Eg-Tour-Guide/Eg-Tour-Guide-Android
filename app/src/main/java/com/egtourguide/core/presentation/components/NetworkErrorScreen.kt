@@ -42,7 +42,7 @@ fun NetworkErrorScreen(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Center
     ) {
         Image(
-            painter = painterResource(id = R.drawable.network_error),
+            painter = painterResource(id = R.drawable.ic_network_error),
             contentDescription = null,
             modifier = Modifier
                 .width(110.dp)

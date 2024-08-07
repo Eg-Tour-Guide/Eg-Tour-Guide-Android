@@ -68,6 +68,8 @@ fun TourPlanItem(
         MainImage(
             data = "$LANDMARK_IMAGE_LINK_PREFIX${place.image}",
             contentDescription = null,
+            placeholderImage = R.drawable.ic_plan_item,
+            errorImage = R.drawable.ic_plan_item,
             modifier = Modifier
                 .width(125.dp)
                 .fillMaxHeight()

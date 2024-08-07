@@ -399,8 +399,8 @@ private fun UpcomingEventsSection(
                         onEventClicked(events[pos])
                     },
                 data = "$LANDMARK_IMAGE_LINK_PREFIX/${events[pos].images.firstOrNull()}",
-                placeHolderImage = R.drawable.event_image,
-                errorImage = R.drawable.event_image
+                placeholderImage = R.drawable.ic_event,
+                errorImage = R.drawable.ic_event
             )
         }
     }

@@ -87,8 +87,8 @@ fun LargeCard(
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(4.dp)),
             data = "${if (itemType == ItemType.ARTIFACT) ARTIFACT_IMAGE_LINK_PREFIX else LANDMARK_IMAGE_LINK_PREFIX}$image",
-            placeHolderImage = R.drawable.large_card_image,
-            errorImage = R.drawable.large_card_image
+            placeholderImage = R.drawable.ic_large_card,
+            errorImage = R.drawable.ic_large_card
         )
 
         Row(

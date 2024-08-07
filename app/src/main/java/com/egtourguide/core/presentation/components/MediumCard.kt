@@ -87,8 +87,8 @@ fun MediumCard(
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(4.dp)),
             data = "${if (itemType == ItemType.ARTIFACT) ARTIFACT_IMAGE_LINK_PREFIX else LANDMARK_IMAGE_LINK_PREFIX}$image",
-            placeHolderImage = R.drawable.medium_card_image,
-            errorImage = R.drawable.medium_card_image
+            placeholderImage = R.drawable.ic_medium_card,
+            errorImage = R.drawable.ic_medium_card
         )
 
         Row(

@@ -10,7 +10,6 @@ import androidx.compose.ui.platform.LocalContext
 import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
-import com.egtourguide.R
 import com.egtourguide.core.utils.Constants.BASE_URL
 import kotlinx.coroutines.Dispatchers
 
@@ -20,8 +19,8 @@ fun MainImage(
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Crop,
     contentDescription: String? = null,
-    @DrawableRes placeHolderImage: Int = R.drawable.ic_placeholder,
-    @DrawableRes errorImage: Int = R.drawable.ic_error_image
+    @DrawableRes placeholderImage: Int,
+    @DrawableRes errorImage: Int
 ) {
     val context = LocalContext.current
 
@@ -36,7 +35,7 @@ fun MainImage(
                 .networkCachePolicy(CachePolicy.ENABLED)
                 .diskCachePolicy(CachePolicy.DISABLED)
                 .dispatcher(Dispatchers.IO)
-                .placeholder(placeHolderImage)
+                .placeholder(placeholderImage)
                 .error(errorImage)
                 .build(),
             contentDescription = contentDescription,

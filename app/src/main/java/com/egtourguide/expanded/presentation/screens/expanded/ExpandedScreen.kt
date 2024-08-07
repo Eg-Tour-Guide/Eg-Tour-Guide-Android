@@ -452,7 +452,9 @@ private fun ImagesSection(
                     .fillMaxWidth()
                     .height(246.dp)
                     .clip(RoundedCornerShape(16.dp)),
-                contentScale = ContentScale.FillBounds
+                contentScale = ContentScale.FillBounds,
+                placeholderImage = R.drawable.ic_expanded,
+                errorImage = R.drawable.ic_expanded
             )
         }
 
