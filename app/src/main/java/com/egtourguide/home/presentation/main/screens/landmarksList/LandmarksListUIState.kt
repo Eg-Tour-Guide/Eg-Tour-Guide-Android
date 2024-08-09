@@ -10,9 +10,9 @@ data class LandmarksListUIState(
     val landmarks: List<AbstractedLandmark> = emptyList(),
     val displayedLandmarks: List<AbstractedLandmark> = emptyList(),
     val error: String? = null,
+    val isSaveCall: Boolean = true,
     val isSaveSuccess: Boolean = false,
-    val isSave: Boolean = true,
-    val saveError: String? = null,
+    val isSaveError: Boolean = false,
     val isDetectionLoading: Boolean = false,
     val detectedArtifact: DetectedArtifact? = null
 )

@@ -83,6 +83,7 @@
     <string name="write_review">Write your review (optional)</string>
     <string name="submit">Submit</string>
     <string name="add_to_tour">Add to Tour</string>
+    <!--  TODO: Remove these two!!  -->
     <string name="saved_successfully">Saved Successfully</string>
     <string name="unsaved_successfully">Unsaved Successfully</string>
     <string name="got_to_active_tour">Go to Active Tour</string>
@@ -182,4 +183,8 @@
     <string name="we_re_on_it">We\'re on it…</string>
     <string name="just_a_second_more">Just a second more…</string>
     <string name="getting_everything_ready">Getting everything ready…</string>
+    <string name="save_success">Saved!</string>
+    <string name="save_error">Failed to save, Please try again.</string>
+    <string name="unsave_success">Removed.</string>
+    <string name="unsave_error">Failed to remove, Please try again.</string>
 </resources>

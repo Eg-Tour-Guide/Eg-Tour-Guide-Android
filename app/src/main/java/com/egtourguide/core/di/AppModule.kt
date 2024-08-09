@@ -41,9 +41,10 @@ object AppModule {
             addInterceptor(tokenInterceptor)
             authenticator(tokenAuthenticator)
             addInterceptor(httpClientLoggingInterceptor)
-            readTimeout(5, TimeUnit.MINUTES)
-            writeTimeout(5, TimeUnit.MINUTES)
-            callTimeout(5, TimeUnit.MINUTES)
+            // TODO: Adjust the time again!!
+            readTimeout(30, TimeUnit.SECONDS)
+            writeTimeout(30, TimeUnit.SECONDS)
+            callTimeout(30, TimeUnit.SECONDS)
         }.build()
     }
 

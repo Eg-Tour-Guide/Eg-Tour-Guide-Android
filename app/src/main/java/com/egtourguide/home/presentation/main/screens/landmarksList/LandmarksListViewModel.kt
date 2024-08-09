@@ -30,18 +30,20 @@ class LandmarksListViewModel @Inject constructor(
     fun onSaveClicked(place: AbstractedLandmark) {
         viewModelScope.launch(Dispatchers.IO) {
             place.isSaved = !place.isSaved
+            _uiState.update { it.copy(isSaveCall = place.isSaved) }
 
             changeLandmarkSavedStateUseCase(placeId = place.id).onResponse(
                 onLoading = {},
                 onSuccess = {
-                    _uiState.update { it.copy(isSaveSuccess = true, isSave = place.isSaved) }
+                    _uiState.update { it.copy(isSaveSuccess = true) }
                 },
-                onFailure = { error ->
-                    _uiState.update { it.copy(saveError = error) }
+                onFailure = {
+                    _uiState.update { it.copy(isSaveError = true) }
+                    place.isSaved = !place.isSaved
                 },
                 onNetworkError = {
-                    // TODO: Show save error!!
-                    _uiState.update { it.copy(isLoading = false) }
+                    _uiState.update { it.copy(isSaveError = true) }
+                    place.isSaved = !place.isSaved
                 }
             )
         }
@@ -77,7 +79,7 @@ class LandmarksListViewModel @Inject constructor(
     }
 
     fun clearSaveError() {
-        _uiState.update { it.copy(saveError = null) }
+        _uiState.update { it.copy(isSaveError = false) }
     }
 
     // TODO: Add rest of filters!!

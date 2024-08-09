@@ -127,22 +127,22 @@ fun LandmarksListScreen(
         }
     }
 
-    // TODO: Check this!!
-    LaunchedEffect(key1 = uiState.isSaveSuccess, key2 = uiState.saveError) {
-        val successMsg =
-            if (uiState.isSave) R.string.saved_successfully else R.string.unsaved_successfully
+    LaunchedEffect(key1 = uiState.isSaveSuccess) {
         if (uiState.isSaveSuccess) {
-            Toast.makeText(context, successMsg, Toast.LENGTH_SHORT).show()
+            val message = if (uiState.isSaveCall) R.string.save_success else R.string.unsave_success
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
             viewModel.clearSaveSuccess()
-        } else if (uiState.saveError != null) {
-            Toast.makeText(
-                context,
-                "There are a problem in saving the place, try again later",
-                Toast.LENGTH_SHORT
-            ).show()
+        }
+    }
+
+    LaunchedEffect(key1 = uiState.isSaveError) {
+        if (uiState.isSaveError) {
+            val message = if (uiState.isSaveCall) R.string.save_error else R.string.unsave_error
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
             viewModel.clearSaveError()
         }
     }
+
 
     LaunchedEffect(key1 = uiState.detectedArtifact) {
         if (uiState.detectedArtifact != null) {
