@@ -74,6 +74,25 @@ class LandmarksListViewModel @Inject constructor(
         }
     }
 
+    fun refreshLandmarks() {
+        viewModelScope.launch(Dispatchers.IO) {
+            getLandmarksListUseCase().onResponse(
+                onLoading = {
+                    _uiState.update { it.copy(isRefreshing = true) }
+                },
+                onSuccess = { response ->
+                    _uiState.update { it.copy(isRefreshing = false, landmarks = response) }
+                },
+                onFailure = {
+                    _uiState.update { it.copy(isRefreshing = false) }
+                },
+                onNetworkError = {
+                    _uiState.update { it.copy(isRefreshing = false) }
+                }
+            )
+        }
+    }
+
     fun clearSaveSuccess() {
         _uiState.update { it.copy(isSaveSuccess = false) }
     }

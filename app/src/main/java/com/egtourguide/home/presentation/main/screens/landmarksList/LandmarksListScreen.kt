@@ -43,6 +43,7 @@ import com.egtourguide.core.presentation.components.EmptyState
 import com.egtourguide.core.presentation.components.LoadingState
 import com.egtourguide.core.presentation.components.LargeCard
 import com.egtourguide.core.presentation.components.NetworkErrorScreen
+import com.egtourguide.core.presentation.components.PullToRefreshScreen
 import com.egtourguide.core.presentation.components.ScreenHeader
 import com.egtourguide.home.domain.model.DetectedArtifact
 import com.egtourguide.home.presentation.filter.FilterScreenViewModel
@@ -105,15 +106,20 @@ fun LandmarksListScreen(
 
     var isDetectionDialogShown by remember { mutableStateOf(false) }
 
-    LandmarksListScreenContent(
-        uiState = uiState,
-        hasChanged = hasChanged,
-        onSearchClicked = onNavigateToSearch,
-        onFilterClicked = onNavigateToFilters,
-        onPlaceClicked = onNavigateToSinglePlace,
-        onSaveClicked = viewModel::onSaveClicked,
-        onCaptureObjectClicked = { isDetectionDialogShown = true }
-    )
+    PullToRefreshScreen(
+        isRefreshing = uiState.isRefreshing,
+        onRefresh = viewModel::refreshLandmarks
+    ) {
+        LandmarksListScreenContent(
+            uiState = uiState,
+            hasChanged = hasChanged,
+            onSearchClicked = onNavigateToSearch,
+            onFilterClicked = onNavigateToFilters,
+            onPlaceClicked = onNavigateToSinglePlace,
+            onSaveClicked = viewModel::onSaveClicked,
+            onCaptureObjectClicked = { isDetectionDialogShown = true }
+        )
+    }
 
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
