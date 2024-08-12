@@ -71,6 +71,25 @@ class ArtifactsListViewModel @Inject constructor(
         }
     }
 
+    fun refreshArtifacts() {
+        viewModelScope.launch(Dispatchers.IO) {
+            getArtifactsListUseCase().onResponse(
+                onLoading = {
+                    _uiState.update { it.copy(isRefreshing = true) }
+                },
+                onSuccess = { response ->
+                    _uiState.update { it.copy(isRefreshing = false, artifacts = response) }
+                },
+                onFailure = {
+                    _uiState.update { it.copy(isRefreshing = false) }
+                },
+                onNetworkError = {
+                    _uiState.update { it.copy(isRefreshing = false) }
+                }
+            )
+        }
+    }
+
     // TODO: Add rest of filters!!
     fun filterArtifacts(filterState: FilterScreenState) {
         _uiState.update {

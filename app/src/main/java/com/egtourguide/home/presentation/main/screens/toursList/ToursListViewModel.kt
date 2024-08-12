@@ -52,6 +52,25 @@ class ToursListViewModel @Inject constructor(
         }
     }
 
+    fun refreshTours() {
+        viewModelScope.launch(Dispatchers.IO) {
+            getToursListUseCase().onResponse(
+                onLoading = {
+                    _uiState.update { it.copy(isRefreshing = true) }
+                },
+                onSuccess = { response ->
+                    _uiState.update { it.copy(isRefreshing = false, tours = response) }
+                },
+                onFailure = {
+                    _uiState.update { it.copy(isRefreshing = false) }
+                },
+                onNetworkError = {
+                    _uiState.update { it.copy(isRefreshing = false) }
+                }
+            )
+        }
+    }
+
     fun onSaveClicked(tour: AbstractedTour) {
         viewModelScope.launch(Dispatchers.IO) {
             changeTourSavedStateUseCase(tourId = tour.id).onResponse(

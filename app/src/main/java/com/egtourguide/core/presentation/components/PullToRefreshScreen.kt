@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 import kotlinx.coroutines.delay
@@ -85,11 +86,12 @@ private fun PullToRefreshScreenPreview() {
 @Composable
 fun PullToRefreshScreen(
     modifier: Modifier = Modifier,
+    positionalThreshold: Dp = 90.dp,
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
     content: @Composable () -> Unit
 ) {
-    val pullToRefreshState = rememberPullToRefreshState()
+    val pullToRefreshState = rememberPullToRefreshState(positionalThreshold = positionalThreshold)
 
     Box(
         modifier = modifier

@@ -23,7 +23,9 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -57,6 +59,7 @@ import com.egtourguide.home.domain.model.AbstractedLandmark
 import com.egtourguide.core.presentation.components.LoadingState
 import com.egtourguide.core.presentation.components.MediumCard
 import com.egtourguide.core.presentation.components.NetworkErrorScreen
+import com.egtourguide.core.presentation.components.PullToRefreshScreen
 import com.egtourguide.core.presentation.components.ScreenHeader
 import com.egtourguide.home.presentation.main.components.ArtifactDetectionDialog
 import kotlinx.coroutines.delay
@@ -149,16 +152,21 @@ fun HomeScreen(
     val context = LocalContext.current
     var isDetectionDialogShown by remember { mutableStateOf(false) }
 
-    HomeScreenContent(
-        uiState = uiState,
-        onNavigateToSearch = onNavigateToSearch,
-        onCaptureObjectClicked = {
-            isDetectionDialogShown = true
-        },
-        onPlaceClicked = onNavigateToSinglePlace,
-        onEventClicked = onNavigateToEvent,
-        onSaveClicked = viewModel::onSaveClicked
-    )
+    PullToRefreshScreen(
+        isRefreshing = uiState.isRefreshing,
+        onRefresh = viewModel::refreshHome
+    ) {
+        HomeScreenContent(
+            uiState = uiState,
+            onNavigateToSearch = onNavigateToSearch,
+            onCaptureObjectClicked = {
+                isDetectionDialogShown = true
+            },
+            onPlaceClicked = onNavigateToSinglePlace,
+            onEventClicked = onNavigateToEvent,
+            onSaveClicked = viewModel::onSaveClicked
+        )
+    }
 
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -243,7 +251,11 @@ private fun HomeScreenContent(
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            NetworkErrorScreen(modifier = Modifier.fillMaxSize())
+            NetworkErrorScreen(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            )
         }
 
         AnimatedVisibility(

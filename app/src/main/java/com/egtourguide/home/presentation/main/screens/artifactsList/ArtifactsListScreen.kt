@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -43,6 +45,7 @@ import com.egtourguide.core.presentation.components.EmptyState
 import com.egtourguide.core.presentation.components.LargeCard
 import com.egtourguide.core.presentation.components.LoadingState
 import com.egtourguide.core.presentation.components.NetworkErrorScreen
+import com.egtourguide.core.presentation.components.PullToRefreshScreen
 import com.egtourguide.core.presentation.components.ScreenHeader
 import com.egtourguide.home.domain.model.DetectedArtifact
 import com.egtourguide.home.presentation.filter.FilterScreenViewModel
@@ -105,15 +108,20 @@ fun ArtifactsListScreen(
 
     var isDetectionDialogShown by remember { mutableStateOf(false) }
 
-    ArtifactsListScreenContent(
-        uiState = uiState,
-        hasChanged = hasChanged,
-        onSearchClicked = onNavigateToSearch,
-        onFilterClicked = onNavigateToFilters,
-        onArtifactClicked = onNavigateToSingleArtifact,
-        onSaveClicked = viewModel::onSaveClicked,
-        onCaptureObjectClicked = { isDetectionDialogShown = true }
-    )
+    PullToRefreshScreen(
+        isRefreshing = uiState.isRefreshing,
+        onRefresh = viewModel::refreshArtifacts
+    ) {
+        ArtifactsListScreenContent(
+            uiState = uiState,
+            hasChanged = hasChanged,
+            onSearchClicked = onNavigateToSearch,
+            onFilterClicked = onNavigateToFilters,
+            onArtifactClicked = onNavigateToSingleArtifact,
+            onSaveClicked = viewModel::onSaveClicked,
+            onCaptureObjectClicked = { isDetectionDialogShown = true }
+        )
+    }
 
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -199,7 +207,11 @@ fun ArtifactsListScreenContent(
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            NetworkErrorScreen(modifier = Modifier.fillMaxSize())
+            NetworkErrorScreen(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            )
         }
 
         AnimatedVisibility(
@@ -207,7 +219,11 @@ fun ArtifactsListScreenContent(
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            EmptyState(modifier = Modifier.fillMaxSize())
+            EmptyState(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            )
         }
 
         AnimatedVisibility(

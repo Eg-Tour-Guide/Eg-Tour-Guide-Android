@@ -55,6 +55,35 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun refreshHome() {
+        viewModelScope.launch(Dispatchers.IO) {
+            getHomeUseCase().onResponse(
+                onLoading = {
+                    _uiState.update { it.copy(isRefreshing = true) }
+                },
+                onSuccess = { response ->
+                    _uiState.update {
+                        it.copy(
+                            isRefreshing = false,
+                            events = response.event,
+                            suggestedPlaces = response.suggestedForYou,
+                            topRatedPlaces = response.topRated,
+                            explorePlaces = response.explore,
+                            recentlyAddedPlaces = response.recentlyAdded,
+                            recentlyViewedPlaces = response.recentlyViewed
+                        )
+                    }
+                },
+                onFailure = {
+                    _uiState.update { it.copy(isRefreshing = false) }
+                },
+                onNetworkError = {
+                    _uiState.update { it.copy(isRefreshing = false) }
+                }
+            )
+        }
+    }
+
     fun onSaveClicked(place: AbstractedLandmark) {
         viewModelScope.launch(Dispatchers.IO) {
             place.isSaved = !place.isSaved
