@@ -79,10 +79,25 @@ fun SearchScreen(
         }
     }
 
-    LaunchedEffect(key1 = uiState.error) {
-        uiState.error?.let {
-            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+    LaunchedEffect(key1 = uiState.isError) {
+        if (uiState.isError) {
+            Toast.makeText(
+                context,
+                context.getString(R.string.failed_to_clear_history_please_try_again),
+                Toast.LENGTH_SHORT
+            ).show()
             viewModel.clearError()
+        }
+    }
+
+    LaunchedEffect(key1 = uiState.isNetworkError) {
+        if (uiState.isNetworkError) {
+            Toast.makeText(
+                context,
+                context.getString(R.string.network_error_toast),
+                Toast.LENGTH_SHORT
+            ).show()
+            viewModel.clearNetworkError()
         }
     }
 }

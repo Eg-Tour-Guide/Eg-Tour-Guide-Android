@@ -44,17 +44,21 @@ class MyToursViewModel @Inject constructor(
 
     fun onSaveClicked(tour: AbstractedTour) {
         viewModelScope.launch(Dispatchers.IO) {
+            tour.isSaved = !tour.isSaved
+            _uiState.update { it.copy(isSaveCall = tour.isSaved) }
+
             changeTourSavedStateUseCase(tourId = tour.id).onResponse(
                 onLoading = {},
                 onSuccess = {
-                    _uiState.update { it.copy(isSaveSuccess = true, isSave = !tour.isSaved) }
+                    _uiState.update { it.copy(isSaveSuccess = true) }
                 },
-                onFailure = { error ->
-                    _uiState.update { it.copy(saveError = error) }
+                onFailure = {
+                    _uiState.update { it.copy(isSaveError = true) }
+                    tour.isSaved = !tour.isSaved
                 },
                 onNetworkError = {
-                    // TODO: Show save error!!
-                    _uiState.update { it.copy(isLoading = false) }
+                    _uiState.update { it.copy(isSaveError = true) }
+                    tour.isSaved = !tour.isSaved
                 }
             )
         }
@@ -65,7 +69,7 @@ class MyToursViewModel @Inject constructor(
     }
 
     fun clearSaveError() {
-        _uiState.update { it.copy(saveError = null) }
+        _uiState.update { it.copy(isSaveError = false) }
     }
 
     fun clearError() {

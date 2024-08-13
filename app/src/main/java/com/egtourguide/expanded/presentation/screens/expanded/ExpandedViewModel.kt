@@ -199,42 +199,66 @@ class ExpandedViewModel @Inject constructor(
         }
     }
 
-    fun changeSavedState() {
+    fun changeSavedState(expandedType: String) {
+        val successLogic = {
+            _uiState.update { it.copy(isSaveSuccess = true) }
+        }
+
+        val errorLogic = {
+            _uiState.update { it.copy(isSaveError = true, isSaved = !it.isSaved) }
+        }
+
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.update { it.copy(isSaved = !it.isSaved, isSaveCall = !it.isSaved) }
 
-            changeLandmarkSavedStateUseCase(placeId = _uiState.value.id).onResponse(
-                onLoading = {},
-                onSuccess = {
-                    _uiState.update { it.copy(isSaveSuccess = true) }
-                },
-                onFailure = { message ->
-                    _uiState.update { it.copy(errorMessage = message) }
-                },
-                onNetworkError = {
-                    // TODO: Show save error!!
-                    _uiState.update { it.copy(isLoading = false) }
+            when (expandedType) {
+                LANDMARK.name -> {
+                    changeLandmarkSavedStateUseCase(placeId = _uiState.value.id).onResponse(
+                        onLoading = {},
+                        onSuccess = { successLogic() },
+                        onFailure = { errorLogic() },
+                        onNetworkError = errorLogic
+                    )
                 }
-            )
+
+                ARTIFACT.name -> {
+                    changeArtifactSavedStateUseCase(artifactId = _uiState.value.id).onResponse(
+                        onLoading = {},
+                        onSuccess = { successLogic() },
+                        onFailure = { errorLogic() },
+                        onNetworkError = errorLogic
+                    )
+                }
+
+                else -> {
+                    changeTourSavedStateUseCase(tourId = _uiState.value.id).onResponse(
+                        onLoading = {},
+                        onSuccess = { successLogic() },
+                        onFailure = { errorLogic() },
+                        onNetworkError = errorLogic
+                    )
+                }
+            }
         }
     }
 
     fun changePlaceSavedState(place: AbstractedLandmark) {
         viewModelScope.launch(Dispatchers.IO) {
-            _uiState.update { it.copy(isSaveCall = !place.isSaved) }
             place.isSaved = !place.isSaved
+            _uiState.update { it.copy(isSaveCall = place.isSaved) }
 
             changeLandmarkSavedStateUseCase(placeId = place.id).onResponse(
                 onLoading = {},
                 onSuccess = {
                     _uiState.update { it.copy(isSaveSuccess = true) }
                 },
-                onFailure = { message ->
-                    _uiState.update { it.copy(errorMessage = message) }
+                onFailure = {
+                    _uiState.update { it.copy(isSaveError = true) }
+                    place.isSaved = !place.isSaved
                 },
                 onNetworkError = {
-                    // TODO: Show save error!!
-                    _uiState.update { it.copy(isLoading = false) }
+                    _uiState.update { it.copy(isSaveError = true) }
+                    place.isSaved = !place.isSaved
                 }
             )
         }
@@ -242,20 +266,21 @@ class ExpandedViewModel @Inject constructor(
 
     fun changeArtifactSavedState(artifact: AbstractedArtifact) {
         viewModelScope.launch(Dispatchers.IO) {
-            _uiState.update { it.copy(isSaveCall = !artifact.isSaved) }
             artifact.isSaved = !artifact.isSaved
+            _uiState.update { it.copy(isSaveCall = artifact.isSaved) }
 
             changeArtifactSavedStateUseCase(artifactId = artifact.id).onResponse(
                 onLoading = {},
                 onSuccess = {
                     _uiState.update { it.copy(isSaveSuccess = true) }
                 },
-                onFailure = { message ->
-                    _uiState.update { it.copy(errorMessage = message) }
+                onFailure = {
+                    _uiState.update { it.copy(isSaveError = true) }
+                    artifact.isSaved = !artifact.isSaved
                 },
                 onNetworkError = {
-                    // TODO: Show save error!!
-                    _uiState.update { it.copy(isLoading = false) }
+                    _uiState.update { it.copy(isSaveError = true) }
+                    artifact.isSaved = !artifact.isSaved
                 }
             )
         }
@@ -263,20 +288,21 @@ class ExpandedViewModel @Inject constructor(
 
     fun changeTourSavedState(tour: AbstractedTour) {
         viewModelScope.launch(Dispatchers.IO) {
-            _uiState.update { it.copy(isSaveCall = !tour.isSaved) }
             tour.isSaved = !tour.isSaved
+            _uiState.update { it.copy(isSaveCall = tour.isSaved) }
 
             changeTourSavedStateUseCase(tourId = tour.id).onResponse(
                 onLoading = {},
                 onSuccess = {
                     _uiState.update { it.copy(isSaveSuccess = true) }
                 },
-                onFailure = { message ->
-                    _uiState.update { it.copy(errorMessage = message) }
+                onFailure = {
+                    _uiState.update { it.copy(isSaveError = true) }
+                    tour.isSaved = !tour.isSaved
                 },
                 onNetworkError = {
-                    // TODO: Show save error!!
-                    _uiState.update { it.copy(isLoading = false) }
+                    _uiState.update { it.copy(isSaveError = true) }
+                    tour.isSaved = !tour.isSaved
                 }
             )
         }
@@ -288,6 +314,10 @@ class ExpandedViewModel @Inject constructor(
 
     fun clearSaveSuccess() {
         _uiState.update { it.copy(isSaveSuccess = false) }
+    }
+
+    fun clearSaveError() {
+        _uiState.update { it.copy(isSaveError = false) }
     }
 
     fun changeAddDialogVisibility() {
@@ -346,13 +376,17 @@ class ExpandedViewModel @Inject constructor(
                     _uiState.update { it.copy(showLoadingDialog = false, showAddError = true) }
                 },
                 onNetworkError = {
-                    _uiState.update { it.copy(showLoadingDialog = false, showAddError = true) }
+                    _uiState.update { it.copy(showLoadingDialog = false, isNetworkError = true) }
                 }
             )
         }
     }
 
-    fun clearToasts() {
-        _uiState.update { it.copy(showAddSuccess = false, showAddError = false) }
+    fun clearAddSuccess() {
+        _uiState.update { it.copy(showAddSuccess = false) }
+    }
+
+    fun clearAddError() {
+        _uiState.update { it.copy(showAddError = false) }
     }
 }

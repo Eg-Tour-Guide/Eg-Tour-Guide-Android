@@ -60,36 +60,28 @@ class SearchResultsViewModel @Inject constructor(
     }
 
     fun onSaveClicked(item: SearchResult) {
+        val errorLogic = {
+            _uiState.update { it.copy(isSaveError = true) }
+            item.isSaved = !item.isSaved
+        }
+
         viewModelScope.launch(Dispatchers.IO) {
+            item.isSaved = !item.isSaved
+            _uiState.update { it.copy(isSaveCall = item.isSaved) }
+
             if (item.itemType == ItemType.ARTIFACT) {
-                item.isSaved = !item.isSaved
-                changeArtifactSavedStateUseCase(
-                    artifactId = item.id
-                ).onResponse(
+                changeArtifactSavedStateUseCase(artifactId = item.id).onResponse(
                     onLoading = {},
-                    onSuccess = {
-                        _uiState.update { it.copy(isSaveSuccess = true, isSave = item.isSaved) }
-                    },
-                    onFailure = { error ->
-                        _uiState.update { it.copy(saveError = error) }
-                    },
-                    onNetworkError = {
-                        // TODO: Show save error!!
-                    }
+                    onSuccess = { _uiState.update { it.copy(isSaveSuccess = true) } },
+                    onFailure = { errorLogic() },
+                    onNetworkError = errorLogic
                 )
             } else {
-                item.isSaved = !item.isSaved
                 changeLandmarkSavedStateUseCase(item.id).onResponse(
                     onLoading = {},
-                    onSuccess = {
-                        _uiState.update { it.copy(isSaveSuccess = true, isSave = item.isSaved) }
-                    },
-                    onFailure = { error ->
-                        _uiState.update { it.copy(saveError = error) }
-                    },
-                    onNetworkError = {
-                        // TODO: Show save error!!
-                    }
+                    onSuccess = { _uiState.update { it.copy(isSaveSuccess = true) } },
+                    onFailure = { errorLogic() },
+                    onNetworkError = errorLogic
                 )
             }
         }
@@ -111,6 +103,6 @@ class SearchResultsViewModel @Inject constructor(
     }
 
     fun clearSaveError() {
-        _uiState.update { it.copy(saveError = null) }
+        _uiState.update { it.copy(isSaveError = false) }
     }
 }

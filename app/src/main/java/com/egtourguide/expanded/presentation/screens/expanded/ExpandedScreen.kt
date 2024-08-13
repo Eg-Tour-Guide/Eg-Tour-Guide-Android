@@ -9,6 +9,8 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,6 +41,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -169,7 +172,7 @@ fun ExpandedScreenRoot(
                 Toast.LENGTH_SHORT
             ).show()
 
-            viewModel.clearToasts()
+            viewModel.clearAddSuccess()
         }
     }
 
@@ -181,18 +184,23 @@ fun ExpandedScreenRoot(
                 Toast.LENGTH_SHORT
             ).show()
 
-            viewModel.clearToasts()
+            viewModel.clearAddError()
         }
     }
 
     LaunchedEffect(key1 = uiState.isSaveSuccess) {
         if (uiState.isSaveSuccess) {
-            Toast.makeText(
-                context,
-                if (uiState.isSaveCall) R.string.saved_successfully else R.string.unsaved_successfully,
-                Toast.LENGTH_SHORT
-            ).show()
+            val message = if (uiState.isSaveCall) R.string.save_success else R.string.unsave_success
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
             viewModel.clearSaveSuccess()
+        }
+    }
+
+    LaunchedEffect(key1 = uiState.isSaveError) {
+        if (uiState.isSaveError) {
+            val message = if (uiState.isSaveCall) R.string.save_error else R.string.unsave_error
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            viewModel.clearSaveError()
         }
     }
 
@@ -251,7 +259,7 @@ fun ExpandedScreenRoot(
                 context.startActivity(sceneViewerIntent)
             }
         },
-        onSaveClicked = viewModel::changeSavedState,
+        onSaveClicked = { viewModel.changeSavedState(expandedType = expandedType) },
         onSavePlace = viewModel::changePlaceSavedState,
         onSaveArtifact = viewModel::changeArtifactSavedState,
         onSaveTour = viewModel::changeTourSavedState,
@@ -336,19 +344,10 @@ private fun ExpandedScreen(
                 item {
                     TitleSection(
                         expandedType = expandedType,
-                        title = uiState.title,
-                        isSaved = uiState.isSaved,
+                        uiState = uiState,
                         onSaveClicked = onSaveClicked,
                         onAddClicked = onAddClicked,
                         goToTourPlan = goToTourPlan,
-                        location = uiState.location,
-                        reviewsAverage = uiState.reviewsAverage,
-                        reviewsCount = uiState.reviewsCount,
-                        tourismTypes = uiState.tourismTypes,
-                        artifactType = uiState.artifactType,
-                        artifactMaterials = uiState.artifactMaterials,
-                        date = uiState.date,
-                        duration = uiState.duration,
                         modifier = Modifier.padding(top = 16.dp)
                     )
                 }
@@ -362,7 +361,7 @@ private fun ExpandedScreen(
                     }
                 }
 
-                if (expandedType != ExpandedType.TOUR.name && uiState.latitute != 0.0 && uiState.longitude != 0.0) {
+                /*if (expandedType != ExpandedType.TOUR.name && uiState.latitute != 0.0 && uiState.longitude != 0.0) {
                     item {
                         LocationSection(
                             title = uiState.title,
@@ -371,7 +370,7 @@ private fun ExpandedScreen(
                             modifier = Modifier.padding(top = 24.dp, start = 16.dp, end = 16.dp)
                         )
                     }
-                }
+                }*/
 
                 if (expandedType == ExpandedType.LANDMARK.name || expandedType == ExpandedType.TOUR.name) {
                     item {
@@ -501,27 +500,20 @@ private fun ImagesSection(
 
 @Composable
 private fun TitleSection(
+    uiState: ExpandedScreenState,
     expandedType: String,
-    title: String,
-    isSaved: Boolean,
     onSaveClicked: () -> Unit,
     onAddClicked: () -> Unit,
     goToTourPlan: () -> Unit,
-    location: String,
-    date: String,
-    duration: Int,
-    reviewsAverage: Double,
-    reviewsCount: Int,
-    tourismTypes: String,
-    artifactType: String,
-    artifactMaterials: String,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
         Text(
-            text = title,
+            text = uiState.title,
             modifier = Modifier.padding(horizontal = 16.dp),
             style = MaterialTheme.typography.displayLarge,
             color = MaterialTheme.colorScheme.onBackground
@@ -536,31 +528,45 @@ private fun TitleSection(
                     .weight(1f)
                     .padding(start = 16.dp, top = 8.dp)
             ) {
-                if (location.isNotEmpty()) {
+                if (uiState.location.isNotEmpty()) {
                     DataRow(
                         icon = R.drawable.ic_location,
                         iconDescription = stringResource(R.string.location),
-                        text = location,
-                        modifier = Modifier.fillMaxWidth()
+                        text = uiState.location,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable(
+                                enabled = (expandedType != ExpandedType.TOUR.name && uiState.latitute != 0.0 && uiState.longitude != 0.0),
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() },
+                                onClick = {
+                                    val uri =
+                                        Uri.parse("geo:0,0?q=${uiState.latitute},${uiState.longitude}(${uiState.title})")
+                                    Intent(Intent.ACTION_VIEW, uri).also { intent ->
+                                        intent.setPackage("com.google.android.apps.maps")
+                                        context.startActivity(intent)
+                                    }
+                                }
+                            )
                     )
                 }
 
-                if (expandedType == ExpandedType.EVENT.name && date.isNotEmpty()) {
+                if (expandedType == ExpandedType.EVENT.name && uiState.date.isNotEmpty()) {
                     DataRow(
                         icon = R.drawable.ic_calendar,
                         iconDescription = stringResource(R.string.date),
-                        text = convertDate(inputDate = date),
+                        text = convertDate(inputDate = uiState.date),
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 8.dp)
                     )
                 }
 
-                if (expandedType != ExpandedType.LANDMARK.name && expandedType != ExpandedType.ARTIFACT.name && duration != 0) {
+                if (expandedType != ExpandedType.LANDMARK.name && expandedType != ExpandedType.ARTIFACT.name && uiState.duration != 0) {
                     DataRow(
                         icon = R.drawable.ic_timesheet,
                         iconDescription = stringResource(R.string.duration),
-                        text = stringResource(id = R.string.days_count, duration),
+                        text = stringResource(id = R.string.days_count, uiState.duration),
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = if (expandedType == ExpandedType.EVENT.name) 8.dp else 0.dp)
@@ -572,8 +578,8 @@ private fun TitleSection(
                         icon = R.drawable.ic_rating_star,
                         text = stringResource(
                             id = R.string.reviews_average_total,
-                            reviewsAverage,
-                            reviewsCount
+                            uiState.reviewsAverage,
+                            uiState.reviewsCount
                         ),
                         iconTint = Color(0xFFFF8D18),
                         modifier = Modifier
@@ -582,33 +588,33 @@ private fun TitleSection(
                     )
                 }
 
-                if (tourismTypes.isNotEmpty()) {
+                if (uiState.tourismTypes.isNotEmpty()) {
                     DataRow(
                         icon = R.drawable.ic_landmarks,
                         iconDescription = stringResource(R.string.tourism_types),
-                        text = tourismTypes,
+                        text = uiState.tourismTypes,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 8.dp)
                     )
                 }
 
-                if (artifactType.isNotEmpty()) {
+                if (uiState.artifactType.isNotEmpty()) {
                     DataRow(
                         icon = R.drawable.ic_artifacts,
                         iconDescription = stringResource(R.string.artifact_type),
-                        text = artifactType,
+                        text = uiState.artifactType,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 8.dp)
                     )
                 }
 
-                if (artifactMaterials.isNotEmpty()) {
+                if (uiState.artifactMaterials.isNotEmpty()) {
                     DataRow(
                         icon = R.drawable.ic_materials,
                         iconDescription = stringResource(R.string.artifact_materials),
-                        text = artifactMaterials,
+                        text = uiState.artifactMaterials,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 8.dp)
@@ -626,8 +632,8 @@ private fun TitleSection(
                         modifier = Modifier.size(31.dp)
                     ) {
                         Icon(
-                            painter = painterResource(id = if (isSaved) R.drawable.ic_saved else R.drawable.ic_save),
-                            contentDescription = stringResource(id = if (isSaved) R.string.unsave else R.string.save),
+                            painter = painterResource(id = if (uiState.isSaved) R.drawable.ic_saved else R.drawable.ic_save),
+                            contentDescription = stringResource(id = if (uiState.isSaved) R.string.unsave else R.string.save),
                             tint = MaterialTheme.colorScheme.onBackground,
                             modifier = Modifier.size(24.dp)
                         )

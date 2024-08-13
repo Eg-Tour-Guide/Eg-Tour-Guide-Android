@@ -47,59 +47,45 @@ class SavedViewModel @Inject constructor(
         }
     }
 
-    // TODO: Check this logic!!
     fun onSaveClicked(item: AbstractSavedItem) {
+        val successLogic = {
+            _uiState.update { it.copy(isSaveSuccess = true) }
+        }
+
+        val errorLogic = {
+            _uiState.update { it.copy(isSaveError = true) }
+            item.isSaved = !item.isSaved
+        }
+
         viewModelScope.launch(Dispatchers.IO) {
             item.isSaved = !item.isSaved
+            _uiState.update { it.copy(isSaveCall = item.isSaved) }
 
             when (item.itemType) {
                 ItemType.ARTIFACT -> {
-                    changeArtifactSavedStateUseCase(
-                        artifactId = item.id
-                    ).onResponse(
+                    changeArtifactSavedStateUseCase(artifactId = item.id).onResponse(
                         onLoading = {},
-                        onSuccess = {
-                            _uiState.update { it.copy(isSaveSuccess = true, isSave = item.isSaved) }
-                        },
-                        onFailure = { error ->
-                            _uiState.update { it.copy(saveError = error) }
-                        },
-                        onNetworkError = {
-                            // TODO: Show save error!!
-                            _uiState.update { it.copy(isLoading = false) }
-                        }
+                        onSuccess = { successLogic() },
+                        onFailure = { errorLogic() },
+                        onNetworkError = errorLogic
                     )
                 }
 
                 ItemType.TOUR -> {
                     changeTourSavedStateUseCase(item.id).onResponse(
                         onLoading = {},
-                        onSuccess = {
-                            _uiState.update { it.copy(isSaveSuccess = true, isSave = item.isSaved) }
-                        },
-                        onFailure = { error ->
-                            _uiState.update { it.copy(saveError = error) }
-                        },
-                        onNetworkError = {
-                            // TODO: Show save error!!
-                            _uiState.update { it.copy(isLoading = false) }
-                        }
+                        onSuccess = { successLogic() },
+                        onFailure = { errorLogic() },
+                        onNetworkError = errorLogic
                     )
                 }
 
                 ItemType.LANDMARK -> {
                     changeLandmarkSavedStateUseCase(item.id).onResponse(
                         onLoading = {},
-                        onSuccess = {
-                            _uiState.update { it.copy(isSaveSuccess = true, isSave = item.isSaved) }
-                        },
-                        onFailure = { error ->
-                            _uiState.update { it.copy(saveError = error) }
-                        },
-                        onNetworkError = {
-                            // TODO: Show save error!!
-                            _uiState.update { it.copy(isLoading = false) }
-                        }
+                        onSuccess = { successLogic() },
+                        onFailure = { errorLogic() },
+                        onNetworkError = errorLogic
                     )
                 }
             }
@@ -111,7 +97,7 @@ class SavedViewModel @Inject constructor(
     }
 
     fun clearSaveError() {
-        _uiState.update { it.copy(saveError = null) }
+        _uiState.update { it.copy(isSaveError = false) }
     }
 
     fun filterSavedItems() {

@@ -112,12 +112,17 @@ fun CustomExpandedScreenRoot(
 
     LaunchedEffect(key1 = uiState.isSaveSuccess) {
         if (uiState.isSaveSuccess) {
-            Toast.makeText(
-                context,
-                if (uiState.isSaveCall) R.string.saved_successfully else R.string.unsaved_successfully,
-                Toast.LENGTH_SHORT
-            ).show()
+            val message = if (uiState.isSaveCall) R.string.save_success else R.string.unsave_success
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
             viewModel.clearSaveSuccess()
+        }
+    }
+
+    LaunchedEffect(key1 = uiState.isSaveError) {
+        if (uiState.isSaveError) {
+            val message = if (uiState.isSaveCall) R.string.save_error else R.string.unsave_error
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            viewModel.clearSaveError()
         }
     }
 

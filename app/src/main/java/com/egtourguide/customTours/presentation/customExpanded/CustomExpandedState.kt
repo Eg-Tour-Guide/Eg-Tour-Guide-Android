@@ -6,6 +6,7 @@ data class CustomExpandedState(
     val errorMessage: String? = null,
     val callIsSent: Boolean = false,
     val isSaveSuccess: Boolean = false,
+    val isSaveError: Boolean = false,
     val isSaveCall: Boolean = false,
     val id: String = "",
     val images: List<String> = emptyList(),

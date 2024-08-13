@@ -10,6 +10,6 @@ data class MyToursUIState(
     val isCallSent: Boolean = false,
     val isSaveSuccess: Boolean = false,
     val isShowEmptyState: Boolean = false,
-    val isSave: Boolean = true,
-    val saveError: String? = null
+    val isSaveCall: Boolean = true,
+    val isSaveError: Boolean = false
 )

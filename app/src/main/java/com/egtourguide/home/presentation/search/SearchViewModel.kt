@@ -36,12 +36,11 @@ class SearchViewModel @Inject constructor(
                         )
                     }
                 },
-                onFailure = { error ->
-                    _uiState.update { it.copy(isLoading = false, error = error) }
+                onFailure = {
+                    _uiState.update { it.copy(isLoading = false) }
                 },
                 onNetworkError = {
-                    // TODO: Show save error!!
-                    _uiState.update { it.copy(isLoading = false) }
+                    _uiState.update { it.copy(isLoading = false, isNetworkError = true) }
                 }
             )
         }
@@ -65,23 +64,26 @@ class SearchViewModel @Inject constructor(
                         )
                     }
                 },
-                onFailure = { error ->
-                    _uiState.update {
-                        it.copy(
-                            error = error,
-                            isClearHistoryLoading = false
-                        )
-                    }
+                onFailure = {
+                    _uiState.update { it.copy(isClearHistoryLoading = false, isError = true) }
                 },
                 onNetworkError = {
-                    // TODO: Show clear history error!!
-                    _uiState.update { it.copy(isClearHistoryLoading = false) }
+                    _uiState.update {
+                        it.copy(
+                            isClearHistoryLoading = false,
+                            isNetworkError = true
+                        )
+                    }
                 }
             )
         }
     }
 
     fun clearError() {
-        _uiState.update { it.copy(error = null) }
+        _uiState.update { it.copy(isError = false) }
+    }
+
+    fun clearNetworkError() {
+        _uiState.update { it.copy(isNetworkError = false) }
     }
 }

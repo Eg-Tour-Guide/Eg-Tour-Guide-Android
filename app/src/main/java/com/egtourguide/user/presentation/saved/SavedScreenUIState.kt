@@ -9,6 +9,6 @@ data class SavedScreenUIState(
     val savedList: List<AbstractSavedItem> = emptyList(),
     val error: String? = null,
     val isSaveSuccess: Boolean = false,
-    val isSave: Boolean = true,
-    val saveError: String? = null
+    val isSaveCall: Boolean = true,
+    val isSaveError: Boolean = false
 )

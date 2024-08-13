@@ -30,17 +30,20 @@ class ArtifactsListViewModel @Inject constructor(
     fun onSaveClicked(artifact: AbstractedArtifact) {
         viewModelScope.launch(Dispatchers.IO) {
             artifact.isSaved = !artifact.isSaved
+            _uiState.update { it.copy(isSaveCall = artifact.isSaved) }
+
             changeArtifactSavedStateUseCase(artifactId = artifact.id).onResponse(
                 onLoading = {},
                 onSuccess = {
-                    _uiState.update { it.copy(isSaveSuccess = true, isSave = artifact.isSaved) }
+                    _uiState.update { it.copy(isSaveSuccess = true) }
                 },
-                onFailure = { error ->
-                    _uiState.update { it.copy(saveError = error) }
+                onFailure = {
+                    _uiState.update { it.copy(isSaveError = true) }
+                    artifact.isSaved = !artifact.isSaved
                 },
                 onNetworkError = {
-                    // TODO: Show save error!!
-                    _uiState.update { it.copy(isLoading = false) }
+                    _uiState.update { it.copy(isSaveError = true) }
+                    artifact.isSaved = !artifact.isSaved
                 }
             )
         }
@@ -106,7 +109,7 @@ class ArtifactsListViewModel @Inject constructor(
     }
 
     fun clearSaveError() {
-        _uiState.update { it.copy(saveError = null) }
+        _uiState.update { it.copy(isSaveError = false) }
     }
 
     fun detectArtifact(image: Bitmap) {

@@ -61,12 +61,11 @@ class CustomExpandedViewModel @Inject constructor(
                 onSuccess = {
                     _uiState.update { it.copy(isSaveSuccess = true) }
                 },
-                onFailure = { message ->
-                    _uiState.update { it.copy(errorMessage = message) }
+                onFailure = {
+                    _uiState.update { it.copy(isSaveError = true, isSaved = !it.isSaved) }
                 },
                 onNetworkError = {
-                    // TODO: Show save error!!
-                    _uiState.update { it.copy(isLoading = false) }
+                    _uiState.update { it.copy(isSaveError = true, isSaved = !it.isSaved) }
                 }
             )
         }
@@ -78,5 +77,9 @@ class CustomExpandedViewModel @Inject constructor(
 
     fun clearSaveSuccess() {
         _uiState.update { it.copy(isSaveSuccess = false) }
+    }
+
+    fun clearSaveError() {
+        _uiState.update { it.copy(isSaveError = false) }
     }
 }

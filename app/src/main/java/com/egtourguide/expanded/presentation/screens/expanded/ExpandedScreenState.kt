@@ -11,6 +11,7 @@ data class ExpandedScreenState(
     val errorMessage: String? = null,
     val callIsSent: Boolean = false,
     val isSaveSuccess: Boolean = false,
+    val isSaveError: Boolean = false,
     val isSaveCall: Boolean = false,
     val isNetworkError: Boolean = false,
 
