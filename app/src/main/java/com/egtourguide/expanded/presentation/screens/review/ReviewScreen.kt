@@ -53,8 +53,8 @@ fun ReviewScreenRoot(
         onChangeRating = viewModel::changeRating
     )
 
-    LaunchedEffect(key1 = uiState.error) {
-        if (uiState.error) {
+    LaunchedEffect(key1 = uiState.isError) {
+        if (uiState.isError) {
             Toast.makeText(
                 context,
                 context.getString(R.string.failed_to_submit_review_please_try_again),
@@ -62,6 +62,18 @@ fun ReviewScreenRoot(
             ).show()
 
             viewModel.clearError()
+        }
+    }
+
+    LaunchedEffect(key1 = uiState.isNetworkError) {
+        if (uiState.isNetworkError) {
+            Toast.makeText(
+                context,
+                context.getString(R.string.network_error_toast),
+                Toast.LENGTH_SHORT
+            ).show()
+
+            viewModel.clearNetworkError()
         }
     }
 

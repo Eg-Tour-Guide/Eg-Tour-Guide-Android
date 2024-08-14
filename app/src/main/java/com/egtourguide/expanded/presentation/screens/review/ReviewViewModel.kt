@@ -31,7 +31,7 @@ class ReviewViewModel @Inject constructor(
     }
 
     fun clearError() {
-        _uiState.update { it.copy(error = false, isRatingError = false) }
+        _uiState.update { it.copy(isError = false, isRatingError = false) }
     }
 
     fun onSubmitClick(isLandMark: Boolean, id: String) {
@@ -51,16 +51,16 @@ class ReviewViewModel @Inject constructor(
                 review = _uiState.value.review
             ).onResponse(
                 onLoading = {
-                    _uiState.update { it.copy(isLoading = true, error = false) }
+                    _uiState.update { it.copy(isLoading = true, isError = false) }
                 },
                 onSuccess = {
                     _uiState.update { it.copy(isLoading = false, isSuccess = true) }
                 },
                 onFailure = {
-                    _uiState.update { it.copy(isLoading = false, error = true) }
+                    _uiState.update { it.copy(isLoading = false, isError = true) }
                 },
                 onNetworkError = {
-                    _uiState.update { it.copy(isLoading = false, error = true) }
+                    _uiState.update { it.copy(isLoading = false, isNetworkError = true) }
                 }
             )
         }
@@ -74,18 +74,22 @@ class ReviewViewModel @Inject constructor(
                 review = _uiState.value.review
             ).onResponse(
                 onLoading = {
-                    _uiState.update { it.copy(isLoading = true, error = false) }
+                    _uiState.update { it.copy(isLoading = true, isError = false) }
                 },
                 onSuccess = {
                     _uiState.update { it.copy(isLoading = false, isSuccess = true) }
                 },
                 onFailure = {
-                    _uiState.update { it.copy(isLoading = false, error = true) }
+                    _uiState.update { it.copy(isLoading = false, isError = true) }
                 },
                 onNetworkError = {
-                    _uiState.update { it.copy(isLoading = false, error = true) }
+                    _uiState.update { it.copy(isLoading = false, isNetworkError = true) }
                 }
             )
         }
+    }
+
+    fun clearNetworkError() {
+        _uiState.update { it.copy(isNetworkError = false) }
     }
 }
