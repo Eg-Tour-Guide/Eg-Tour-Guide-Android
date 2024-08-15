@@ -5,6 +5,7 @@ import com.egtourguide.home.domain.model.SearchResult
 data class SearchResultsUIState(
     val isLoading: Boolean = false,
     val isNetworkError: Boolean = false,
+    val isRefreshing: Boolean = false,
     val results: List<SearchResult> = emptyList(),
     val displayedResults: List<SearchResult> = emptyList(),
     val error: String? = null,

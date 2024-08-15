@@ -34,10 +34,12 @@ sealed class AppScreen(val route: String) {
     object EditProfile : AppScreen(route = Routes.EDIT_PROFILE_SCREEN_ROUTE)
     object ChangePassword : AppScreen(route = Routes.CHANGE_PASSWORD_SCREEN_ROUTE)
     object Settings : AppScreen(route = Routes.SETTINGS_SCREEN_ROUTE)
-    object Saved : AppScreen(route = Routes.SAVED_ITEMS_SCREEN_ROUTE)
+    object Saved : AppScreen(route = Routes.SAVED_SCREEN_ROUTE)
+    object SavedFilter : AppScreen(route = Routes.SAVED_FILTER_SCREEN_ROUTE)
 
     // Custom Tours Screens
     object MyTours : AppScreen(route = Routes.MY_TOURS_SCREEN_ROUTE)
     object CreateTour : AppScreen(route = Routes.CREATE_TOUR_SCREEN_ROUTE)
     object CustomExpanded : AppScreen(route = Routes.CUSTOM_EXPANDED_SCREEN_ROUTE)
+    object MyToursFilter : AppScreen(route = Routes.MY_TOURS_FILTER_SCREEN_ROUTE)
 }

@@ -52,6 +52,31 @@ class SearchResultsViewModel @Inject constructor(
         }
     }
 
+    fun refreshSearchResults(query: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            searchUseCase(query).onResponse(
+                onLoading = {
+                    _uiState.update { it.copy(isRefreshing = true) }
+                },
+                onSuccess = { response ->
+                    _uiState.update {
+                        it.copy(
+                            isRefreshing = false,
+                            results = response,
+                            displayedResults = response
+                        )
+                    }
+                },
+                onFailure = {
+                    _uiState.update { it.copy(isRefreshing = false) }
+                },
+                onNetworkError = {
+                    _uiState.update { it.copy(isRefreshing = false) }
+                }
+            )
+        }
+    }
+
     fun onSaveClicked(item: SearchResult) {
         val errorLogic = {
             _uiState.update { it.copy(isSaveError = true) }
@@ -83,10 +108,18 @@ class SearchResultsViewModel @Inject constructor(
     fun filterResults(filterState: FilterScreenState) {
         var results = uiState.value.results
 
-        if (filterState.selectedCategory == "Landmarks") {
-            results = results.filter { it.itemType == ItemType.LANDMARK }
-        } else if (filterState.selectedCategory == "Artifacts") {
-            results = results.filter { it.itemType == ItemType.ARTIFACT }
+        when (filterState.selectedCategory) {
+            "Landmarks" -> {
+                results = results.filter { it.itemType == ItemType.LANDMARK }
+            }
+
+            "Artifacts" -> {
+                results = results.filter { it.itemType == ItemType.ARTIFACT }
+            }
+
+            "Tours" -> {
+                results = results.filter { it.itemType == ItemType.TOUR }
+            }
         }
 
         _uiState.update { it.copy(displayedResults = results) }

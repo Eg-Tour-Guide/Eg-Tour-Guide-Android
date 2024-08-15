@@ -41,6 +41,7 @@ import com.egtourguide.core.presentation.components.EmptyState
 import com.egtourguide.core.presentation.components.LargeCard
 import com.egtourguide.core.presentation.components.LoadingState
 import com.egtourguide.core.presentation.components.NetworkErrorScreen
+import com.egtourguide.core.presentation.components.PullToRefreshScreen
 import com.egtourguide.core.presentation.components.ScreenHeader
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 import com.egtourguide.core.utils.ExpandedType
@@ -65,15 +66,19 @@ fun SearchResultsScreen(
         viewModel.filterResults(filterState)
     }
 
-    // TODO: Refresh Here!!
-    SearchResultsScreenContent(
-        uiState = uiState,
-        hasChanged = hasChanged,
-        onSearchClicked = onNavigateToSearch,
-        onFilterClicked = onNavigateToFilters,
-        onResultClicked = onNavigateToSingleItem,
-        onSaveClicked = viewModel::onSaveClicked
-    )
+    PullToRefreshScreen(
+        isRefreshing = uiState.isRefreshing,
+        onRefresh = { viewModel.refreshSearchResults(query) }
+    ) {
+        SearchResultsScreenContent(
+            uiState = uiState,
+            hasChanged = hasChanged,
+            onSearchClicked = onNavigateToSearch,
+            onFilterClicked = onNavigateToFilters,
+            onResultClicked = onNavigateToSingleItem,
+            onSaveClicked = viewModel::onSaveClicked
+        )
+    }
 
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -151,7 +156,11 @@ fun SearchResultsScreenContent(
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            EmptyState(modifier = Modifier.fillMaxSize())
+            EmptyState(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            )
         }
 
         AnimatedVisibility(

@@ -1,6 +1,6 @@
 package com.egtourguide.home.presentation.filter
 
-val categories = listOf("Landmarks", "Artifacts")
+val categories = listOf("Tours", "Landmarks", "Artifacts")
 
 val ratings = listOf(
     Rate(title = "5 Only", rating = 5),

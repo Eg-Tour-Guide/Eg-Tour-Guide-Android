@@ -10,12 +10,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -40,7 +41,9 @@ import com.egtourguide.core.presentation.components.EmptyState
 import com.egtourguide.core.presentation.components.LargeCard
 import com.egtourguide.core.presentation.components.LoadingState
 import com.egtourguide.core.presentation.components.NetworkErrorScreen
+import com.egtourguide.core.presentation.components.PullToRefreshScreen
 import com.egtourguide.core.presentation.components.ScreenHeader
+import com.egtourguide.home.presentation.filter.FilterScreenViewModel
 
 @Preview
 @Composable
@@ -56,31 +59,51 @@ private fun SavedScreenPreview() {
                         name = "Test",
                         itemType = ItemType.LANDMARK
                     )
+                },
+                displayedSavedList = (1..5).map {
+                    AbstractSavedItem(
+                        id = "$it",
+                        image = "",
+                        name = "Test",
+                        itemType = ItemType.LANDMARK
+                    )
                 }
             )
         )
     }
 }
 
-// TODO: Filters logic!!
 @Composable
 fun SavedScreen(
     viewModel: SavedViewModel = hiltViewModel(),
+    filterViewModel: FilterScreenViewModel,
     onNavigateBack: () -> Unit,
     onNavigateToFilters: () -> Unit,
     onNavigateToSingleItem: (AbstractSavedItem) -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val filterState by filterViewModel.uiState.collectAsState()
+    val hasChanged by filterViewModel.hasChanged.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
 
-    SavedScreenContent(
-        uiState = uiState,
-        onFilterClicked = onNavigateToFilters,
-        onSaveClicked = viewModel::onSaveClicked,
-        onItemClicked = onNavigateToSingleItem,
-        onBackClicked = onNavigateBack
-    )
+    LaunchedEffect(key1 = filterState) {
+        viewModel.filterSavedItems(filterState)
+    }
+
+    PullToRefreshScreen(
+        isRefreshing = uiState.isRefreshing,
+        onRefresh = viewModel::refreshSaved
+    ) {
+        SavedScreenContent(
+            uiState = uiState,
+            hasChanged = hasChanged,
+            onFilterClicked = onNavigateToFilters,
+            onSaveClicked = viewModel::onSaveClicked,
+            onItemClicked = onNavigateToSingleItem,
+            onBackClicked = onNavigateBack
+        )
+    }
 
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -113,8 +136,9 @@ fun SavedScreen(
 }
 
 @Composable
-fun SavedScreenContent(
+private fun SavedScreenContent(
     uiState: SavedScreenUIState = SavedScreenUIState(),
+    hasChanged: Boolean = false,
     onFilterClicked: () -> Unit = {},
     onItemClicked: (AbstractSavedItem) -> Unit = {},
     onSaveClicked: (AbstractSavedItem) -> Unit = {},
@@ -144,7 +168,11 @@ fun SavedScreenContent(
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            NetworkErrorScreen(modifier = Modifier.fillMaxSize())
+            NetworkErrorScreen(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            )
         }
 
         AnimatedVisibility(
@@ -152,26 +180,33 @@ fun SavedScreenContent(
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            EmptyState(modifier = Modifier.fillMaxSize())
+            EmptyState(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            )
         }
 
         AnimatedVisibility(
-            visible = !uiState.isLoading && !uiState.isNetworkError,
+            visible = !uiState.isLoading && uiState.savedList.isNotEmpty(),
             enter = fadeIn(),
             exit = fadeOut()
         ) {
             Column {
                 DataScreenHeader(
-                    title = stringResource(id = R.string.saved_count, uiState.savedList.size),
+                    title = stringResource(
+                        id = R.string.saved_count,
+                        uiState.displayedSavedList.size
+                    ),
                     onFilterClicked = onFilterClicked,
-                    hasChanged = false, // TODO: Change this!!
+                    hasChanged = hasChanged,
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 ItemsSection(
-                    items = uiState.savedList,
+                    items = uiState.displayedSavedList,
                     onItemClicked = onItemClicked,
                     onSaveClicked = onSaveClicked
                 )
@@ -187,7 +222,7 @@ private fun ItemsSection(
     onSaveClicked: (AbstractSavedItem) -> Unit
 ) {
     LazyVerticalGrid(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxSize(),
         columns = GridCells.Fixed(2),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),

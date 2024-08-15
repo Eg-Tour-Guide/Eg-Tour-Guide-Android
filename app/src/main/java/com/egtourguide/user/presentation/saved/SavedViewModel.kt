@@ -8,6 +8,7 @@ import com.egtourguide.core.domain.usecases.ChangeArtifactSavedStateUseCase
 import com.egtourguide.core.domain.usecases.ChangeLandmarkSavedStateUseCase
 import com.egtourguide.core.domain.usecases.ChangeTourSavedStateUseCase
 import com.egtourguide.core.utils.ItemType
+import com.egtourguide.home.presentation.filter.FilterScreenState
 import com.egtourguide.user.domain.usecases.GetSavedItemsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -35,13 +36,44 @@ class SavedViewModel @Inject constructor(
                     _uiState.update { it.copy(isLoading = true, error = null, isCallSent = true) }
                 },
                 onSuccess = { response ->
-                    _uiState.update { it.copy(isLoading = false, savedList = response) }
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            savedList = response,
+                            displayedSavedList = response
+                        )
+                    }
                 },
                 onFailure = { error ->
                     _uiState.update { it.copy(isLoading = false, error = error) }
                 },
                 onNetworkError = {
                     _uiState.update { it.copy(isLoading = false, isNetworkError = true) }
+                }
+            )
+        }
+    }
+
+    fun refreshSaved() {
+        viewModelScope.launch(Dispatchers.IO) {
+            getSavedItemsUseCase().onResponse(
+                onLoading = {
+                    _uiState.update { it.copy(isRefreshing = true) }
+                },
+                onSuccess = { response ->
+                    _uiState.update {
+                        it.copy(
+                            savedList = response,
+                            displayedSavedList = response,
+                            isRefreshing = false
+                        )
+                    }
+                },
+                onFailure = {
+                    _uiState.update { it.copy(isRefreshing = false) }
+                },
+                onNetworkError = {
+                    _uiState.update { it.copy(isRefreshing = false) }
                 }
             )
         }
@@ -100,7 +132,23 @@ class SavedViewModel @Inject constructor(
         _uiState.update { it.copy(isSaveError = false) }
     }
 
-    fun filterSavedItems() {
-        // TODO: Implement this!!
+    fun filterSavedItems(filterState: FilterScreenState) {
+        var savedList = uiState.value.savedList
+
+        when (filterState.selectedCategory) {
+            "Landmarks" -> {
+                savedList = savedList.filter { it.itemType == ItemType.LANDMARK }
+            }
+
+            "Artifacts" -> {
+                savedList = savedList.filter { it.itemType == ItemType.ARTIFACT }
+            }
+
+            "Tours" -> {
+                savedList = savedList.filter { it.itemType == ItemType.TOUR }
+            }
+        }
+
+        _uiState.update { it.copy(displayedSavedList = savedList) }
     }
 }

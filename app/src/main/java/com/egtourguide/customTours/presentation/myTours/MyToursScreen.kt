@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -38,29 +40,78 @@ import com.egtourguide.core.presentation.components.EmptyState
 import com.egtourguide.core.presentation.components.LargeCard
 import com.egtourguide.core.presentation.components.LoadingState
 import com.egtourguide.core.presentation.components.NetworkErrorScreen
+import com.egtourguide.core.presentation.components.PullToRefreshScreen
 import com.egtourguide.core.presentation.components.ScreenHeader
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
+import com.egtourguide.home.presentation.filter.FilterScreenViewModel
+
+@Preview
+@Composable
+private fun MyToursScreenPreview() {
+    EGTourGuideTheme {
+        MyToursScreenContent(
+            uiState = MyToursUIState(
+                isLoading = false,
+                myTours = (0..3).map {
+                    AbstractedTour(
+                        id = "$it",
+                        title = "Test $it",
+                        isSaved = true,
+                        image = "",
+                        duration = 3,
+                        ratingCount = 5,
+                        rating = 3.5
+                    )
+                },
+                displayedTours = (0..3).map {
+                    AbstractedTour(
+                        id = "$it",
+                        title = "Test $it",
+                        isSaved = true,
+                        image = "",
+                        duration = 3,
+                        ratingCount = 5,
+                        rating = 3.5
+                    )
+                }
+            )
+        )
+    }
+}
 
 @Composable
 fun MyToursScreen(
     viewModel: MyToursViewModel = hiltViewModel(),
+    filterViewModel: FilterScreenViewModel,
     onNavigateToCreateTour: () -> Unit,
     onNavigateToFilters: () -> Unit,
     onNavigateToSingleTour: (AbstractedTour) -> Unit,
     onNavigateBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val filterState by filterViewModel.uiState.collectAsState()
+    val hasChanged by filterViewModel.hasChanged.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
 
-    MyToursScreenContent(
-        uiState = uiState,
-        onFilterClicked = onNavigateToFilters,
-        onTourClicked = onNavigateToSingleTour,
-        onSaveClicked = viewModel::onSaveClicked,
-        onAddClicked = onNavigateToCreateTour,
-        onBackClicked = onNavigateBack
-    )
+    LaunchedEffect(key1 = filterState) {
+        viewModel.filterMyTours(filterState)
+    }
+
+    PullToRefreshScreen(
+        isRefreshing = uiState.isRefreshing,
+        onRefresh = viewModel::refreshMyTours
+    ) {
+        MyToursScreenContent(
+            uiState = uiState,
+            hasChanged = hasChanged,
+            onFilterClicked = onNavigateToFilters,
+            onTourClicked = onNavigateToSingleTour,
+            onSaveClicked = viewModel::onSaveClicked,
+            onAddClicked = onNavigateToCreateTour,
+            onBackClicked = onNavigateBack
+        )
+    }
 
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -102,6 +153,7 @@ fun MyToursScreen(
 @Composable
 private fun MyToursScreenContent(
     uiState: MyToursUIState = MyToursUIState(),
+    hasChanged: Boolean = false,
     onFilterClicked: () -> Unit = {},
     onTourClicked: (AbstractedTour) -> Unit = {},
     onSaveClicked: (AbstractedTour) -> Unit = {},
@@ -134,7 +186,11 @@ private fun MyToursScreenContent(
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            NetworkErrorScreen(modifier = Modifier.fillMaxSize())
+            NetworkErrorScreen(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            )
         }
 
         AnimatedVisibility(
@@ -142,7 +198,11 @@ private fun MyToursScreenContent(
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            EmptyState(modifier = Modifier.fillMaxSize())
+            EmptyState(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            )
         }
 
         AnimatedVisibility(
@@ -152,9 +212,9 @@ private fun MyToursScreenContent(
         ) {
             Column {
                 DataScreenHeader(
-                    title = stringResource(id = R.string.tours_count, uiState.myTours.size),
+                    title = stringResource(id = R.string.tours_count, uiState.displayedTours.size),
                     onFilterClicked = onFilterClicked,
-                    hasChanged = false,
+                    hasChanged = hasChanged,
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)
                 )
 
@@ -167,7 +227,7 @@ private fun MyToursScreenContent(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp)
                 ) {
-                    items(items = uiState.myTours, key = { it.id }) { tour ->
+                    items(items = uiState.displayedTours, key = { it.id }) { tour ->
                         LargeCard(
                             itemType = ItemType.TOUR,
                             image = tour.image,
@@ -183,28 +243,5 @@ private fun MyToursScreenContent(
                 }
             }
         }
-    }
-}
-
-@Preview
-@Composable
-private fun MyToursScreenPreview() {
-    EGTourGuideTheme {
-        MyToursScreenContent(
-            uiState = MyToursUIState(
-                isLoading = false,
-                myTours = (0..3).map {
-                    AbstractedTour(
-                        id = "$it",
-                        title = "Test $it",
-                        isSaved = true,
-                        image = "",
-                        duration = 3,
-                        ratingCount = 5,
-                        rating = 3.5
-                    )
-                }
-            )
-        )
     }
 }

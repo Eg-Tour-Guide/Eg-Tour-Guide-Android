@@ -5,8 +5,6 @@ enum class FilterType {
     LANDMARK,
     ARTIFACT,
     SEARCH,
-
-    // TODO: Use these!!
     MY_TOURS,
     SAVED
 }

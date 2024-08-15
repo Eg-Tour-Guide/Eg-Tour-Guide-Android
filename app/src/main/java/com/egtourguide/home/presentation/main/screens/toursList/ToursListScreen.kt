@@ -227,7 +227,7 @@ fun ToursListScreenContent(
         }
 
         AnimatedVisibility(
-            visible = !uiState.isLoading && uiState.tours.isNotEmpty(),
+            visible = !uiState.isLoading && uiState.tours.isNotEmpty() && !uiState.isNetworkError,
             enter = fadeIn(),
             exit = fadeOut()
         ) {

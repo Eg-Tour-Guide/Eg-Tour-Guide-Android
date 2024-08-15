@@ -58,7 +58,7 @@ fun FilterScreen(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(32.dp)
         ) {
-            if (uiState.filterType == FilterType.SEARCH) {
+            if (uiState.filterType == FilterType.SEARCH || uiState.filterType == FilterType.SAVED) {
                 item {
                     FlowFilterSection(
                         title = stringResource(id = R.string.category),
@@ -114,7 +114,7 @@ fun FilterScreen(
                 }
             }
 
-            if (uiState.filterType == FilterType.TOUR) {
+            if (uiState.filterType == FilterType.TOUR || uiState.filterType == FilterType.MY_TOURS) {
                 item {
                     Text(
                         text = stringResource(id = R.string.duration),

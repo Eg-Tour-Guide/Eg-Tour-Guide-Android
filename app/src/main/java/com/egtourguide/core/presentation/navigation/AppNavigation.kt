@@ -51,6 +51,9 @@ fun AppNavigation(
     navController: NavHostController,
     startDestination: String
 ) {
+    val myToursFilterViewModel: FilterScreenViewModel = hiltViewModel(key = "myTours")
+    myToursFilterViewModel.setType(FilterType.MY_TOURS)
+
     NavHost(
         navController = navController,
         startDestination = startDestination,
@@ -100,7 +103,10 @@ fun AppNavigation(
             }
         )
 
-        customToursGraph(navController = navController)
+        customToursGraph(
+            navController = navController,
+            myToursFilterViewModel = myToursFilterViewModel
+        )
     }
 }
 
@@ -233,11 +239,13 @@ fun MainNavGraph(
     val landmarksFilterViewModel: FilterScreenViewModel = hiltViewModel(key = "landmarks")
     val artifactsFilterViewModel: FilterScreenViewModel = hiltViewModel(key = "artifacts")
     val searchFilterViewModel: FilterScreenViewModel = hiltViewModel(key = "search")
+    val savedFilterViewModel: FilterScreenViewModel = hiltViewModel(key = "saved")
 
     toursFilterViewModel.setType(FilterType.TOUR)
     landmarksFilterViewModel.setType(FilterType.LANDMARK)
     artifactsFilterViewModel.setType(FilterType.ARTIFACT)
     searchFilterViewModel.setType(FilterType.SEARCH)
+    savedFilterViewModel.setType(FilterType.SAVED)
 
     NavHost(
         navController = navController,
@@ -350,6 +358,7 @@ fun MainNavGraph(
 
         userGraph(
             navController = navController,
+            savedFilterViewModel = savedFilterViewModel,
             navigateToMyTours = navigateToMyTours,
             onNavigateToDetectedArtifact = { artifact ->
                 navigateToExpanded(artifact.id, ExpandedType.ARTIFACT.name)
@@ -558,6 +567,7 @@ fun NavGraphBuilder.expandedGraph(
 
 fun NavGraphBuilder.userGraph(
     navController: NavHostController,
+    savedFilterViewModel: FilterScreenViewModel,
     navigateToMyTours: () -> Unit,
     onNavigateToDetectedArtifact: (DetectedArtifact) -> Unit,
     navigateToExpanded: (String, String) -> Unit,
@@ -614,11 +624,9 @@ fun NavGraphBuilder.userGraph(
         }
 
         composable(route = AppScreen.Saved.route) {
-            // TODO: Add filters viewModel!!
             SavedScreen(
-                onNavigateBack = {
-                    navController.navigateUp()
-                },
+                filterViewModel = savedFilterViewModel,
+                onNavigateBack = { navController.navigateUp() },
                 onNavigateToSingleItem = { item ->
                     val expandedType = when (item.itemType) {
                         ItemType.LANDMARK -> ExpandedType.LANDMARK.name
@@ -629,14 +637,24 @@ fun NavGraphBuilder.userGraph(
                     navigateToExpanded(item.id, expandedType)
                 },
                 onNavigateToFilters = {
-                    // TODO: Create own filters!!
+                    navController.navigate(route = AppScreen.SavedFilter.route)
                 }
+            )
+        }
+
+        composable(route = AppScreen.SavedFilter.route) {
+            FilterScreen(
+                viewModel = savedFilterViewModel,
+                onNavigateBack = { navController.navigateUp() }
             )
         }
     }
 }
 
-fun NavGraphBuilder.customToursGraph(navController: NavHostController) {
+fun NavGraphBuilder.customToursGraph(
+    navController: NavHostController,
+    myToursFilterViewModel: FilterScreenViewModel
+) {
     navigation(
         route = AppGraph.CustomTours.route,
         startDestination = AppScreen.MyTours.route
@@ -649,6 +667,7 @@ fun NavGraphBuilder.customToursGraph(navController: NavHostController) {
             val isSelect = parentEntry.arguments?.getString("isSelect").toBoolean()
 
             MyToursScreen(
+                filterViewModel = myToursFilterViewModel,
                 onNavigateToSingleTour = { tour ->
                     if (isSelect) {
                         navController.previousBackStackEntry?.savedStateHandle?.set(
@@ -671,7 +690,7 @@ fun NavGraphBuilder.customToursGraph(navController: NavHostController) {
                     }
                 },
                 onNavigateToFilters = {
-                    // TODO: Create own filters!!
+                    navController.navigate(route = AppScreen.MyToursFilter.route)
                 },
                 onNavigateToCreateTour = {
                     navController.navigate(
@@ -681,6 +700,13 @@ fun NavGraphBuilder.customToursGraph(navController: NavHostController) {
                 onNavigateBack = {
                     navController.navigateUp()
                 }
+            )
+        }
+
+        composable(route = AppScreen.MyToursFilter.route) {
+            FilterScreen(
+                viewModel = myToursFilterViewModel,
+                onNavigateBack = { navController.navigateUp() }
             )
         }
 
