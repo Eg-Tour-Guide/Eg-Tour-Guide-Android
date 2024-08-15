@@ -1,89 +1,21 @@
 package com.egtourguide.home.presentation.filter
 
-// TODO: Change these according to backend!!
+// TODO: Check these!!
 val categories = listOf("Tours", "Landmarks", "Artifacts")
 
-val tourismTypes = listOf(
-    "Adventure",
-    "Ecotourism",
-    "Cultural",
-    "Medical",
-    "Historical",
-    "Culinary",
-    "Urban",
-    "Beach",
-    "Sports",
-    "Shopping",
-    "Education", "Various"
+val ratings = listOf(
+    Rate(title = "5 Only", rating = 5),
+    Rate(title = "4 & Up", rating = 4),
+    Rate(title = "3 & Up", rating = 3),
+    Rate(title = "2 & Up", rating = 2),
+    Rate(title = "1 & Up", rating = 1)
 )
 
-val artifactTypes = listOf(
-    "Pottery",
-    "Sculpture",
-    "Statue",
-    "Jewelry",
-    "Manuscript",
-    "Tool",
-    "Utensil",
-    "Weapon",
-    "Armor",
-    "Textile",
-    "Coin",
-    "Religiou",
-    "Artistic",
-    "Architectural",
-    "Decorative"
+val sortWays = listOf(
+    SortWay(title = "Rating: High To Low", number = 1),
+    SortWay(title = "Rating: Low To High", number = 2)
 )
 
-val materials = listOf(
-    "Stone", "Clay", "Wood", "Papyrus", "Marble", "Gold", "Silver",
-    "Bronze", "Silk", "Leather", "Glass"
-)
+data class Rate(val title: String, val rating: Int)
 
-val tourTypes = listOf(
-    "Adventure",
-    "Ecotourism",
-    "Cultural",
-    "Medical",
-    "Historical",
-    "Culinary",
-    "Urban",
-    "Beach",
-    "Sports",
-    "Shopping",
-    "Education"
-)
-
-val locations = listOf(
-    "Alexandria",
-    "Aswan",
-    "Assiut",
-    "Beheira",
-    "Beni Suef",
-    "Cairo",
-    "Dakahlia",
-    "Damietta",
-    "Fayoum",
-    "Gharbia",
-    "Giza",
-    "Ismailia",
-    "Kafr el-Sheikh",
-    "Matrouh",
-    "Minya",
-    "Menofia",
-    "New Valley",
-    "North Sinai",
-    "Port Said",
-    "Qualyubia",
-    "Qena",
-    "Red Sea",
-    "Al-Sharqia",
-    "Sohag",
-    "South Sinai",
-    "Suez",
-    "Luxor"
-)
-
-val ratings = listOf("5 Only", "4 & Up", "3 & Up", "2 & Up", "1 & Up")
-
-val sortWays = listOf("Rating: High To Low", "Rating: Low To High")
+data class SortWay(val title: String, val number: Int)

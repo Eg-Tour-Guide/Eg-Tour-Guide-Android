@@ -111,7 +111,7 @@ fun ToursListScreen(
 
     PullToRefreshScreen(
         isRefreshing = uiState.isRefreshing,
-        onRefresh = viewModel::refreshTours
+        onRefresh = { viewModel.refreshTours { filterViewModel.setTourFilters(it) } }
     ) {
         ToursListScreenContent(
             uiState = uiState,
@@ -127,10 +127,11 @@ fun ToursListScreen(
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_CREATE && !uiState.callIsSent) {
-                viewModel.getToursList()
+                viewModel.getToursList { filterViewModel.setTourFilters(it) }
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
+
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(observer)
         }

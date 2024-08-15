@@ -24,6 +24,18 @@ class FilterScreenViewModel @Inject constructor() : ViewModel() {
         _uiState.update { it.copy(filterType = filterType) }
     }
 
+    fun setTourFilters(tourTypes: List<String>) {
+        _uiState.update { it.copy(tourTypes = tourTypes) }
+    }
+
+    fun setLandmarkFilters(tourismTypes: List<String>, locations: List<String>) {
+        _uiState.update { it.copy(tourismTypes = tourismTypes, locations = locations) }
+    }
+
+    fun setArtifactFilters(artifactTypes: List<String>, materials: List<String>) {
+        _uiState.update { it.copy(artifactTypes = artifactTypes, materials = materials) }
+    }
+
     fun onCategoryChipClicked(category: String) {
         _uiState.update {
             it.copy(selectedCategory = if (category == it.selectedCategory) "" else category)
@@ -48,15 +60,15 @@ class FilterScreenViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun onRatingChipClicked(rating: String) {
+    fun onRatingChipClicked(rating: Int) {
         _uiState.update {
-            it.copy(selectedRating = if (it.selectedRating == rating) "" else rating)
+            it.copy(selectedRating = if (it.selectedRating == rating) -1 else rating)
         }
     }
 
-    fun onSortByChipClicked(item: String) {
+    fun onSortByChipClicked(item: Int) {
         _uiState.update {
-            it.copy(selectedSortBy = if (it.selectedSortBy == item) "" else item)
+            it.copy(selectedSortBy = if (it.selectedSortBy == item) -1 else item)
         }
     }
 
@@ -99,8 +111,8 @@ class FilterScreenViewModel @Inject constructor() : ViewModel() {
                 selectedCategory = "",
                 selectedTourismTypes = emptyList(),
                 selectedLocations = emptyList(),
-                selectedRating = "",
-                selectedSortBy = "",
+                selectedRating = -1,
+                selectedSortBy = -1,
                 selectedArtifactTypes = emptyList(),
                 selectedMaterials = emptyList(),
                 selectedTourTypes = emptyList(),

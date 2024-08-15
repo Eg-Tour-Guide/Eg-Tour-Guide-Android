@@ -21,7 +21,7 @@ class HomeRepositoryImpl @Inject constructor(private val homeApi: HomeApi) : Hom
     }
 
     override suspend fun getToursList() = safeCall {
-        homeApi.getToursList().tours.map { it.toDomainAbstractedTour() }
+        homeApi.getToursList().toDomainToursList()
     }
 
     override suspend fun search(query: String) = safeCall {

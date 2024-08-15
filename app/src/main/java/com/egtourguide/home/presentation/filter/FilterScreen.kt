@@ -53,154 +53,126 @@ fun FilterScreen(
             modifier = Modifier.height(52.dp)
         )
 
-        ScreenContent(
-            uiState = uiState,
-            filterType = uiState.filterType,
-            onCategoryChipClicked = viewModel::onCategoryChipClicked,
-            onTourismTypeChipClicked = viewModel::onTourismTypeChipClicked,
-            onLocationChipClicked = viewModel::onLocationChipClicked,
-            onRatingChipClicked = viewModel::onRatingChipClicked,
-            onSortByChipClicked = viewModel::onSortByChipClicked,
-            onArtifactTypeChipClicked = viewModel::onArtifactTypeChipClicked,
-            onMaterialChipClicked = viewModel::onMaterialChipClicked,
-            onTourTypeChipClicked = viewModel::onTourTypeChipClicked,
-            onDurationChanged = viewModel::changeDuration,
-            onApplyClicked = onNavigateBack,
-            onResetClicked = viewModel::onResetClicked
-        )
-    }
-}
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(32.dp)
+        ) {
+            if (uiState.filterType == FilterType.SEARCH) {
+                item {
+                    FlowFilterSection(
+                        title = stringResource(id = R.string.category),
+                        chipsTitles = categories,
+                        selectedChips = listOf(uiState.selectedCategory),
+                        onChipClicked = viewModel::onCategoryChipClicked
+                    )
+                }
+            }
 
-// TODO: Change used data according to the backend!!
-@Composable
-private fun ScreenContent(
-    uiState: FilterScreenState,
-    filterType: FilterType,
-    onCategoryChipClicked: (String) -> Unit,
-    onTourismTypeChipClicked: (String) -> Unit,
-    onLocationChipClicked: (String) -> Unit,
-    onRatingChipClicked: (String) -> Unit,
-    onSortByChipClicked: (String) -> Unit,
-    onArtifactTypeChipClicked: (String) -> Unit,
-    onMaterialChipClicked: (String) -> Unit,
-    onTourTypeChipClicked: (String) -> Unit,
-    onDurationChanged: (Float, Float) -> Unit,
-    onApplyClicked: () -> Unit,
-    onResetClicked: () -> Unit
-) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(32.dp)
-    ) {
-        if (filterType == FilterType.SEARCH) {
+            if (uiState.tourismTypes.isNotEmpty()) {
+                item {
+                    FlowFilterSection(
+                        title = stringResource(id = R.string.tourism_type),
+                        chipsTitles = uiState.tourismTypes,
+                        selectedChips = uiState.selectedTourismTypes,
+                        onChipClicked = viewModel::onTourismTypeChipClicked
+                    )
+                }
+            }
+
+            if (uiState.artifactTypes.isNotEmpty()) {
+                item {
+                    FlowFilterSection(
+                        title = stringResource(id = R.string.artifact_type),
+                        chipsTitles = uiState.artifactTypes,
+                        selectedChips = uiState.selectedArtifactTypes,
+                        onChipClicked = viewModel::onArtifactTypeChipClicked
+                    )
+                }
+            }
+
+            if (uiState.materials.isNotEmpty()) {
+                item {
+                    FlowFilterSection(
+                        title = stringResource(id = R.string.material),
+                        chipsTitles = uiState.materials,
+                        selectedChips = uiState.selectedMaterials,
+                        onChipClicked = viewModel::onMaterialChipClicked,
+                        modifier = Modifier.padding(top = 32.dp)
+                    )
+                }
+            }
+
+            if (uiState.tourTypes.isNotEmpty()) {
+                item {
+                    FlowFilterSection(
+                        title = stringResource(id = R.string.tour_type),
+                        chipsTitles = uiState.tourTypes,
+                        selectedChips = uiState.selectedTourTypes,
+                        onChipClicked = viewModel::onTourTypeChipClicked
+                    )
+                }
+            }
+
+            if (uiState.filterType == FilterType.TOUR) {
+                item {
+                    Text(
+                        text = stringResource(id = R.string.duration),
+                        style = MaterialTheme.typography.displayMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+
+                    DurationFields(
+                        minDuration = uiState.minDuration,
+                        maxDuration = uiState.maxDuration,
+                        onDurationChanged = viewModel::changeDuration
+                    )
+
+                    CustomRangeSlider(
+                        min = uiState.minDuration,
+                        max = uiState.maxDuration,
+                        onDurationChanged = viewModel::changeDuration
+                    )
+                }
+            }
+
+            if (uiState.locations.isNotEmpty()) {
+                item {
+                    FlowFilterSection(
+                        title = stringResource(id = R.string.location),
+                        chipsTitles = uiState.locations,
+                        selectedChips = uiState.selectedLocations,
+                        onChipClicked = viewModel::onLocationChipClicked
+                    )
+                }
+            }
+
+            if (uiState.filterType == FilterType.TOUR || uiState.filterType == FilterType.LANDMARK) {
+                item {
+                    FlowFilterSection(
+                        title = stringResource(id = R.string.rating),
+                        isRating = true,
+                        ratings = ratings,
+                        selectedRate = uiState.selectedRating,
+                        onChipClicked = { viewModel.onRatingChipClicked(it.toInt()) }
+                    )
+
+                    FlowFilterSection(
+                        title = stringResource(id = R.string.sort_by),
+                        sortWays = sortWays,
+                        selectedSortWay = uiState.selectedSortBy,
+                        onChipClicked = { viewModel.onSortByChipClicked(it.toInt()) },
+                        modifier = Modifier.padding(top = 32.dp)
+                    )
+                }
+            }
+
             item {
-                FlowFilterSection(
-                    title = stringResource(id = R.string.category),
-                    chipsTitles = categories,
-                    selectedChips = listOf(uiState.selectedCategory),
-                    onChipClicked = onCategoryChipClicked
+                FilterFooter(
+                    onApplyClick = onNavigateBack,
+                    onResetClick = viewModel::onResetClicked
                 )
             }
-        }
-
-        if (filterType == FilterType.LANDMARK) {
-            item {
-                FlowFilterSection(
-                    title = stringResource(id = R.string.tourism_type),
-                    chipsTitles = tourismTypes,
-                    selectedChips = uiState.selectedTourismTypes,
-                    onChipClicked = onTourismTypeChipClicked
-                )
-            }
-        }
-
-        if (filterType == FilterType.ARTIFACT) {
-            item {
-                FlowFilterSection(
-                    title = stringResource(id = R.string.artifact_type),
-                    chipsTitles = artifactTypes,
-                    selectedChips = uiState.selectedArtifactTypes,
-                    onChipClicked = onArtifactTypeChipClicked
-                )
-
-                FlowFilterSection(
-                    title = stringResource(id = R.string.material),
-                    chipsTitles = materials,
-                    selectedChips = uiState.selectedMaterials,
-                    onChipClicked = onMaterialChipClicked,
-                    modifier = Modifier.padding(top = 32.dp)
-                )
-            }
-        }
-
-        if (filterType == FilterType.TOUR) {
-            item {
-                FlowFilterSection(
-                    title = stringResource(id = R.string.tour_type),
-                    chipsTitles = tourTypes,
-                    selectedChips = uiState.selectedTourTypes,
-                    onChipClicked = onTourTypeChipClicked
-                )
-
-                Text(
-                    text = stringResource(id = R.string.duration),
-                    style = MaterialTheme.typography.displayMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(top = 32.dp)
-                )
-
-                DurationFields(
-                    minDuration = uiState.minDuration,
-                    maxDuration = uiState.maxDuration,
-                    onDurationChanged = onDurationChanged
-                )
-
-                CustomRangeSlider(
-                    min = uiState.minDuration,
-                    max = uiState.maxDuration,
-                    onDurationChanged = onDurationChanged
-                )
-            }
-        }
-
-        if (filterType != FilterType.SEARCH) {
-            item {
-                FlowFilterSection(
-                    title = stringResource(id = R.string.location),
-                    chipsTitles = locations,
-                    selectedChips = uiState.selectedLocations,
-                    onChipClicked = onLocationChipClicked
-                )
-            }
-        }
-
-        if (filterType == FilterType.TOUR || filterType == FilterType.LANDMARK) {
-            item {
-                FlowFilterSection(
-                    title = stringResource(id = R.string.rating),
-                    isRating = true,
-                    chipsTitles = ratings,
-                    selectedChips = listOf(uiState.selectedRating),
-                    onChipClicked = onRatingChipClicked
-                )
-            }
-        }
-
-        item {
-            FlowFilterSection(
-                title = stringResource(id = R.string.sort_by),
-                chipsTitles = sortWays,
-                selectedChips = listOf(uiState.selectedSortBy),
-                onChipClicked = onSortByChipClicked
-            )
-        }
-
-        item {
-            FilterFooter(
-                onApplyClick = onApplyClicked,
-                onResetClick = onResetClicked
-            )
         }
     }
 }
@@ -228,8 +200,7 @@ private fun DurationFields(
             )
 
             CustomTextField(
-                value = if (minDuration == -1f) "" else minDuration.toInt()
-                    .toString(),
+                value = if (minDuration == -1f) "" else minDuration.toInt().toString(),
                 onValueChanged = { newValue ->
                     if (newValue.isEmpty()) {
                         onDurationChanged(-1f, maxDuration)
@@ -260,8 +231,7 @@ private fun DurationFields(
             )
 
             CustomTextField(
-                value = if (maxDuration == 31f) "" else maxDuration.toInt()
-                    .toString(),
+                value = if (maxDuration == 31f) "" else maxDuration.toInt().toString(),
                 onValueChanged = { newValue ->
                     if (newValue.isEmpty()) {
                         onDurationChanged(minDuration, 31f)
@@ -288,8 +258,12 @@ private fun DurationFields(
 private fun FlowFilterSection(
     modifier: Modifier = Modifier,
     title: String,
-    chipsTitles: List<String>,
-    selectedChips: List<String>,
+    chipsTitles: List<String> = emptyList(),
+    ratings: List<Rate> = emptyList(),
+    sortWays: List<SortWay> = emptyList(),
+    selectedChips: List<String> = emptyList(),
+    selectedRate: Int = 0,
+    selectedSortWay: Int = 0,
     isRating: Boolean = false,
     onChipClicked: (String) -> Unit
 ) {
@@ -313,6 +287,24 @@ private fun FlowFilterSection(
                     isRating = isRating,
                     isSelected = (item in selectedChips),
                     onClicked = onChipClicked
+                )
+            }
+
+            ratings.forEach { rate ->
+                CustomChip(
+                    title = rate.title,
+                    isRating = isRating,
+                    isSelected = (rate.rating == selectedRate),
+                    onClicked = { onChipClicked(rate.rating.toString()) }
+                )
+            }
+
+            sortWays.forEach { item ->
+                CustomChip(
+                    title = item.title,
+                    isRating = isRating,
+                    isSelected = (item.number == selectedSortWay),
+                    onClicked = { onChipClicked(item.number.toString()) }
                 )
             }
         }
@@ -348,14 +340,13 @@ private fun FilterFooter(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, heightDp = 1500)
 @Composable
 private fun FilterScreenReview() {
     EGTourGuideTheme {
         FilterScreen(
             viewModel = hiltViewModel(),
-            onNavigateBack = {},
-//            onNavigateToResults = {}
+            onNavigateBack = {}
         )
     }
 }

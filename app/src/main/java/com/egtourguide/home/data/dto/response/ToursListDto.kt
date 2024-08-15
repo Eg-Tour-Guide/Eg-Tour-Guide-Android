@@ -1,11 +1,18 @@
 package com.egtourguide.home.data.dto.response
 
 import com.egtourguide.home.domain.model.AbstractedTour
+import com.egtourguide.home.domain.model.ToursScreenResponse
 
 data class ToursListDto(
     val status: String,
-    val tours: List<Tour>
+    val tours: List<Tour>,
+    val filter: Filter
 ) {
+    fun toDomainToursList() = ToursScreenResponse(
+        tours = tours.map { it.toDomainAbstractedTour() },
+        tourTypes = filter.type
+    )
+
     data class Tour(
         val _id: String,
         val duration: Int,
@@ -27,4 +34,8 @@ data class ToursListDto(
             )
         }
     }
+
+    data class Filter(
+        val type: List<String>
+    )
 }

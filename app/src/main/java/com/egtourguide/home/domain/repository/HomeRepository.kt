@@ -7,6 +7,7 @@ import com.egtourguide.home.domain.model.DetectedArtifact
 import com.egtourguide.home.domain.model.HomeResponse
 import com.egtourguide.home.domain.model.AbstractedLandmark
 import com.egtourguide.home.domain.model.SearchResult
+import com.egtourguide.home.domain.model.ToursScreenResponse
 import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody
 
@@ -18,7 +19,7 @@ interface HomeRepository {
 
     suspend fun getArtifactsList(): Flow<ResultWrapper<List<AbstractedArtifact>>>
 
-    suspend fun getToursList(): Flow<ResultWrapper<List<AbstractedTour>>>
+    suspend fun getToursList(): Flow<ResultWrapper<ToursScreenResponse>>
 
     suspend fun search(query: String): Flow<ResultWrapper<List<SearchResult>>>
 

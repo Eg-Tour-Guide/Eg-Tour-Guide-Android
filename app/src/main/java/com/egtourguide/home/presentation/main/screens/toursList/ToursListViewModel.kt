@@ -27,7 +27,7 @@ class ToursListViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(ToursListUIState())
     val uiState = _uiState.asStateFlow()
 
-    fun getToursList() {
+    fun getToursList(setFilters: (List<String>) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             getToursListUseCase().onResponse(
                 onLoading = {
@@ -37,10 +37,12 @@ class ToursListViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            tours = response,
-                            displayedTours = response
+                            tours = response.tours,
+                            displayedTours = response.tours
                         )
                     }
+
+                    setFilters(response.tourTypes)
                 },
                 onFailure = { error ->
                     _uiState.update { it.copy(isLoading = false, error = error) }
@@ -52,14 +54,15 @@ class ToursListViewModel @Inject constructor(
         }
     }
 
-    fun refreshTours() {
+    fun refreshTours(setFilters: (List<String>) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             getToursListUseCase().onResponse(
                 onLoading = {
                     _uiState.update { it.copy(isRefreshing = true) }
                 },
                 onSuccess = { response ->
-                    _uiState.update { it.copy(isRefreshing = false, tours = response) }
+                    _uiState.update { it.copy(isRefreshing = false, tours = response.tours) }
+                    setFilters(response.tourTypes)
                 },
                 onFailure = {
                     _uiState.update { it.copy(isRefreshing = false) }
@@ -101,15 +104,27 @@ class ToursListViewModel @Inject constructor(
         _uiState.update { it.copy(isSaveError = false) }
     }
 
-    // TODO: Add rest of filters!!
     fun filterTours(filterState: FilterScreenState) {
-        _uiState.update {
-            it.copy(
-                displayedTours = it.tours.filter { tour ->
-                    filterState.minDuration.toInt() <= tour.duration && tour.duration <= filterState.maxDuration.toInt()
-                }
-            )
+        var tours = uiState.value.tours
+
+        tours = tours.filter { tour ->
+            tour.duration >= filterState.minDuration.toInt() &&
+                    tour.duration <= filterState.maxDuration.toInt() &&
+                    tour.rating >= filterState.selectedRating
         }
+
+        tours = if (filterState.selectedSortBy == 1) {
+            tours.sortedByDescending { it.rating }
+        } else {
+            tours.sortedBy { it.rating }
+        }
+
+        // TODO: Filter tour types!!
+//        if(filterState.selectedTourTypes.isNotEmpty()) {
+//            tours.filter { it.type in filterState.selectedTourTypes }
+//        }
+
+        _uiState.update { it.copy(displayedTours = tours) }
     }
 
     fun detectArtifact(image: Bitmap) {
