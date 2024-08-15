@@ -5,6 +5,7 @@ data class AbstractedLandmark(
     val name: String,
     val image: String,
     val location: String,
+    val category: String,
     var isSaved: Boolean,
     val rating: Double,
     val ratingCount: Int

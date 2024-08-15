@@ -9,7 +9,6 @@ data class SearchResultsUIState(
     val displayedResults: List<SearchResult> = emptyList(),
     val error: String? = null,
     val isCallSent: Boolean = false,
-    val isShowEmptyState: Boolean = false,
     val isSaveSuccess: Boolean = false,
     val isSaveCall: Boolean = true,
     val isSaveError: Boolean = false

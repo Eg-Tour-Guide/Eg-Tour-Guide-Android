@@ -110,7 +110,14 @@ fun ArtifactsListScreen(
 
     PullToRefreshScreen(
         isRefreshing = uiState.isRefreshing,
-        onRefresh = viewModel::refreshArtifacts
+        onRefresh = {
+            viewModel.refreshArtifacts { artifactTypes, materials ->
+                filterViewModel.setArtifactFilters(
+                    artifactTypes = artifactTypes,
+                    materials = materials
+                )
+            }
+        }
     ) {
         ArtifactsListScreenContent(
             uiState = uiState,
@@ -126,7 +133,12 @@ fun ArtifactsListScreen(
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_CREATE && !uiState.callIsSent) {
-                viewModel.getArtifactsList()
+                viewModel.getArtifactsList { artifactTypes, materials ->
+                    filterViewModel.setArtifactFilters(
+                        artifactTypes = artifactTypes,
+                        materials = materials
+                    )
+                }
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)

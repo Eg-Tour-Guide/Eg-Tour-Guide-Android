@@ -31,21 +31,14 @@ class SearchResultsViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             searchUseCase(query).onResponse(
                 onLoading = {
-                    _uiState.update {
-                        it.copy(
-                            isLoading = true,
-                            isShowEmptyState = false,
-                            isCallSent = true
-                        )
-                    }
+                    _uiState.update { it.copy(isLoading = true, isCallSent = true) }
                 },
                 onSuccess = { response ->
                     _uiState.update {
                         it.copy(
                             isLoading = false,
                             results = response,
-                            displayedResults = response,
-                            isShowEmptyState = true
+                            displayedResults = response
                         )
                     }
                 },
@@ -87,15 +80,16 @@ class SearchResultsViewModel @Inject constructor(
         }
     }
 
-    // TODO: Add rest of filters!!
     fun filterResults(filterState: FilterScreenState) {
-        _uiState.update {
-            it.copy(
-                displayedResults = it.results.filter { result ->
-                    result.location in filterState.selectedLocations
-                }
-            )
+        var results = uiState.value.results
+
+        if (filterState.selectedCategory == "Landmarks") {
+            results = results.filter { it.itemType == ItemType.LANDMARK }
+        } else if (filterState.selectedCategory == "Artifacts") {
+            results = results.filter { it.itemType == ItemType.ARTIFACT }
         }
+
+        _uiState.update { it.copy(displayedResults = results) }
     }
 
     fun clearSaveSuccess() {

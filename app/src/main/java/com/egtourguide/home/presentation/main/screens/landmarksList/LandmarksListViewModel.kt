@@ -27,29 +27,7 @@ class LandmarksListViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(LandmarksListUIState())
     val uiState = _uiState.asStateFlow()
 
-    fun onSaveClicked(place: AbstractedLandmark) {
-        viewModelScope.launch(Dispatchers.IO) {
-            place.isSaved = !place.isSaved
-            _uiState.update { it.copy(isSaveCall = place.isSaved) }
-
-            changeLandmarkSavedStateUseCase(placeId = place.id).onResponse(
-                onLoading = {},
-                onSuccess = {
-                    _uiState.update { it.copy(isSaveSuccess = true) }
-                },
-                onFailure = {
-                    _uiState.update { it.copy(isSaveError = true) }
-                    place.isSaved = !place.isSaved
-                },
-                onNetworkError = {
-                    _uiState.update { it.copy(isSaveError = true) }
-                    place.isSaved = !place.isSaved
-                }
-            )
-        }
-    }
-
-    fun getLandmarksList() {
+    fun getLandmarksList(setLandmarkFilters: (tourismTypes: List<String>, locations: List<String>) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             getLandmarksListUseCase().onResponse(
                 onLoading = {
@@ -59,10 +37,12 @@ class LandmarksListViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            landmarks = response,
-                            displayedLandmarks = response
+                            landmarks = response.landmarks,
+                            displayedLandmarks = response.landmarks
                         )
                     }
+
+                    setLandmarkFilters(response.tourismTypes, response.locations)
                 },
                 onFailure = { error ->
                     _uiState.update { it.copy(isLoading = false, error = error) }
@@ -74,14 +54,20 @@ class LandmarksListViewModel @Inject constructor(
         }
     }
 
-    fun refreshLandmarks() {
+    fun refreshLandmarks(setLandmarkFilters: (tourismTypes: List<String>, locations: List<String>) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             getLandmarksListUseCase().onResponse(
                 onLoading = {
                     _uiState.update { it.copy(isRefreshing = true) }
                 },
                 onSuccess = { response ->
-                    _uiState.update { it.copy(isRefreshing = false, landmarks = response) }
+                    _uiState.update {
+                        it.copy(
+                            isRefreshing = false,
+                            landmarks = response.landmarks
+                        )
+                    }
+                    setLandmarkFilters(response.tourismTypes, response.locations)
                 },
                 onFailure = {
                     _uiState.update { it.copy(isRefreshing = false) }
@@ -101,15 +87,22 @@ class LandmarksListViewModel @Inject constructor(
         _uiState.update { it.copy(isSaveError = false) }
     }
 
-    // TODO: Add rest of filters!!
     fun filterLandmarks(filterState: FilterScreenState) {
-        _uiState.update {
-            it.copy(
-                displayedLandmarks = it.landmarks.filter { landmark ->
-                    landmark.location in filterState.selectedLocations || filterState.selectedLocations.isEmpty()
-                }
-            )
+        var landmarks = uiState.value.landmarks
+
+        landmarks = landmarks.filter { landmark ->
+            (landmark.category in filterState.selectedTourismTypes || filterState.selectedTourismTypes.isEmpty()) &&
+                    (landmark.location in filterState.selectedLocations || filterState.selectedLocations.isEmpty()) &&
+                    (landmark.rating >= filterState.selectedRating)
         }
+
+        if (filterState.selectedSortBy == 1) {
+            landmarks = landmarks.sortedByDescending { it.rating }
+        } else if (filterState.selectedSortBy == 2) {
+            landmarks = landmarks.sortedBy { it.rating }
+        }
+
+        _uiState.update { it.copy(displayedLandmarks = landmarks) }
     }
 
     fun detectArtifact(image: Bitmap) {
@@ -139,5 +132,27 @@ class LandmarksListViewModel @Inject constructor(
 
     fun clearDetectionSuccess() {
         _uiState.update { it.copy(detectedArtifact = null) }
+    }
+
+    fun onSaveClicked(place: AbstractedLandmark) {
+        viewModelScope.launch(Dispatchers.IO) {
+            place.isSaved = !place.isSaved
+            _uiState.update { it.copy(isSaveCall = place.isSaved) }
+
+            changeLandmarkSavedStateUseCase(placeId = place.id).onResponse(
+                onLoading = {},
+                onSuccess = {
+                    _uiState.update { it.copy(isSaveSuccess = true) }
+                },
+                onFailure = {
+                    _uiState.update { it.copy(isSaveError = true) }
+                    place.isSaved = !place.isSaved
+                },
+                onNetworkError = {
+                    _uiState.update { it.copy(isSaveError = true) }
+                    place.isSaved = !place.isSaved
+                }
+            )
+        }
     }
 }

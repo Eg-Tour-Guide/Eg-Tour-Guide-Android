@@ -27,6 +27,69 @@ class ArtifactsListViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(ArtifactsListUIState())
     val uiState = _uiState.asStateFlow()
 
+    fun getArtifactsList(setArtifactFilters: (artifactTypes: List<String>, materials: List<String>) -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            getArtifactsListUseCase().onResponse(
+                onLoading = {
+                    _uiState.update { it.copy(isLoading = true, callIsSent = true, error = null) }
+                },
+                onSuccess = { response ->
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            artifacts = response.artifacts,
+                            displayedArtifacts = response.artifacts
+                        )
+                    }
+
+                    setArtifactFilters(response.artifactTypes, response.materials)
+                },
+                onFailure = { error ->
+                    _uiState.update { it.copy(isLoading = false, error = error) }
+                },
+                onNetworkError = {
+                    _uiState.update { it.copy(isNetworkError = true, isLoading = false) }
+                }
+            )
+        }
+    }
+
+    fun refreshArtifacts(setArtifactFilters: (artifactTypes: List<String>, materials: List<String>) -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            getArtifactsListUseCase().onResponse(
+                onLoading = {
+                    _uiState.update { it.copy(isRefreshing = true) }
+                },
+                onSuccess = { response ->
+                    _uiState.update {
+                        it.copy(
+                            isRefreshing = false,
+                            artifacts = response.artifacts
+                        )
+                    }
+                    setArtifactFilters(response.artifactTypes, response.materials)
+                },
+                onFailure = {
+                    _uiState.update { it.copy(isRefreshing = false) }
+                },
+                onNetworkError = {
+                    _uiState.update { it.copy(isRefreshing = false) }
+                }
+            )
+        }
+    }
+
+    fun filterArtifacts(filterState: FilterScreenState) {
+        var artifacts = uiState.value.artifacts
+
+        artifacts = artifacts.filter { artifact ->
+            (artifact.type in filterState.selectedArtifactTypes || filterState.selectedArtifactTypes.isEmpty()) &&
+                    (artifact.material in filterState.selectedMaterials || filterState.selectedMaterials.isEmpty())
+        }
+
+        _uiState.update { it.copy(displayedArtifacts = artifacts) }
+    }
+
     fun onSaveClicked(artifact: AbstractedArtifact) {
         viewModelScope.launch(Dispatchers.IO) {
             artifact.isSaved = !artifact.isSaved
@@ -44,61 +107,6 @@ class ArtifactsListViewModel @Inject constructor(
                 onNetworkError = {
                     _uiState.update { it.copy(isSaveError = true) }
                     artifact.isSaved = !artifact.isSaved
-                }
-            )
-        }
-    }
-
-    fun getArtifactsList() {
-        viewModelScope.launch(Dispatchers.IO) {
-            getArtifactsListUseCase().onResponse(
-                onLoading = {
-                    _uiState.update { it.copy(isLoading = true, callIsSent = true, error = null) }
-                },
-                onSuccess = { response ->
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            artifacts = response,
-                            displayedArtifacts = response
-                        )
-                    }
-                },
-                onFailure = { error ->
-                    _uiState.update { it.copy(isLoading = false, error = error) }
-                },
-                onNetworkError = {
-                    _uiState.update { it.copy(isNetworkError = true, isLoading = false) }
-                }
-            )
-        }
-    }
-
-    fun refreshArtifacts() {
-        viewModelScope.launch(Dispatchers.IO) {
-            getArtifactsListUseCase().onResponse(
-                onLoading = {
-                    _uiState.update { it.copy(isRefreshing = true) }
-                },
-                onSuccess = { response ->
-                    _uiState.update { it.copy(isRefreshing = false, artifacts = response) }
-                },
-                onFailure = {
-                    _uiState.update { it.copy(isRefreshing = false) }
-                },
-                onNetworkError = {
-                    _uiState.update { it.copy(isRefreshing = false) }
-                }
-            )
-        }
-    }
-
-    // TODO: Add rest of filters!!
-    fun filterArtifacts(filterState: FilterScreenState) {
-        _uiState.update {
-            it.copy(
-                displayedArtifacts = it.artifacts.filter { artifact ->
-                    artifact.material in filterState.selectedMaterials || filterState.selectedMaterials.isEmpty()
                 }
             )
         }

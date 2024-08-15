@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -63,6 +65,7 @@ fun SearchResultsScreen(
         viewModel.filterResults(filterState)
     }
 
+    // TODO: Refresh Here!!
     SearchResultsScreenContent(
         uiState = uiState,
         hasChanged = hasChanged,
@@ -136,7 +139,11 @@ fun SearchResultsScreenContent(
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            NetworkErrorScreen(modifier = Modifier.fillMaxSize())
+            NetworkErrorScreen(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            )
         }
 
         AnimatedVisibility(
@@ -154,7 +161,10 @@ fun SearchResultsScreenContent(
         ) {
             Column {
                 DataScreenHeader(
-                    title = stringResource(id = R.string.results_count, uiState.results.size),
+                    title = stringResource(
+                        id = R.string.results_count,
+                        uiState.displayedResults.size
+                    ),
                     onFilterClicked = onFilterClicked,
                     hasChanged = hasChanged,
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)
@@ -163,7 +173,7 @@ fun SearchResultsScreenContent(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 ResultsSection(
-                    results = uiState.results,
+                    results = uiState.displayedResults,
                     onResultClicked = onResultClicked,
                     onSaveClicked = onSaveClicked
                 )
@@ -217,6 +227,19 @@ private fun SearchResultsScreenPreview() {
             uiState = SearchResultsUIState(
                 isLoading = false,
                 results = (0..4).map {
+                    SearchResult(
+                        id = "$it",
+                        name = "John Johnson",
+                        image = "pro",
+                        location = "Cairo",
+                        isSaved = false,
+                        rating = 6.7,
+                        ratingCount = 8388,
+                        itemType = ItemType.LANDMARK,
+                        artifactType = "Statue"
+                    )
+                },
+                displayedResults = (0..4).map {
                     SearchResult(
                         id = "$it",
                         name = "John Johnson",

@@ -85,6 +85,7 @@ private fun HomePreview() {
                         name = "Terrence Kane",
                         image = "pro",
                         location = "Giza",
+                        category = "Sports",
                         isSaved = false,
                         rating = 2.3,
                         ratingCount = 6748
@@ -96,6 +97,7 @@ private fun HomePreview() {
                         name = "Terrence Kane",
                         image = "pro",
                         location = "Giza",
+                        category = "Sports",
                         isSaved = false,
                         rating = 2.3,
                         ratingCount = 6748
@@ -107,6 +109,7 @@ private fun HomePreview() {
                         name = "Terrence Kane",
                         image = "pro",
                         location = "Giza",
+                        category = "Sports",
                         isSaved = false,
                         rating = 2.3,
                         ratingCount = 6748
@@ -118,6 +121,7 @@ private fun HomePreview() {
                         name = "Terrence Kane",
                         image = "pro",
                         location = "Giza",
+                        category = "Sports",
                         isSaved = false,
                         rating = 2.3,
                         ratingCount = 6748
@@ -129,6 +133,7 @@ private fun HomePreview() {
                         name = "Terrence Kane",
                         image = "pro",
                         location = "Giza",
+                        category = "Sports",
                         isSaved = false,
                         rating = 2.3,
                         ratingCount = 6748

@@ -1,11 +1,10 @@
 package com.egtourguide.home.domain.repository
 
 import com.egtourguide.core.utils.ResultWrapper
-import com.egtourguide.home.domain.model.AbstractedArtifact
-import com.egtourguide.home.domain.model.AbstractedTour
+import com.egtourguide.home.domain.model.ArtifactsScreenResponse
 import com.egtourguide.home.domain.model.DetectedArtifact
 import com.egtourguide.home.domain.model.HomeResponse
-import com.egtourguide.home.domain.model.AbstractedLandmark
+import com.egtourguide.home.domain.model.LandmarksScreenResponse
 import com.egtourguide.home.domain.model.SearchResult
 import com.egtourguide.home.domain.model.ToursScreenResponse
 import kotlinx.coroutines.flow.Flow
@@ -15,9 +14,9 @@ interface HomeRepository {
 
     suspend fun getHome(): Flow<ResultWrapper<HomeResponse>>
 
-    suspend fun getLandmarksList(): Flow<ResultWrapper<List<AbstractedLandmark>>>
+    suspend fun getLandmarksList(): Flow<ResultWrapper<LandmarksScreenResponse>>
 
-    suspend fun getArtifactsList(): Flow<ResultWrapper<List<AbstractedArtifact>>>
+    suspend fun getArtifactsList(): Flow<ResultWrapper<ArtifactsScreenResponse>>
 
     suspend fun getToursList(): Flow<ResultWrapper<ToursScreenResponse>>
 

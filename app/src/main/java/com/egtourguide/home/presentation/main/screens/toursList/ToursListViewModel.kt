@@ -113,10 +113,10 @@ class ToursListViewModel @Inject constructor(
                     tour.rating >= filterState.selectedRating
         }
 
-        tours = if (filterState.selectedSortBy == 1) {
-            tours.sortedByDescending { it.rating }
-        } else {
-            tours.sortedBy { it.rating }
+        if (filterState.selectedSortBy == 1) {
+            tours = tours.sortedByDescending { it.rating }
+        } else if (filterState.selectedSortBy == 2) {
+            tours = tours.sortedBy { it.rating }
         }
 
         // TODO: Filter tour types!!

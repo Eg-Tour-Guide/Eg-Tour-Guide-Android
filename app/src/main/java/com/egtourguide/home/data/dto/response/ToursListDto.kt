@@ -8,7 +8,7 @@ data class ToursListDto(
     val tours: List<Tour>,
     val filter: Filter
 ) {
-    fun toDomainToursList() = ToursScreenResponse(
+    fun toToursResponse() = ToursScreenResponse(
         tours = tours.map { it.toDomainAbstractedTour() },
         tourTypes = filter.type
     )

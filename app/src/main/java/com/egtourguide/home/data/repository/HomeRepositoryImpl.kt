@@ -13,15 +13,15 @@ class HomeRepositoryImpl @Inject constructor(private val homeApi: HomeApi) : Hom
     }
 
     override suspend fun getLandmarksList() = safeCall {
-        homeApi.getLandmarksList().places.map { it.toDomainPlace() }
+        homeApi.getLandmarksList().toLandmarksResponse()
     }
 
     override suspend fun getArtifactsList() = safeCall {
-        homeApi.getArtifactsList().artifacs.map { it.toDomainAbstractedArtifact() }
+        homeApi.getArtifactsList().toArtifactsResponse()
     }
 
     override suspend fun getToursList() = safeCall {
-        homeApi.getToursList().toDomainToursList()
+        homeApi.getToursList().toToursResponse()
     }
 
     override suspend fun search(query: String) = safeCall {

@@ -77,6 +77,7 @@ data class RelatedPlaceDto(
     val name: String,
     val image: String,
     val govName: String,
+    val category: String,
     val ratingAverage: Double,
     val ratingQuantity: Int,
     val saved: Boolean
@@ -86,6 +87,7 @@ data class RelatedPlaceDto(
         name = name,
         image = image,
         location = govName,
+        category = category,
         isSaved = saved,
         rating = ratingAverage,
         ratingCount = ratingQuantity

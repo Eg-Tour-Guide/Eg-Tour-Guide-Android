@@ -66,6 +66,7 @@ private fun LandmarksScreenPreview() {
                         name = "Terrence Kane",
                         image = "pro",
                         location = "Cairo",
+                        category = "Sports",
                         isSaved = false,
                         rating = 6.7,
                         ratingCount = 8388
@@ -77,6 +78,7 @@ private fun LandmarksScreenPreview() {
                         name = "Terrence Kane",
                         image = "pro",
                         location = "Cairo",
+                        category = "Sports",
                         isSaved = false,
                         rating = 6.7,
                         ratingCount = 8388
@@ -110,7 +112,14 @@ fun LandmarksListScreen(
 
     PullToRefreshScreen(
         isRefreshing = uiState.isRefreshing,
-        onRefresh = viewModel::refreshLandmarks
+        onRefresh = {
+            viewModel.refreshLandmarks { tourismTypes, locations ->
+                filterViewModel.setLandmarkFilters(
+                    tourismTypes = tourismTypes,
+                    locations = locations
+                )
+            }
+        }
     ) {
         LandmarksListScreenContent(
             uiState = uiState,
@@ -126,7 +135,12 @@ fun LandmarksListScreen(
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_CREATE && !uiState.callIsSent) {
-                viewModel.getLandmarksList()
+                viewModel.getLandmarksList { tourismTypes, locations ->
+                    filterViewModel.setLandmarkFilters(
+                        tourismTypes = tourismTypes,
+                        locations = locations
+                    )
+                }
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
