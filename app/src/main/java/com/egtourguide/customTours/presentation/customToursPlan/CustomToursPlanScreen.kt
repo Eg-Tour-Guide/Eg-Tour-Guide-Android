@@ -1,4 +1,4 @@
-package com.egtourguide.expanded.presentation.screens.toursPlan
+package com.egtourguide.customTours.presentation.customToursPlan
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -41,20 +41,21 @@ import com.egtourguide.core.presentation.components.LoadingState
 import com.egtourguide.core.presentation.components.NetworkErrorScreen
 import com.egtourguide.core.presentation.components.ScreenHeader
 import com.egtourguide.core.presentation.components.TourPlanItem
+import com.egtourguide.expanded.domain.model.TourDetailsPlace
 
 @Preview
 @Composable
-private fun ToursPlanScreenPreview() {
+private fun CustomToursPlanScreenRootPreview() {
     EGTourGuideTheme {
-        ToursPlanScreenContent(
-            uiState = ToursPlanScreenState()
+        CustomToursPlanScreenContent(
+            uiState = CustomToursPlanScreenState()
         )
     }
 }
 
 @Composable
-fun ToursPlanScreenRoot(
-    viewModel: ToursPlanViewModel = hiltViewModel(),
+fun CustomToursPlanScreenRoot(
+    viewModel: CustomToursPlanViewModel = hiltViewModel(),
     tourId: String,
     onBackClicked: () -> Unit,
     navigateToLandmark: (String) -> Unit
@@ -75,20 +76,22 @@ fun ToursPlanScreenRoot(
         }
     }
 
-    ToursPlanScreenContent(
+    CustomToursPlanScreenContent(
         uiState = uiState,
         onBackClicked = onBackClicked,
         onPlaceClicked = navigateToLandmark,
-        changeChosenDay = viewModel::changeChosenDay
+        changeChosenDay = viewModel::changeChosenDay,
+        onDeleteClicked = viewModel::deletePlace
     )
 }
 
 @Composable
-fun ToursPlanScreenContent(
-    uiState: ToursPlanScreenState = ToursPlanScreenState(),
+private fun CustomToursPlanScreenContent(
+    uiState: CustomToursPlanScreenState = CustomToursPlanScreenState(),
     onBackClicked: () -> Unit = {},
     changeChosenDay: (Int) -> Unit = {},
-    onPlaceClicked: (String) -> Unit = {}
+    onPlaceClicked: (String) -> Unit = {},
+    onDeleteClicked: (TourDetailsPlace) -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -181,7 +184,9 @@ fun ToursPlanScreenContent(
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp),
                         place = place,
-                        onClick = onPlaceClicked
+                        onClick = onPlaceClicked,
+                        isCustom = true,
+                        onDeleteClicked = { onDeleteClicked(place) }
                     )
                 }
             }

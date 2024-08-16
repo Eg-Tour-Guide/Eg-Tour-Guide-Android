@@ -23,6 +23,7 @@ import com.egtourguide.customTours.presentation.customExpanded.CustomExpandedScr
 import com.egtourguide.home.presentation.main.screens.artifactsList.ArtifactsListScreen
 import com.egtourguide.expanded.presentation.screens.expanded.ExpandedScreenRoot
 import com.egtourguide.core.utils.ExpandedType
+import com.egtourguide.customTours.presentation.customToursPlan.CustomToursPlanScreenRoot
 import com.egtourguide.expanded.presentation.screens.webView.WebViewScreen
 import com.egtourguide.home.presentation.filter.FilterScreen
 import com.egtourguide.home.presentation.main.MainScreen
@@ -771,8 +772,28 @@ fun NavGraphBuilder.customToursGraph(
                             .replace("{description}", description)
                     )
                 },
-                goToTourPlan = {
-                    // TODO: Navigate!!
+                goToTourPlan = { id ->
+                    navController.navigate(
+                        AppScreen.CustomToursPlan.route.replace("{tourId}", id)
+                    )
+                }
+            )
+        }
+
+        composable(route = AppScreen.CustomToursPlan.route) { entry ->
+            val tourId = entry.arguments?.getString("tourId") ?: ""
+
+            CustomToursPlanScreenRoot(
+                tourId = tourId,
+                onBackClicked = {
+                    navController.navigateUp()
+                },
+                navigateToLandmark = { landmarkId ->
+                    navController.navigate(
+                        route = AppGraph.Expanded.route
+                            .replace("{id}", landmarkId)
+                            .replace("{expandedType}", ExpandedType.LANDMARK.name)
+                    )
                 }
             )
         }

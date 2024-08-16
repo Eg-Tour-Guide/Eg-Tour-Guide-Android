@@ -42,4 +42,5 @@ sealed class AppScreen(val route: String) {
     object CreateTour : AppScreen(route = Routes.CREATE_TOUR_SCREEN_ROUTE)
     object CustomExpanded : AppScreen(route = Routes.CUSTOM_EXPANDED_SCREEN_ROUTE)
     object MyToursFilter : AppScreen(route = Routes.MY_TOURS_FILTER_SCREEN_ROUTE)
+    object CustomToursPlan : AppScreen(route = Routes.CUSTOM_TOURS_PLAN_SCREEN_ROUTE)
 }
