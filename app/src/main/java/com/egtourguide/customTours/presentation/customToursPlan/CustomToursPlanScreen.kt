@@ -42,7 +42,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.egtourguide.R
-import com.egtourguide.core.presentation.components.EmptyState
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 import com.egtourguide.core.presentation.components.LoadingState
 import com.egtourguide.core.presentation.components.NetworkErrorScreen
@@ -85,6 +84,13 @@ fun CustomToursPlanScreenRoot(
         }
     }
 
+    LaunchedEffect(key1 = uiState.errorMessage) {
+        uiState.errorMessage?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            viewModel.clearError()
+        }
+    }
+
     LaunchedEffect(key1 = uiState.isRemoveSuccess) {
         if (uiState.isRemoveSuccess) {
             Toast.makeText(
@@ -92,7 +98,7 @@ fun CustomToursPlanScreenRoot(
                 context.getString(R.string.place_removed_successfully),
                 Toast.LENGTH_SHORT
             ).show()
-            viewModel.clearSuccess()
+            viewModel.clearRemoveSuccess()
         }
     }
 
@@ -103,7 +109,7 @@ fun CustomToursPlanScreenRoot(
                 context.getString(R.string.failed_to_remove_this_place_please_try_again),
                 Toast.LENGTH_SHORT
             ).show()
-            viewModel.clearError()
+            viewModel.clearRemoveError()
         }
     }
 
@@ -171,18 +177,6 @@ private fun CustomToursPlanScreenContent(
             exit = fadeOut()
         ) {
             NetworkErrorScreen(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-            )
-        }
-
-        AnimatedVisibility(
-            visible = !uiState.isLoading && uiState.id.isEmpty() && !uiState.isNetworkError,
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
-            EmptyState(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())

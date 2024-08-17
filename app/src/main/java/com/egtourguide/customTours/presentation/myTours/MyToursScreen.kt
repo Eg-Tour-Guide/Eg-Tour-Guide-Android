@@ -194,19 +194,7 @@ private fun MyToursScreenContent(
         }
 
         AnimatedVisibility(
-            visible = !uiState.isLoading && uiState.myTours.isEmpty() && !uiState.isNetworkError,
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
-            EmptyState(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-            )
-        }
-
-        AnimatedVisibility(
-            visible = !uiState.isLoading && uiState.myTours.isNotEmpty() && !uiState.isNetworkError,
+            visible = !uiState.isLoading && !uiState.isNetworkError,
             enter = fadeIn(),
             exit = fadeOut()
         ) {
@@ -218,27 +206,35 @@ private fun MyToursScreenContent(
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)
                 )
 
-                LazyVerticalGrid(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
-                    columns = GridCells.Fixed(2),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp)
-                ) {
-                    items(items = uiState.displayedTours, key = { it.id }) { tour ->
-                        LargeCard(
-                            itemType = ItemType.TOUR,
-                            image = tour.image,
-                            name = tour.title,
-                            isSaved = tour.isSaved,
-                            duration = tour.duration,
-                            ratingAverage = tour.rating,
-                            ratingCount = tour.ratingCount,
-                            onItemClicked = { onTourClicked(tour) },
-                            onSaveClicked = { onSaveClicked(tour) }
-                        )
+                if (uiState.displayedTours.isEmpty()) {
+                    EmptyState(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                    )
+                } else {
+                    LazyVerticalGrid(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp),
+                        columns = GridCells.Fixed(2),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                    ) {
+                        items(items = uiState.displayedTours, key = { it.id }) { tour ->
+                            LargeCard(
+                                itemType = ItemType.TOUR,
+                                image = tour.image,
+                                name = tour.title,
+                                isSaved = tour.isSaved,
+                                duration = tour.duration,
+                                ratingAverage = tour.rating,
+                                ratingCount = tour.ratingCount,
+                                onItemClicked = { onTourClicked(tour) },
+                                onSaveClicked = { onSaveClicked(tour) }
+                            )
+                        }
                     }
                 }
             }

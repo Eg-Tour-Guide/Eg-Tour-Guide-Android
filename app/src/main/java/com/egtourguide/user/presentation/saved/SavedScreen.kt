@@ -8,8 +8,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -176,19 +176,7 @@ private fun SavedScreenContent(
         }
 
         AnimatedVisibility(
-            visible = !uiState.isLoading && uiState.savedList.isEmpty() && !uiState.isNetworkError,
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
-            EmptyState(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-            )
-        }
-
-        AnimatedVisibility(
-            visible = !uiState.isLoading && uiState.savedList.isNotEmpty(),
+            visible = !uiState.isLoading && !uiState.isNetworkError,
             enter = fadeIn(),
             exit = fadeOut()
         ) {
@@ -203,45 +191,40 @@ private fun SavedScreenContent(
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                ItemsSection(
-                    items = uiState.displayedSavedList,
-                    onItemClicked = onItemClicked,
-                    onSaveClicked = onSaveClicked
-                )
+                if (uiState.displayedSavedList.isEmpty()) {
+                    EmptyState(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                    )
+                } else {
+                    LazyVerticalGrid(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp),
+                        columns = GridCells.Fixed(2),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        contentPadding = PaddingValues(bottom = 16.dp, start = 16.dp, end = 16.dp)
+                    ) {
+                        items(items = uiState.displayedSavedList, key = { it.id }) { item ->
+                            LargeCard(
+                                itemType = item.itemType,
+                                image = item.image,
+                                name = item.name,
+                                isSaved = item.isSaved,
+                                duration = item.duration,
+                                location = item.location,
+                                ratingAverage = item.ratingAverage,
+                                ratingCount = item.ratingCount,
+                                artifactType = item.artifactType,
+                                onItemClicked = { onItemClicked(item) },
+                                onSaveClicked = { onSaveClicked(item) }
+                            )
+                        }
+                    }
+                }
             }
-        }
-    }
-}
-
-@Composable
-private fun ItemsSection(
-    items: List<AbstractSavedItem>,
-    onItemClicked: (AbstractSavedItem) -> Unit,
-    onSaveClicked: (AbstractSavedItem) -> Unit
-) {
-    LazyVerticalGrid(
-        modifier = Modifier.fillMaxSize(),
-        columns = GridCells.Fixed(2),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        contentPadding = PaddingValues(bottom = 16.dp, start = 16.dp, end = 16.dp)
-    ) {
-        items(items = items, key = { it.id }) { item ->
-            LargeCard(
-                itemType = item.itemType,
-                image = item.image,
-                name = item.name,
-                isSaved = item.isSaved,
-                duration = item.duration,
-                location = item.location,
-                ratingAverage = item.ratingAverage,
-                ratingCount = item.ratingCount,
-                artifactType = item.artifactType,
-                onItemClicked = { onItemClicked(item) },
-                onSaveClicked = { onSaveClicked(item) }
-            )
         }
     }
 }

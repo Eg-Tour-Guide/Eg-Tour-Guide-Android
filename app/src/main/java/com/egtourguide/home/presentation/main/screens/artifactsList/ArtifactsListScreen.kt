@@ -8,7 +8,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -237,19 +236,7 @@ fun ArtifactsListScreenContent(
         }
 
         AnimatedVisibility(
-            visible = !uiState.isLoading && uiState.artifacts.isEmpty(),
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
-            EmptyState(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-            )
-        }
-
-        AnimatedVisibility(
-            visible = !uiState.isLoading && uiState.artifacts.isNotEmpty(),
+            visible = !uiState.isLoading && !uiState.isNetworkError,
             enter = fadeIn(),
             exit = fadeOut()
         ) {
@@ -264,42 +251,37 @@ fun ArtifactsListScreenContent(
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                ArtifactsSection(
-                    artifacts = uiState.displayedArtifacts,
-                    onArtifactClicked = onArtifactClicked,
-                    onSaveClicked = onSaveClicked
-                )
+                if (uiState.displayedArtifacts.isEmpty()) {
+                    EmptyState(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                    )
+                } else {
+                    LazyVerticalGrid(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp),
+                        columns = GridCells.Fixed(2),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        contentPadding = PaddingValues(bottom = 16.dp, start = 16.dp, end = 16.dp)
+                    ) {
+                        items(items = uiState.displayedArtifacts, key = { it.id }) { artifact ->
+                            LargeCard(
+                                itemType = ItemType.ARTIFACT,
+                                image = artifact.image,
+                                name = artifact.name,
+                                isSaved = artifact.isSaved,
+                                location = artifact.museumName,
+                                artifactType = artifact.type,
+                                onItemClicked = { onArtifactClicked(artifact) },
+                                onSaveClicked = { onSaveClicked(artifact) }
+                            )
+                        }
+                    }
+                }
             }
-        }
-    }
-}
-
-@Composable
-private fun ArtifactsSection(
-    artifacts: List<AbstractedArtifact>,
-    onArtifactClicked: (AbstractedArtifact) -> Unit,
-    onSaveClicked: (AbstractedArtifact) -> Unit
-) {
-    LazyVerticalGrid(
-        modifier = Modifier.fillMaxWidth(),
-        columns = GridCells.Fixed(2),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        contentPadding = PaddingValues(bottom = 16.dp, start = 16.dp, end = 16.dp)
-    ) {
-        items(items = artifacts, key = { it.id }) { artifact ->
-            LargeCard(
-                itemType = ItemType.ARTIFACT,
-                image = artifact.image,
-                name = artifact.name,
-                isSaved = artifact.isSaved,
-                location = artifact.museumName,
-                artifactType = artifact.type,
-                onItemClicked = { onArtifactClicked(artifact) },
-                onSaveClicked = { onSaveClicked(artifact) }
-            )
         }
     }
 }

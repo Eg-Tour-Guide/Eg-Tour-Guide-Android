@@ -8,7 +8,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -239,19 +238,7 @@ fun LandmarksListScreenContent(
         }
 
         AnimatedVisibility(
-            visible = !uiState.isLoading && uiState.landmarks.isEmpty(),
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
-            EmptyState(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-            )
-        }
-
-        AnimatedVisibility(
-            visible = !uiState.isLoading && uiState.landmarks.isNotEmpty(),
+            visible = !uiState.isLoading && !uiState.isNetworkError,
             enter = fadeIn(),
             exit = fadeOut()
         ) {
@@ -266,43 +253,38 @@ fun LandmarksListScreenContent(
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                PlacesSection(
-                    places = uiState.displayedLandmarks,
-                    onPlaceClicked = onPlaceClicked,
-                    onSaveClicked = onSaveClicked
-                )
+                if (uiState.displayedLandmarks.isEmpty()) {
+                    EmptyState(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                    )
+                } else {
+                    LazyVerticalGrid(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp),
+                        columns = GridCells.Fixed(2),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        contentPadding = PaddingValues(bottom = 16.dp, start = 16.dp, end = 16.dp)
+                    ) {
+                        items(items = uiState.displayedLandmarks, key = { it.id }) { place ->
+                            LargeCard(
+                                itemType = ItemType.LANDMARK,
+                                image = place.image,
+                                name = place.name,
+                                isSaved = place.isSaved,
+                                location = place.location,
+                                ratingAverage = place.rating,
+                                ratingCount = place.ratingCount,
+                                onItemClicked = { onPlaceClicked(place) },
+                                onSaveClicked = { onSaveClicked(place) }
+                            )
+                        }
+                    }
+                }
             }
-        }
-    }
-}
-
-@Composable
-private fun PlacesSection(
-    places: List<AbstractedLandmark>,
-    onPlaceClicked: (AbstractedLandmark) -> Unit,
-    onSaveClicked: (AbstractedLandmark) -> Unit
-) {
-    LazyVerticalGrid(
-        modifier = Modifier.fillMaxWidth(),
-        columns = GridCells.Fixed(2),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        contentPadding = PaddingValues(bottom = 16.dp, start = 16.dp, end = 16.dp)
-    ) {
-        items(items = places, key = { it.id }) { place ->
-            LargeCard(
-                itemType = ItemType.LANDMARK,
-                image = place.image,
-                name = place.name,
-                isSaved = place.isSaved,
-                location = place.location,
-                ratingAverage = place.rating,
-                ratingCount = place.ratingCount,
-                onItemClicked = { onPlaceClicked(place) },
-                onSaveClicked = { onSaveClicked(place) }
-            )
         }
     }
 }

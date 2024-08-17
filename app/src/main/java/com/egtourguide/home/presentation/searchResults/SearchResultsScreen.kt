@@ -8,7 +8,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -46,6 +45,45 @@ import com.egtourguide.core.presentation.components.ScreenHeader
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 import com.egtourguide.core.utils.ExpandedType
 import com.egtourguide.home.presentation.filter.FilterScreenViewModel
+
+@Preview
+@Composable
+private fun SearchResultsScreenPreview() {
+    EGTourGuideTheme {
+        SearchResultsScreenContent(
+            hasChanged = true,
+            uiState = SearchResultsUIState(
+                isLoading = false,
+                results = (0..4).map {
+                    SearchResult(
+                        id = "$it",
+                        name = "John Johnson",
+                        image = "pro",
+                        location = "Cairo",
+                        isSaved = false,
+                        rating = 6.7,
+                        ratingCount = 8388,
+                        itemType = ItemType.LANDMARK,
+                        artifactType = "Statue"
+                    )
+                },
+                displayedResults = (0..4).map {
+                    SearchResult(
+                        id = "$it",
+                        name = "John Johnson",
+                        image = "pro",
+                        location = "Cairo",
+                        isSaved = false,
+                        rating = 6.7,
+                        ratingCount = 8388,
+                        itemType = ItemType.LANDMARK,
+                        artifactType = "Statue"
+                    )
+                }
+            )
+        )
+    }
+}
 
 @Composable
 fun SearchResultsScreen(
@@ -152,19 +190,7 @@ fun SearchResultsScreenContent(
         }
 
         AnimatedVisibility(
-            visible = !uiState.isLoading && uiState.results.isEmpty() && !uiState.isNetworkError,
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
-            EmptyState(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-            )
-        }
-
-        AnimatedVisibility(
-            visible = !uiState.isLoading && uiState.results.isNotEmpty(),
+            visible = !uiState.isLoading && !uiState.isNetworkError,
             enter = fadeIn(),
             exit = fadeOut()
         ) {
@@ -179,89 +205,45 @@ fun SearchResultsScreenContent(
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                ResultsSection(
-                    results = uiState.displayedResults,
-                    onResultClicked = onResultClicked,
-                    onSaveClicked = onSaveClicked
-                )
+                if (uiState.displayedResults.isEmpty()) {
+                    EmptyState(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                    )
+                } else {
+                    LazyVerticalGrid(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp),
+                        columns = GridCells.Fixed(2),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        contentPadding = PaddingValues(bottom = 16.dp, start = 16.dp, end = 16.dp)
+                    ) {
+                        items(items = uiState.displayedResults, key = { it.id }) { result ->
+                            LargeCard(
+                                itemType = result.itemType,
+                                image = result.image,
+                                name = result.name,
+                                isSaved = result.isSaved,
+                                location = result.location,
+                                ratingAverage = result.rating,
+                                ratingCount = result.ratingCount,
+                                artifactType = result.artifactType,
+                                onItemClicked = {
+                                    onResultClicked(
+                                        result.id,
+                                        if (result.itemType == ItemType.LANDMARK) ExpandedType.LANDMARK.name
+                                        else ExpandedType.ARTIFACT.name
+                                    )
+                                },
+                                onSaveClicked = { onSaveClicked(result) }
+                            )
+                        }
+                    }
+                }
             }
         }
-    }
-}
-
-@Composable
-private fun ResultsSection(
-    results: List<SearchResult>,
-    onResultClicked: (String, String) -> Unit,
-    onSaveClicked: (SearchResult) -> Unit
-) {
-    LazyVerticalGrid(
-        modifier = Modifier.fillMaxWidth(),
-        columns = GridCells.Fixed(2),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        contentPadding = PaddingValues(bottom = 16.dp, start = 16.dp, end = 16.dp)
-    ) {
-        items(items = results, key = { it.id }) { result ->
-            LargeCard(
-                itemType = result.itemType,
-                image = result.image,
-                name = result.name,
-                isSaved = result.isSaved,
-                location = result.location,
-                ratingAverage = result.rating,
-                ratingCount = result.ratingCount,
-                artifactType = result.artifactType,
-                onItemClicked = {
-                    onResultClicked(
-                        result.id,
-                        if (result.itemType == ItemType.LANDMARK) ExpandedType.LANDMARK.name
-                        else ExpandedType.ARTIFACT.name
-                    )
-                },
-                onSaveClicked = { onSaveClicked(result) }
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-private fun SearchResultsScreenPreview() {
-    EGTourGuideTheme {
-        SearchResultsScreenContent(
-            hasChanged = true,
-            uiState = SearchResultsUIState(
-                isLoading = false,
-                results = (0..4).map {
-                    SearchResult(
-                        id = "$it",
-                        name = "John Johnson",
-                        image = "pro",
-                        location = "Cairo",
-                        isSaved = false,
-                        rating = 6.7,
-                        ratingCount = 8388,
-                        itemType = ItemType.LANDMARK,
-                        artifactType = "Statue"
-                    )
-                },
-                displayedResults = (0..4).map {
-                    SearchResult(
-                        id = "$it",
-                        name = "John Johnson",
-                        image = "pro",
-                        location = "Cairo",
-                        isSaved = false,
-                        rating = 6.7,
-                        ratingCount = 8388,
-                        itemType = ItemType.LANDMARK,
-                        artifactType = "Statue"
-                    )
-                }
-            )
-        )
     }
 }

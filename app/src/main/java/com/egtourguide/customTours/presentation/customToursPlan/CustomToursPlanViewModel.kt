@@ -132,11 +132,15 @@ class CustomToursPlanViewModel @Inject constructor(
         _uiState.update { it.copy(days = newDays) }
     }
 
-    fun clearSuccess() {
+    fun clearRemoveSuccess() {
         _uiState.update { it.copy(isRemoveSuccess = false) }
     }
 
-    fun clearError() {
+    fun clearRemoveError() {
         _uiState.update { it.copy(isRemoveError = false) }
+    }
+
+    fun clearError() {
+        _uiState.update { it.copy(errorMessage = null) }
     }
 }

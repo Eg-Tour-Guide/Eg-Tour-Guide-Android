@@ -8,7 +8,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -226,70 +225,50 @@ fun ToursListScreenContent(
         }
 
         AnimatedVisibility(
-            visible = !uiState.isLoading && uiState.tours.isEmpty() && !uiState.isNetworkError,
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
-            EmptyState(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-            )
-        }
-
-        AnimatedVisibility(
-            visible = !uiState.isLoading && uiState.tours.isNotEmpty() && !uiState.isNetworkError,
+            visible = !uiState.isLoading && !uiState.isNetworkError,
             enter = fadeIn(),
             exit = fadeOut()
         ) {
             Column {
                 DataScreenHeader(
-                    title = stringResource(
-                        id = R.string.tours_count,
-                        uiState.displayedTours.size
-                    ),
+                    title = stringResource(id = R.string.tours_count, uiState.displayedTours.size),
                     onFilterClicked = onFilterClicked,
                     hasChanged = hasChanged,
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                ToursSection(
-                    tours = uiState.displayedTours,
-                    onTourClicked = onTourClicked,
-                    onSaveClicked = onSaveClicked
-                )
+                if (uiState.displayedTours.isEmpty()) {
+                    EmptyState(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                    )
+                } else {
+                    LazyVerticalGrid(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp),
+                        columns = GridCells.Fixed(2),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        contentPadding = PaddingValues(bottom = 16.dp, start = 16.dp, end = 16.dp)
+                    ) {
+                        items(items = uiState.displayedTours, key = { it.id }) { tour ->
+                            LargeCard(
+                                itemType = ItemType.TOUR,
+                                image = tour.image,
+                                name = tour.title,
+                                isSaved = tour.isSaved,
+                                duration = tour.duration,
+                                ratingAverage = tour.rating,
+                                ratingCount = tour.ratingCount,
+                                onItemClicked = { onTourClicked(tour) },
+                                onSaveClicked = { onSaveClicked(tour) }
+                            )
+                        }
+                    }
+                }
             }
-        }
-    }
-}
-
-@Composable
-private fun ToursSection(
-    tours: List<AbstractedTour>,
-    onTourClicked: (AbstractedTour) -> Unit,
-    onSaveClicked: (AbstractedTour) -> Unit
-) {
-    LazyVerticalGrid(
-        modifier = Modifier.fillMaxWidth(),
-        columns = GridCells.Fixed(2),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        contentPadding = PaddingValues(bottom = 16.dp, start = 16.dp, end = 16.dp)
-    ) {
-        items(items = tours, key = { it.id }) { tour ->
-            LargeCard(
-                itemType = ItemType.TOUR,
-                image = tour.image,
-                name = tour.title,
-                isSaved = tour.isSaved,
-                duration = tour.duration,
-                ratingAverage = tour.rating,
-                ratingCount = tour.ratingCount,
-                onItemClicked = { onTourClicked(tour) },
-                onSaveClicked = { onSaveClicked(tour) }
-            )
         }
     }
 }

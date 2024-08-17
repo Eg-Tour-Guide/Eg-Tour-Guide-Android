@@ -56,7 +56,6 @@ import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 import com.egtourguide.core.utils.Constants.LANDMARK_IMAGE_LINK_PREFIX
 import com.egtourguide.core.utils.getLoremString
 import com.egtourguide.core.presentation.components.DataRow
-import com.egtourguide.core.presentation.components.EmptyState
 import com.egtourguide.core.presentation.components.LoadingState
 import com.egtourguide.core.presentation.components.NetworkErrorScreen
 import com.egtourguide.core.presentation.components.PullToRefreshScreen
@@ -186,18 +185,6 @@ private fun CustomExpandedContent(
             exit = fadeOut()
         ) {
             NetworkErrorScreen(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-            )
-        }
-
-        AnimatedVisibility(
-            visible = !uiState.isLoading && uiState.id.isEmpty() && !uiState.isNetworkError,
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
-            EmptyState(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
