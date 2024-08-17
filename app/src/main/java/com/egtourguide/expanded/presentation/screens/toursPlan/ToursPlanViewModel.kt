@@ -52,6 +52,32 @@ class ToursPlanViewModel @Inject constructor(
         }
     }
 
+    fun refreshTourDetails(id: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            getTourDetailsUseCase(tourId = id).onResponse(
+                onLoading = {
+                    _uiState.update { it.copy(isRefreshing = true) }
+                },
+                onSuccess = { response ->
+                    _uiState.update {
+                        it.copy(
+                            id = id,
+                            isRefreshing = false,
+                            title = response.name,
+                            days = response.days
+                        )
+                    }
+                },
+                onFailure = {
+                    _uiState.update { it.copy(isRefreshing = false) }
+                },
+                onNetworkError = {
+                    _uiState.update { it.copy(isRefreshing = false) }
+                }
+            )
+        }
+    }
+
     fun changeChosenDay(day: Int) {
         _uiState.update { it.copy(chosenDay = day) }
     }

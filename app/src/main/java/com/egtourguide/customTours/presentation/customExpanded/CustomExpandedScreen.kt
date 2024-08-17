@@ -23,9 +23,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -54,8 +56,10 @@ import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 import com.egtourguide.core.utils.Constants.LANDMARK_IMAGE_LINK_PREFIX
 import com.egtourguide.core.utils.getLoremString
 import com.egtourguide.core.presentation.components.DataRow
+import com.egtourguide.core.presentation.components.EmptyState
 import com.egtourguide.core.presentation.components.LoadingState
 import com.egtourguide.core.presentation.components.NetworkErrorScreen
+import com.egtourguide.core.presentation.components.PullToRefreshScreen
 import com.egtourguide.core.presentation.components.ScreenHeader
 
 @Preview(showBackground = true)
@@ -126,18 +130,23 @@ fun CustomExpandedScreenRoot(
         }
     }
 
-    CustomExpandedContent(
-        uiState = uiState,
-        onBackClicked = onBackClicked,
-        onEditClicked = {
-            onEditClicked(
-                uiState.title,
-                uiState.description
-            )
-        },
-        onSaveClicked = viewModel::onSaveClicked,
-        goToTourPlan = { goToTourPlan(uiState.id) }
-    )
+    PullToRefreshScreen(
+        isRefreshing = uiState.isRefreshing,
+        onRefresh = { viewModel.refreshData(id = tourId) }
+    ) {
+        CustomExpandedContent(
+            uiState = uiState,
+            onBackClicked = onBackClicked,
+            onEditClicked = {
+                onEditClicked(
+                    uiState.title,
+                    uiState.description
+                )
+            },
+            onSaveClicked = viewModel::onSaveClicked,
+            goToTourPlan = { goToTourPlan(uiState.id) }
+        )
+    }
 }
 
 @Composable
@@ -176,7 +185,23 @@ private fun CustomExpandedContent(
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            NetworkErrorScreen(modifier = Modifier.fillMaxSize())
+            NetworkErrorScreen(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            )
+        }
+
+        AnimatedVisibility(
+            visible = !uiState.isLoading && uiState.id.isEmpty() && !uiState.isNetworkError,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            EmptyState(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            )
         }
 
         AnimatedVisibility(

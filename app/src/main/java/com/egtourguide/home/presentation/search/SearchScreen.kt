@@ -45,6 +45,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import com.egtourguide.R
 import com.egtourguide.core.presentation.components.MainTextField
 import com.egtourguide.core.presentation.components.LoadingState
+import com.egtourguide.core.presentation.components.PullToRefreshScreen
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 
 @Composable
@@ -56,15 +57,20 @@ fun SearchScreen(
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
 
-    SearchScreenContent(
-        uiState = uiState,
-        onQueryChanged = viewModel::updateSearchQuery,
-        onSearchClicked = {
-            if (uiState.searchQuery.isNotEmpty()) onNavigateToSearchResults(uiState.searchQuery)
-        },
-        onClearHistoryClicked = viewModel::clearHistory,
-        onSearchItemClicked = onNavigateToSearchResults
-    )
+    PullToRefreshScreen(
+        isRefreshing = uiState.isRefreshing,
+        onRefresh = viewModel::refreshSearchHistory
+    ) {
+        SearchScreenContent(
+            uiState = uiState,
+            onQueryChanged = viewModel::updateSearchQuery,
+            onSearchClicked = {
+                if (uiState.searchQuery.isNotEmpty()) onNavigateToSearchResults(uiState.searchQuery)
+            },
+            onClearHistoryClicked = viewModel::clearHistory,
+            onSearchItemClicked = onNavigateToSearchResults
+        )
+    }
 
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -197,7 +203,9 @@ private fun RecentSearchesSection(
         }
 
         LazyColumn(
-            modifier = Modifier.padding(top = 16.dp)
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .fillMaxSize()
         ) {
             items(items = searchHistory) { item ->
                 HistoryItem(

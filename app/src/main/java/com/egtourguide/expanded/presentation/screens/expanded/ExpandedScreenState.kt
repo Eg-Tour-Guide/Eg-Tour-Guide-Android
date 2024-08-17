@@ -14,6 +14,7 @@ data class ExpandedScreenState(
     val isSaveError: Boolean = false,
     val isSaveCall: Boolean = false,
     val isNetworkError: Boolean = false,
+    val isRefreshing: Boolean = false,
 
     // All Data
     val id: String = "",

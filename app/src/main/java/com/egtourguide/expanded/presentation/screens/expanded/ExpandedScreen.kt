@@ -76,6 +76,7 @@ import com.egtourguide.core.presentation.components.DataRow
 import com.egtourguide.core.presentation.components.LoadingState
 import com.egtourguide.core.presentation.components.MediumCard
 import com.egtourguide.core.presentation.components.NetworkErrorScreen
+import com.egtourguide.core.presentation.components.PullToRefreshScreen
 import com.egtourguide.expanded.presentation.components.ReviewItem
 import com.egtourguide.expanded.presentation.components.ReviewsHeader
 import com.egtourguide.core.presentation.components.ScreenHeader
@@ -236,41 +237,46 @@ fun ExpandedScreenRoot(
         }
     }
 
-    ExpandedScreen(
-        expandedType = expandedType,
-        uiState = uiState,
-        onBackClicked = onBackClicked,
-        onVrViewClicked = {
-            navigateToWebScreen(uiState.vrModel)
-        },
-        onArViewClicked = {
-            val uri = Uri.parse("https://arvr.google.com/scene-viewer/1.0").buildUpon()
-                .appendQueryParameter(
-                    "file",
-                    "$AR_MODEL_LINK_PREFIX${uiState.arModel}"
-                )
-                .appendQueryParameter("mode", "ar_preferred")
-                .appendQueryParameter("title", uiState.title)
-                .build()
+    PullToRefreshScreen(
+        isRefreshing = uiState.isRefreshing,
+        onRefresh = { viewModel.refreshData(id = id, expandedType = expandedType) }
+    ) {
+        ExpandedScreen(
+            expandedType = expandedType,
+            uiState = uiState,
+            onBackClicked = onBackClicked,
+            onVrViewClicked = {
+                navigateToWebScreen(uiState.vrModel)
+            },
+            onArViewClicked = {
+                val uri = Uri.parse("https://arvr.google.com/scene-viewer/1.0").buildUpon()
+                    .appendQueryParameter(
+                        "file",
+                        "$AR_MODEL_LINK_PREFIX${uiState.arModel}"
+                    )
+                    .appendQueryParameter("mode", "ar_preferred")
+                    .appendQueryParameter("title", uiState.title)
+                    .build()
 
-            Intent(Intent.ACTION_VIEW).also { sceneViewerIntent ->
-                sceneViewerIntent.setData(uri)
-                sceneViewerIntent.setPackage("com.google.android.googlequicksearchbox")
-                context.startActivity(sceneViewerIntent)
-            }
-        },
-        onSaveClicked = { viewModel.changeSavedState(expandedType = expandedType) },
-        onSavePlace = viewModel::changePlaceSavedState,
-        onSaveArtifact = viewModel::changeArtifactSavedState,
-        onSaveTour = viewModel::changeTourSavedState,
-        onAddClicked = viewModel::changeAddDialogVisibility,
-        onSeeMoreClicked = {
-            onSeeMoreClicked(uiState.reviews, uiState.reviewsAverage)
-        },
-        onReviewClicked = onReviewClicked,
-        goToTourPlan = { goToTourPlan(uiState.id) },
-        navigateToSingleItem = navigateToSingleItem
-    )
+                Intent(Intent.ACTION_VIEW).also { sceneViewerIntent ->
+                    sceneViewerIntent.setData(uri)
+                    sceneViewerIntent.setPackage("com.google.android.googlequicksearchbox")
+                    context.startActivity(sceneViewerIntent)
+                }
+            },
+            onSaveClicked = { viewModel.changeSavedState(expandedType = expandedType) },
+            onSavePlace = viewModel::changePlaceSavedState,
+            onSaveArtifact = viewModel::changeArtifactSavedState,
+            onSaveTour = viewModel::changeTourSavedState,
+            onAddClicked = viewModel::changeAddDialogVisibility,
+            onSeeMoreClicked = {
+                onSeeMoreClicked(uiState.reviews, uiState.reviewsAverage)
+            },
+            onReviewClicked = onReviewClicked,
+            goToTourPlan = { goToTourPlan(uiState.id) },
+            navigateToSingleItem = navigateToSingleItem
+        )
+    }
 }
 
 @Composable

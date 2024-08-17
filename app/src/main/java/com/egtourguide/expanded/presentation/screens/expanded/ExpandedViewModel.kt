@@ -51,13 +51,18 @@ class ExpandedViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             getEventUseCase(eventId = id).onResponse(
                 onLoading = {
-                    _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+                    _uiState.update {
+                        it.copy(
+                            isLoading = true,
+                            callIsSent = true,
+                            errorMessage = null
+                        )
+                    }
                 },
                 onSuccess = { response ->
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            callIsSent = true,
                             id = response.id,
                             images = response.images,
                             title = response.name,
@@ -140,7 +145,6 @@ class ExpandedViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            callIsSent = true,
                             id = response.id,
                             images = response.images,
                             title = response.title,
@@ -168,13 +172,18 @@ class ExpandedViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             getTourUseCase(tourId = id).onResponse(
                 onLoading = {
-                    _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+                    _uiState.update {
+                        it.copy(
+                            isLoading = true,
+                            callIsSent = true,
+                            errorMessage = null,
+                        )
+                    }
                 },
                 onSuccess = { response ->
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            callIsSent = true,
                             id = response.id,
                             images = response.images,
                             title = response.name,
@@ -194,6 +203,152 @@ class ExpandedViewModel @Inject constructor(
                 },
                 onNetworkError = {
                     _uiState.update { it.copy(isLoading = false, isNetworkError = true) }
+                }
+            )
+        }
+    }
+
+    fun refreshData(id: String, expandedType: String) {
+        when (expandedType) {
+            EVENT.name -> refreshEvent(id = id)
+            LANDMARK.name -> refreshLandmark(id = id)
+            ARTIFACT.name -> refreshArtifact(id = id)
+            else -> refreshTour(id = id)
+        }
+    }
+
+    private fun refreshEvent(id: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            getEventUseCase(eventId = id).onResponse(
+                onLoading = {
+                    _uiState.update { it.copy(isRefreshing = true) }
+                },
+                onSuccess = { response ->
+                    _uiState.update {
+                        it.copy(
+                            isRefreshing = false,
+                            id = response.id,
+                            images = response.images,
+                            title = response.name,
+                            date = response.date,
+                            latitute = response.latitude,
+                            longitude = response.longitude,
+                            tourismTypes = response.category,
+                            description = response.description,
+                            location = response.placeName
+                        )
+                    }
+                },
+                onFailure = {
+                    _uiState.update { it.copy(isRefreshing = false) }
+                },
+                onNetworkError = {
+                    _uiState.update { it.copy(isRefreshing = false) }
+                }
+            )
+        }
+    }
+
+    private fun refreshLandmark(id: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            getLandmarkUseCase(id = id).onResponse(
+                onLoading = {
+                    _uiState.update { it.copy(isRefreshing = true) }
+                },
+                onSuccess = { response ->
+                    _uiState.update {
+                        it.copy(
+                            isRefreshing = false,
+                            id = response.id,
+                            images = response.images,
+                            title = response.title,
+                            isSaved = response.saved,
+                            location = response.location,
+                            reviewsAverage = response.reviewsAverage,
+                            reviewsCount = response.reviewsCount,
+                            reviews = response.reviews,
+                            tourismTypes = response.type,
+                            description = response.description,
+                            includedArtifacts = response.includedArtifacts,
+                            relatedPlaces = response.relatedPlaces,
+                            latitute = response.latitude,
+                            longitude = response.longitude,
+                            vrModel = response.model
+                        )
+                    }
+                },
+                onFailure = {
+                    _uiState.update { it.copy(isRefreshing = false) }
+                },
+                onNetworkError = {
+                    _uiState.update { it.copy(isRefreshing = false) }
+                }
+            )
+        }
+    }
+
+    private fun refreshArtifact(id: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            getArtifactUseCase(id = id).onResponse(
+                onLoading = {
+                    _uiState.update { it.copy(isRefreshing = true) }
+                },
+                onSuccess = { response ->
+                    _uiState.update {
+                        it.copy(
+                            isRefreshing = false,
+                            id = response.id,
+                            images = response.images,
+                            title = response.title,
+                            isSaved = response.saved,
+                            location = response.museum,
+                            description = response.description,
+                            artifactType = response.type,
+                            artifactMaterials = response.material,
+                            relatedArtifacts = response.relatedArtifacts,
+                            arModel = response.arModel
+                        )
+                    }
+                },
+                onFailure = {
+                    _uiState.update { it.copy(isRefreshing = false) }
+                },
+                onNetworkError = {
+                    _uiState.update { it.copy(isRefreshing = false) }
+                }
+            )
+        }
+    }
+
+    private fun refreshTour(id: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            getTourUseCase(tourId = id).onResponse(
+                onLoading = {
+                    _uiState.update { it.copy(isRefreshing = true) }
+                },
+                onSuccess = { response ->
+                    _uiState.update {
+                        it.copy(
+                            isRefreshing = false,
+                            id = response.id,
+                            images = response.images,
+                            title = response.name,
+                            reviewsAverage = response.ratingAverage,
+                            reviewsCount = response.ratingQuantity,
+                            reviews = response.reviews,
+                            tourismTypes = response.type,
+                            duration = response.duration,
+                            isSaved = response.saved,
+                            description = response.description,
+                            relatedTours = response.relatedTours
+                        )
+                    }
+                },
+                onFailure = {
+                    _uiState.update { it.copy(isRefreshing = false) }
+                },
+                onNetworkError = {
+                    _uiState.update { it.copy(isRefreshing = false) }
                 }
             )
         }

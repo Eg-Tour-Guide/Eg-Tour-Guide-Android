@@ -17,7 +17,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,6 +41,7 @@ import com.egtourguide.R
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 import com.egtourguide.core.presentation.components.LoadingState
 import com.egtourguide.core.presentation.components.NetworkErrorScreen
+import com.egtourguide.core.presentation.components.PullToRefreshScreen
 import com.egtourguide.core.presentation.components.ScreenHeader
 import com.egtourguide.core.presentation.components.TourPlanItem
 
@@ -75,12 +78,17 @@ fun ToursPlanScreenRoot(
         }
     }
 
-    ToursPlanScreenContent(
-        uiState = uiState,
-        onBackClicked = onBackClicked,
-        onPlaceClicked = navigateToLandmark,
-        changeChosenDay = viewModel::changeChosenDay
-    )
+    PullToRefreshScreen(
+        isRefreshing = uiState.isRefreshing,
+        onRefresh = { viewModel.refreshTourDetails(id = tourId) }
+    ) {
+        ToursPlanScreenContent(
+            uiState = uiState,
+            onBackClicked = onBackClicked,
+            onPlaceClicked = navigateToLandmark,
+            changeChosenDay = viewModel::changeChosenDay
+        )
+    }
 }
 
 @Composable
@@ -116,7 +124,11 @@ fun ToursPlanScreenContent(
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            NetworkErrorScreen(modifier = Modifier.fillMaxSize())
+            NetworkErrorScreen(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            )
         }
 
         AnimatedVisibility(
@@ -125,9 +137,7 @@ fun ToursPlanScreenContent(
             exit = fadeOut()
         ) {
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
+                modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 item {

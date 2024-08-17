@@ -52,6 +52,35 @@ class CustomExpandedViewModel @Inject constructor(
         }
     }
 
+    fun refreshData(id: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            getTourUseCase(tourId = id).onResponse(
+                onLoading = {
+                    _uiState.update { it.copy(isRefreshing = true) }
+                },
+                onSuccess = { response ->
+                    _uiState.update {
+                        it.copy(
+                            isRefreshing = false,
+                            id = response.id,
+                            images = response.images,
+                            title = response.name,
+                            duration = response.duration,
+                            isSaved = response.saved,
+                            description = response.description
+                        )
+                    }
+                },
+                onFailure = {
+                    _uiState.update { it.copy(isRefreshing = false) }
+                },
+                onNetworkError = {
+                    _uiState.update { it.copy(isRefreshing = false) }
+                }
+            )
+        }
+    }
+
     fun onSaveClicked() {
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.update { it.copy(isSaved = !it.isSaved, isSaveCall = !it.isSaved) }

@@ -46,6 +46,30 @@ class SearchViewModel @Inject constructor(
         }
     }
 
+    fun refreshSearchHistory() {
+        viewModelScope.launch(Dispatchers.IO) {
+            getSearchHistoryUseCase().onResponse(
+                onLoading = {
+                    _uiState.update { it.copy(isRefreshing = true) }
+                },
+                onSuccess = { response ->
+                    _uiState.update {
+                        it.copy(
+                            isRefreshing = false,
+                            searchHistory = response.reversed().take(10)
+                        )
+                    }
+                },
+                onFailure = {
+                    _uiState.update { it.copy(isRefreshing = false) }
+                },
+                onNetworkError = {
+                    _uiState.update { it.copy(isRefreshing = false) }
+                }
+            )
+        }
+    }
+
     fun updateSearchQuery(newQuery: String) {
         _uiState.update { it.copy(searchQuery = newQuery) }
     }
