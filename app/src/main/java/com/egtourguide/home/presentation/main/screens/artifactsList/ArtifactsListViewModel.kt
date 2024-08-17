@@ -83,8 +83,8 @@ class ArtifactsListViewModel @Inject constructor(
         var artifacts = uiState.value.artifacts
 
         artifacts = artifacts.filter { artifact ->
-            (artifact.type in filterState.selectedArtifactTypes || filterState.selectedArtifactTypes.isEmpty()) &&
-                    (artifact.material in filterState.selectedMaterials || filterState.selectedMaterials.isEmpty())
+            (artifact.type in filterState.appliedArtifactTypes || filterState.appliedArtifactTypes.isEmpty()) &&
+                    (artifact.material in filterState.appliedMaterials || filterState.appliedMaterials.isEmpty())
         }
 
         _uiState.update { it.copy(displayedArtifacts = artifacts) }

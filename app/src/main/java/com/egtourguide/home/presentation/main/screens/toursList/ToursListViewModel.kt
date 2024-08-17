@@ -108,20 +108,24 @@ class ToursListViewModel @Inject constructor(
         var tours = uiState.value.tours
 
         tours = tours.filter { tour ->
-            tour.duration >= filterState.minDuration.toInt() &&
-                    tour.duration <= filterState.maxDuration.toInt() &&
-                    tour.rating >= filterState.selectedRating
+            tour.duration >= filterState.appliedMinDuration.toInt() &&
+                    tour.duration <= filterState.appliedMaxDuration.toInt() &&
+                    tour.rating >= filterState.appliedRating
         }
 
-        if (filterState.selectedSortBy == 1) {
-            tours = tours.sortedByDescending { it.rating }
-        } else if (filterState.selectedSortBy == 2) {
-            tours = tours.sortedBy { it.rating }
+        when (filterState.appliedSortBy) {
+            1 -> {
+                tours = tours.sortedByDescending { it.rating }
+            }
+
+            2 -> {
+                tours = tours.sortedBy { it.rating }
+            }
         }
 
         // TODO: Filter tour types!!
-//        if(filterState.selectedTourTypes.isNotEmpty()) {
-//            tours.filter { it.type in filterState.selectedTourTypes }
+//        if(filterState.appliedTourTypes.isNotEmpty()) {
+//            tours.filter { it.type in filterState.appliedTourTypes }
 //        }
 
         _uiState.update { it.copy(displayedTours = tours) }

@@ -101,13 +101,23 @@ class FilterScreenViewModel @Inject constructor() : ViewModel() {
 
     fun changeDuration(min: Float, max: Float) {
         _uiState.update {
-            it.copy(minDuration = min, maxDuration = max)
+            it.copy(selectedMinDuration = min, selectedMaxDuration = max)
         }
     }
 
     fun onResetClicked() {
         _uiState.update {
             it.copy(
+                appliedCategory = "",
+                appliedTourismTypes = emptyList(),
+                appliedLocations = emptyList(),
+                appliedRating = -1,
+                appliedSortBy = -1,
+                appliedArtifactTypes = emptyList(),
+                appliedMaterials = emptyList(),
+                appliedTourTypes = emptyList(),
+                appliedMinDuration = 0f,
+                appliedMaxDuration = 30f,
                 selectedCategory = "",
                 selectedTourismTypes = emptyList(),
                 selectedLocations = emptyList(),
@@ -116,8 +126,42 @@ class FilterScreenViewModel @Inject constructor() : ViewModel() {
                 selectedArtifactTypes = emptyList(),
                 selectedMaterials = emptyList(),
                 selectedTourTypes = emptyList(),
-                minDuration = 0f,
-                maxDuration = 30f
+                selectedMinDuration = 0f,
+                selectedMaxDuration = 30f
+            )
+        }
+    }
+
+    fun onApplyClicked() {
+        _uiState.update {
+            it.copy(
+                appliedCategory = it.selectedCategory,
+                appliedTourismTypes = it.selectedTourismTypes,
+                appliedLocations = it.selectedLocations,
+                appliedRating = it.selectedRating,
+                appliedSortBy = it.selectedSortBy,
+                appliedArtifactTypes = it.selectedArtifactTypes,
+                appliedMaterials = it.selectedMaterials,
+                appliedTourTypes = it.selectedTourTypes,
+                appliedMinDuration = it.selectedMinDuration,
+                appliedMaxDuration = it.selectedMaxDuration
+            )
+        }
+    }
+
+    fun resetSelected() {
+        _uiState.update {
+            it.copy(
+                selectedCategory = it.appliedCategory,
+                selectedTourismTypes = it.appliedTourismTypes,
+                selectedLocations = it.appliedLocations,
+                selectedRating = it.appliedRating,
+                selectedSortBy = it.appliedSortBy,
+                selectedArtifactTypes = it.appliedArtifactTypes,
+                selectedMaterials = it.appliedMaterials,
+                selectedTourTypes = it.appliedTourTypes,
+                selectedMinDuration = it.appliedMinDuration,
+                selectedMaxDuration = it.appliedMaxDuration,
             )
         }
     }

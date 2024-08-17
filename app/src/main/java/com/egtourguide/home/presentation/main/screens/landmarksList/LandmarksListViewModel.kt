@@ -91,15 +91,19 @@ class LandmarksListViewModel @Inject constructor(
         var landmarks = uiState.value.landmarks
 
         landmarks = landmarks.filter { landmark ->
-            (landmark.category in filterState.selectedTourismTypes || filterState.selectedTourismTypes.isEmpty()) &&
-                    (landmark.location in filterState.selectedLocations || filterState.selectedLocations.isEmpty()) &&
-                    (landmark.rating >= filterState.selectedRating)
+            (landmark.category in filterState.appliedTourismTypes || filterState.appliedTourismTypes.isEmpty()) &&
+                    (landmark.location in filterState.appliedLocations || filterState.appliedLocations.isEmpty()) &&
+                    (landmark.rating >= filterState.appliedRating)
         }
 
-        if (filterState.selectedSortBy == 1) {
-            landmarks = landmarks.sortedByDescending { it.rating }
-        } else if (filterState.selectedSortBy == 2) {
-            landmarks = landmarks.sortedBy { it.rating }
+        when (filterState.appliedSortBy) {
+            1 -> {
+                landmarks = landmarks.sortedByDescending { it.rating }
+            }
+
+            2 -> {
+                landmarks = landmarks.sortedBy { it.rating }
+            }
         }
 
         _uiState.update { it.copy(displayedLandmarks = landmarks) }

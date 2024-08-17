@@ -135,7 +135,7 @@ class SavedViewModel @Inject constructor(
     fun filterSavedItems(filterState: FilterScreenState) {
         var savedList = uiState.value.savedList
 
-        when (filterState.selectedCategory) {
+        when (filterState.appliedCategory) {
             "Landmarks" -> {
                 savedList = savedList.filter { it.itemType == ItemType.LANDMARK }
             }

@@ -108,7 +108,7 @@ class SearchResultsViewModel @Inject constructor(
     fun filterResults(filterState: FilterScreenState) {
         var results = uiState.value.results
 
-        when (filterState.selectedCategory) {
+        when (filterState.appliedCategory) {
             "Landmarks" -> {
                 results = results.filter { it.itemType == ItemType.LANDMARK }
             }

@@ -100,8 +100,8 @@ class MyToursViewModel @Inject constructor(
         var tours = uiState.value.myTours
 
         tours = tours.filter { tour ->
-            tour.duration >= filterState.minDuration.toInt() &&
-                    tour.duration <= filterState.maxDuration.toInt()
+            tour.duration >= filterState.appliedMinDuration.toInt() &&
+                    tour.duration <= filterState.appliedMaxDuration.toInt()
         }
 
         _uiState.update { it.copy(displayedTours = tours) }

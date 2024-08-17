@@ -1,5 +1,6 @@
 package com.egtourguide.home.presentation.filter
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -35,12 +36,28 @@ import com.egtourguide.core.presentation.components.ScreenHeader
 import com.egtourguide.home.presentation.filter.components.CustomChip
 import com.egtourguide.home.presentation.filter.components.CustomRangeSlider
 
+@Preview(showBackground = true, heightDp = 1500)
+@Composable
+private fun FilterScreenReview() {
+    EGTourGuideTheme {
+        FilterScreen(
+            viewModel = hiltViewModel(),
+            onNavigateBack = {}
+        )
+    }
+}
+
 @Composable
 fun FilterScreen(
     viewModel: FilterScreenViewModel,
     onNavigateBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    BackHandler {
+        viewModel.resetSelected()
+        onNavigateBack()
+    }
 
     Column(
         modifier = Modifier
@@ -49,7 +66,10 @@ fun FilterScreen(
     ) {
         ScreenHeader(
             showBack = true,
-            onBackClicked = onNavigateBack,
+            onBackClicked = {
+                viewModel.resetSelected()
+                onNavigateBack()
+            },
             modifier = Modifier.height(52.dp)
         )
 
@@ -123,14 +143,14 @@ fun FilterScreen(
                     )
 
                     DurationFields(
-                        minDuration = uiState.minDuration,
-                        maxDuration = uiState.maxDuration,
+                        minDuration = uiState.selectedMinDuration,
+                        maxDuration = uiState.selectedMaxDuration,
                         onDurationChanged = viewModel::changeDuration
                     )
 
                     CustomRangeSlider(
-                        min = uiState.minDuration,
-                        max = uiState.maxDuration,
+                        min = uiState.selectedMinDuration,
+                        max = uiState.selectedMaxDuration,
                         onDurationChanged = viewModel::changeDuration
                     )
                 }
@@ -169,7 +189,10 @@ fun FilterScreen(
 
             item {
                 FilterFooter(
-                    onApplyClick = onNavigateBack,
+                    onApplyClick = {
+                        viewModel.onApplyClicked()
+                        onNavigateBack()
+                    },
                     onResetClick = viewModel::onResetClicked
                 )
             }
@@ -336,17 +359,6 @@ private fun FilterFooter(
             modifier = Modifier
                 .weight(1f)
                 .height(40.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true, heightDp = 1500)
-@Composable
-private fun FilterScreenReview() {
-    EGTourGuideTheme {
-        FilterScreen(
-            viewModel = hiltViewModel(),
-            onNavigateBack = {}
         )
     }
 }
