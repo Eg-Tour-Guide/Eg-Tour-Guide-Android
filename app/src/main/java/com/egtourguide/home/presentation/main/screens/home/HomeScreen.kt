@@ -211,6 +211,17 @@ fun HomeScreen(
         }
     }
 
+    LaunchedEffect(key1 = uiState.isDetectionError) {
+        if (uiState.isDetectionError) {
+            Toast.makeText(
+                context,
+                context.getString(R.string.failed_to_detect_please_try_again),
+                Toast.LENGTH_SHORT
+            ).show()
+            viewModel.clearDetectionError()
+        }
+    }
+
     ArtifactDetectionDialog(
         isShown = isDetectionDialogShown,
         isDetectionLoading = uiState.isDetectionLoading,

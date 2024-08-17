@@ -115,16 +115,15 @@ class LandmarksListViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             isDetectionLoading = false,
-                            detectedArtifact = response,
+                            detectedArtifact = response
                         )
                     }
                 },
-                onFailure = { error ->
-                    _uiState.update { it.copy(isDetectionLoading = false, error = error) }
+                onFailure = {
+                    _uiState.update { it.copy(isDetectionLoading = false, isDetectionError = true) }
                 },
                 onNetworkError = {
-                    // TODO: Show detection error!!
-                    _uiState.update { it.copy(isDetectionLoading = false) }
+                    _uiState.update { it.copy(isDetectionLoading = false, isDetectionError = true) }
                 }
             )
         }
@@ -132,6 +131,10 @@ class LandmarksListViewModel @Inject constructor(
 
     fun clearDetectionSuccess() {
         _uiState.update { it.copy(detectedArtifact = null) }
+    }
+
+    fun clearDetectionError() {
+        _uiState.update { it.copy(isDetectionError = false) }
     }
 
     fun onSaveClicked(place: AbstractedLandmark) {

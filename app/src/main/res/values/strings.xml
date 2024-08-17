@@ -84,7 +84,7 @@
     <string name="submit">Submit</string>
     <string name="add_to_tour">Add to Tour</string>
     <string name="got_to_active_tour">Go to Active Tour</string>
-    <string name="capture_object">Capture Object</string>
+    <string name="detect_object">Detect Object</string>
     <string name="show_vr_view">Show VR View</string>
     <string name="show_ar_view">Show AR View</string>
     <string name="recent_searches">Recent Searches</string>
@@ -188,4 +188,5 @@
     <string name="remove_this_place">Remove this place</string>
     <string name="failed_to_remove_this_place_please_try_again">Failed to remove this place, Please try again.</string>
     <string name="place_removed_successfully">Place removed successfully!</string>
+    <string name="failed_to_detect_please_try_again">Failed to detect, Please try again.</string>
 </resources>

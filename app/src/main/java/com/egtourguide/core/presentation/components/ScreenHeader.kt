@@ -161,7 +161,7 @@ fun ScreenHeader(
             if (showCaptureObject) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_capture_object),
-                    contentDescription = stringResource(id = R.string.capture_object),
+                    contentDescription = stringResource(id = R.string.detect_object),
                     tint = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
                         .size(20.dp)

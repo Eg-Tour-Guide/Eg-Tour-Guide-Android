@@ -15,5 +15,6 @@ data class ArtifactsListUIState(
     val isSaveCall: Boolean = true,
     val isSaveError: Boolean = false,
     val isDetectionLoading: Boolean = false,
-    val detectedArtifact: DetectedArtifact? = null
+    val detectedArtifact: DetectedArtifact? = null,
+    val isDetectionError: Boolean = false
 )

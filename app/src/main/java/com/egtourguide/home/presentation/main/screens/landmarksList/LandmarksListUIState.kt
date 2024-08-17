@@ -15,5 +15,6 @@ data class LandmarksListUIState(
     val isSaveSuccess: Boolean = false,
     val isSaveError: Boolean = false,
     val isDetectionLoading: Boolean = false,
+    val isDetectionError: Boolean = false,
     val detectedArtifact: DetectedArtifact? = null
 )

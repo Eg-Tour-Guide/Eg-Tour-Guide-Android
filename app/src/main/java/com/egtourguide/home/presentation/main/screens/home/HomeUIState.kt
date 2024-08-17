@@ -11,6 +11,7 @@ data class HomeUIState(
     val isRefreshing: Boolean = false,
     val isDetectionLoading: Boolean = false,
     val detectedArtifact: DetectedArtifact? = null,
+    val isDetectionError: Boolean = false,
     val isSaveSuccess: Boolean = false,
     val isSaveCall: Boolean = true,
     val error: String? = null,
