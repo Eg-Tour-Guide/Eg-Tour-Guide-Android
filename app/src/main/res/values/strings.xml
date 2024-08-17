@@ -185,5 +185,7 @@
     <string name="unsave_success">Removed.</string>
     <string name="unsave_error">Failed to remove, Please try again.</string>
     <string name="failed_to_clear_history_please_try_again">Failed to clear history, Please try again.</string>
-    <string name="delete">Delete</string>
+    <string name="remove_this_place">Remove this place</string>
+    <string name="failed_to_remove_this_place_please_try_again">Failed to remove this place, Please try again.</string>
+    <string name="place_removed_successfully">Place removed successfully!</string>
 </resources>

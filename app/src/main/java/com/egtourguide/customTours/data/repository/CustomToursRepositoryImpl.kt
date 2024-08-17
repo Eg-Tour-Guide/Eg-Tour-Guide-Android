@@ -22,4 +22,11 @@ class CustomToursRepositoryImpl @Inject constructor(
     override suspend fun editTour(tourId: String, body: EditTourBody) = safeCall {
         customToursApi.editTour(tourId = tourId, body = body)
     }
+
+    override suspend fun removePlaceFromTour(
+        tourId: String,
+        placeId: String
+    ) = safeCall {
+        customToursApi.removePlaceFromTour(tourId = tourId, placeId = placeId)
+    }
 }

@@ -142,7 +142,7 @@ fun TourPlanItem(
                 IconButton(onClick = onDeleteClicked) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_delete),
-                        contentDescription = stringResource(id = R.string.delete),
+                        contentDescription = stringResource(id = R.string.remove_this_place),
                         tint = MaterialTheme.colorScheme.onPrimaryContainer,
                         modifier = Modifier
                             .width(16.dp)

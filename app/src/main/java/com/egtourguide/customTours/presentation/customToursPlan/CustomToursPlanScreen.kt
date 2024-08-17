@@ -1,5 +1,6 @@
 package com.egtourguide.customTours.presentation.customToursPlan
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -22,16 +23,19 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -62,6 +66,7 @@ fun CustomToursPlanScreenRoot(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
+    val context = LocalContext.current
 
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -76,12 +81,50 @@ fun CustomToursPlanScreenRoot(
         }
     }
 
+    LaunchedEffect(key1 = uiState.isRemoveSuccess) {
+        if (uiState.isRemoveSuccess) {
+            Toast.makeText(
+                context,
+                context.getString(R.string.place_removed_successfully),
+                Toast.LENGTH_SHORT
+            ).show()
+            viewModel.clearSuccess()
+        }
+    }
+
+    LaunchedEffect(key1 = uiState.isRemoveError) {
+        if (uiState.isRemoveError) {
+            Toast.makeText(
+                context,
+                context.getString(R.string.failed_to_remove_this_place_please_try_again),
+                Toast.LENGTH_SHORT
+            ).show()
+            viewModel.clearError()
+        }
+    }
+
+    if (uiState.showLoadingDialog) {
+        Dialog(onDismissRequest = {}) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(MaterialTheme.colorScheme.background)
+                    .padding(vertical = 24.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                LoadingState()
+            }
+        }
+    }
+
+    // TODO: Pull to refresh here!!
     CustomToursPlanScreenContent(
         uiState = uiState,
         onBackClicked = onBackClicked,
         onPlaceClicked = navigateToLandmark,
         changeChosenDay = viewModel::changeChosenDay,
-        onDeleteClicked = viewModel::deletePlace
+        onDeleteClicked = viewModel::removePlace
     )
 }
 
@@ -91,7 +134,7 @@ private fun CustomToursPlanScreenContent(
     onBackClicked: () -> Unit = {},
     changeChosenDay: (Int) -> Unit = {},
     onPlaceClicked: (String) -> Unit = {},
-    onDeleteClicked: (TourDetailsPlace) -> Unit = {}
+    onDeleteClicked: (TourDetailsPlace, Int) -> Unit = { _, _ -> }
 ) {
     Column(
         modifier = Modifier
@@ -186,7 +229,9 @@ private fun CustomToursPlanScreenContent(
                         place = place,
                         onClick = onPlaceClicked,
                         isCustom = true,
-                        onDeleteClicked = { onDeleteClicked(place) }
+                        onDeleteClicked = {
+                            onDeleteClicked(place, uiState.chosenDay)
+                        }
                     )
                 }
             }

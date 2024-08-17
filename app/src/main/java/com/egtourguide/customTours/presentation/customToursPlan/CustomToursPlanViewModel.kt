@@ -3,6 +3,7 @@ package com.egtourguide.customTours.presentation.customToursPlan
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.egtourguide.core.utils.onResponse
+import com.egtourguide.customTours.domain.usecases.RemovePlaceFromTourUseCase
 import com.egtourguide.expanded.domain.model.TourDetailsPlace
 import com.egtourguide.expanded.domain.usecases.GetTourDetailsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CustomToursPlanViewModel @Inject constructor(
-    private val getTourDetailsUseCase: GetTourDetailsUseCase
+    private val getTourDetailsUseCase: GetTourDetailsUseCase,
+    private val removePlaceFromTourUseCase: RemovePlaceFromTourUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CustomToursPlanScreenState())
@@ -57,7 +59,47 @@ class CustomToursPlanViewModel @Inject constructor(
         _uiState.update { it.copy(chosenDay = day) }
     }
 
-    fun deletePlace(place: TourDetailsPlace) {
-        // TODO: Implement this!!
+    fun removePlace(place: TourDetailsPlace, chosenDay: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            removePlaceFromTourUseCase(tourId = uiState.value.id, placeId = place.id).onResponse(
+                onLoading = {
+                    _uiState.update { it.copy(showLoadingDialog = true) }
+                },
+                onSuccess = {
+                    _uiState.update { it.copy(showLoadingDialog = false, isRemoveSuccess = true) }
+                    handleDays(chosenDay = chosenDay, place = place)
+                },
+                onFailure = {
+                    _uiState.update { it.copy(showLoadingDialog = false, isRemoveError = true) }
+                },
+                onNetworkError = {
+                    _uiState.update { it.copy(showLoadingDialog = false, isRemoveError = true) }
+                }
+            )
+        }
+    }
+
+    private fun handleDays(
+        chosenDay: Int,
+        place: TourDetailsPlace
+    ) {
+        val newDays = uiState.value.days.toMutableMap()
+        newDays[chosenDay] = newDays[chosenDay].orEmpty() - place
+        if (newDays[chosenDay].isNullOrEmpty()) {
+            // TODO: Check this logic!!
+            if (chosenDay != newDays.keys.first()) _uiState.update { it.copy(chosenDay = chosenDay - 1) }
+            else _uiState.update { it.copy(chosenDay = chosenDay + 1) }
+
+            newDays.remove(chosenDay)
+        }
+        _uiState.update { it.copy(days = newDays) }
+    }
+
+    fun clearSuccess() {
+        _uiState.update { it.copy(isRemoveSuccess = false) }
+    }
+
+    fun clearError() {
+        _uiState.update { it.copy(isRemoveError = false) }
     }
 }

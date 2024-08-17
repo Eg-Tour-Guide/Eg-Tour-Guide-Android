@@ -13,4 +13,9 @@ interface CustomToursRepository {
     suspend fun createTour(body: CreateTourBody): Flow<ResultWrapper<Unit>>
 
     suspend fun editTour(tourId: String, body: EditTourBody): Flow<ResultWrapper<Unit>>
+
+    suspend fun removePlaceFromTour(
+        tourId: String,
+        placeId: String
+    ): Flow<ResultWrapper<Unit>>
 }
