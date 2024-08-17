@@ -8,6 +8,7 @@ data class CustomToursPlanScreenState(
     val showLoadingDialog: Boolean = false,
     val isRemoveSuccess: Boolean = false,
     val isRemoveError: Boolean = false,
+    val isRefreshing: Boolean = false,
     val errorMessage: String? = null,
     val id: String = "",
     val title: String = "",

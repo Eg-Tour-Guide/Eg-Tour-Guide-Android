@@ -18,7 +18,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,9 +42,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.egtourguide.R
+import com.egtourguide.core.presentation.components.EmptyState
 import com.egtourguide.core.presentation.ui.theme.EGTourGuideTheme
 import com.egtourguide.core.presentation.components.LoadingState
 import com.egtourguide.core.presentation.components.NetworkErrorScreen
+import com.egtourguide.core.presentation.components.PullToRefreshScreen
 import com.egtourguide.core.presentation.components.ScreenHeader
 import com.egtourguide.core.presentation.components.TourPlanItem
 import com.egtourguide.expanded.domain.model.TourDetailsPlace
@@ -118,14 +122,18 @@ fun CustomToursPlanScreenRoot(
         }
     }
 
-    // TODO: Pull to refresh here!!
-    CustomToursPlanScreenContent(
-        uiState = uiState,
-        onBackClicked = onBackClicked,
-        onPlaceClicked = navigateToLandmark,
-        changeChosenDay = viewModel::changeChosenDay,
-        onDeleteClicked = viewModel::removePlace
-    )
+    PullToRefreshScreen(
+        isRefreshing = uiState.isRefreshing,
+        onRefresh = { viewModel.refreshTourDetails(id = tourId) }
+    ) {
+        CustomToursPlanScreenContent(
+            uiState = uiState,
+            onBackClicked = onBackClicked,
+            onPlaceClicked = navigateToLandmark,
+            changeChosenDay = viewModel::changeChosenDay,
+            onDeleteClicked = viewModel::removePlace
+        )
+    }
 }
 
 @Composable
@@ -162,7 +170,23 @@ private fun CustomToursPlanScreenContent(
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            NetworkErrorScreen(modifier = Modifier.fillMaxSize())
+            NetworkErrorScreen(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            )
+        }
+
+        AnimatedVisibility(
+            visible = !uiState.isLoading && uiState.id.isEmpty() && !uiState.isNetworkError,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            EmptyState(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            )
         }
 
         AnimatedVisibility(
@@ -171,9 +195,7 @@ private fun CustomToursPlanScreenContent(
             exit = fadeOut()
         ) {
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
+                modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 item {

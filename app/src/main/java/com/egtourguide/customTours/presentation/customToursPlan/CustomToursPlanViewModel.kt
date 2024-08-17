@@ -41,7 +41,8 @@ class CustomToursPlanViewModel @Inject constructor(
                             id = id,
                             isLoading = false,
                             title = response.name,
-                            days = response.days
+                            days = response.days,
+                            chosenDay = response.days.keys.first()
                         )
                     }
                 },
@@ -50,6 +51,33 @@ class CustomToursPlanViewModel @Inject constructor(
                 },
                 onNetworkError = {
                     _uiState.update { it.copy(isLoading = false, isNetworkError = true) }
+                }
+            )
+        }
+    }
+
+    fun refreshTourDetails(id: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            getTourDetailsUseCase(tourId = id).onResponse(
+                onLoading = {
+                    _uiState.update { it.copy(isRefreshing = true) }
+                },
+                onSuccess = { response ->
+                    _uiState.update {
+                        it.copy(
+                            id = id,
+                            isRefreshing = false,
+                            title = response.name,
+                            days = response.days,
+                            chosenDay = response.days.keys.first()
+                        )
+                    }
+                },
+                onFailure = {
+                    _uiState.update { it.copy(isRefreshing = false) }
+                },
+                onNetworkError = {
+                    _uiState.update { it.copy(isRefreshing = false) }
                 }
             )
         }
@@ -84,14 +112,23 @@ class CustomToursPlanViewModel @Inject constructor(
         place: TourDetailsPlace
     ) {
         val newDays = uiState.value.days.toMutableMap()
-        newDays[chosenDay] = newDays[chosenDay].orEmpty() - place
-        if (newDays[chosenDay].isNullOrEmpty()) {
-            // TODO: Check this logic!!
-            if (chosenDay != newDays.keys.first()) _uiState.update { it.copy(chosenDay = chosenDay - 1) }
-            else _uiState.update { it.copy(chosenDay = chosenDay + 1) }
 
+        val updatedPlaces = newDays[chosenDay].orEmpty() - place
+        newDays[chosenDay] = updatedPlaces
+
+        if (updatedPlaces.isEmpty()) {
             newDays.remove(chosenDay)
+
+            val leftNeighbor = newDays.keys.filter { it < chosenDay }.maxOrNull()
+            val rightNeighbor = newDays.keys.filter { it > chosenDay }.minOrNull()
+
+            val newChosenDay = leftNeighbor ?: rightNeighbor
+
+            newChosenDay?.let { day ->
+                _uiState.update { it.copy(chosenDay = day) }
+            }
         }
+
         _uiState.update { it.copy(days = newDays) }
     }
 
