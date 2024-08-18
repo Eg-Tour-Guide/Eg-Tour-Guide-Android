@@ -2,6 +2,10 @@ package com.egtourguide.user.presentation.editProfile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.egtourguide.core.domain.usecases.GetFromDataStoreUseCase
+import com.egtourguide.core.utils.DataStoreKeys.USER_EMAIL_KEY
+import com.egtourguide.core.utils.DataStoreKeys.USER_NAME_KEY
+import com.egtourguide.core.utils.DataStoreKeys.USER_PHONE_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -13,11 +17,27 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EditProfileViewModel @Inject constructor(
-
+    private val getFromDataStoreUseCase: GetFromDataStoreUseCase
 ) : ViewModel() {
+
+    init {
+        getUserData()
+    }
 
     private val _uiState = MutableStateFlow(EditProfileState())
     val uiState = _uiState.asStateFlow()
+
+    private fun getUserData() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val name = getFromDataStoreUseCase(key = USER_NAME_KEY)
+            val email = getFromDataStoreUseCase(key = USER_EMAIL_KEY)
+            val phone = getFromDataStoreUseCase(key = USER_PHONE_KEY)
+
+            name?.let { it2 -> _uiState.update { it.copy(name = it2) } }
+            email?.let { it2 -> _uiState.update { it.copy(email = it2) } }
+            phone?.let { it2 -> _uiState.update { it.copy(phone = it2) } }
+        }
+    }
 
     fun onNameChanged(name: String) {
         _uiState.update { it.copy(name = name) }

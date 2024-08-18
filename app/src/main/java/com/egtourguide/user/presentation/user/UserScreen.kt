@@ -39,7 +39,9 @@ import com.egtourguide.home.presentation.main.components.ArtifactDetectionDialog
 @Composable
 private fun UserScreenRoot() {
     EGTourGuideTheme {
-        UserScreenContent()
+        UserScreenContent(
+            username = "Abdo Sharaf"
+        )
     }
 }
 
@@ -60,6 +62,7 @@ fun UserScreenRoot(
     var isDetectionDialogShown by remember { mutableStateOf(false) }
 
     UserScreenContent(
+        username = uiState.username,
         navigateToSearch = onNavigateToSearch,
         navigateToEditProfile = navigateToEditProfile,
         navigateToSaved = navigateToSaved,
@@ -103,6 +106,7 @@ fun UserScreenRoot(
 
 @Composable
 private fun UserScreenContent(
+    username: String = "",
     navigateToSearch: () -> Unit = {},
     navigateToEditProfile: () -> Unit = {},
     navigateToSaved: () -> Unit = {},
@@ -136,7 +140,7 @@ private fun UserScreenContent(
         )
 
         Text(
-            text = "Abdo Sharaf",
+            text = username,
             style = MaterialTheme.typography.displayLarge,
             color = MaterialTheme.colorScheme.onBackground,
             textAlign = TextAlign.Center,

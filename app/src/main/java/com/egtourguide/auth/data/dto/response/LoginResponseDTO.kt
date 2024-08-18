@@ -7,6 +7,9 @@ data class LoginResponseDTO(
     val status: String
 ) {
     fun toLoginResponse() = LoginResponse(
-        token = data.token
+        token = data.token,
+        userName = data.user.username,
+        email = data.user.email,
+        phone = data.user.phone
     )
 }

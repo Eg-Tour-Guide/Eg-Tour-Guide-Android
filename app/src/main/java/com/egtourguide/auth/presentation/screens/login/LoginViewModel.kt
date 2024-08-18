@@ -2,12 +2,16 @@ package com.egtourguide.auth.presentation.screens.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.egtourguide.auth.domain.model.LoginResponse
 import com.egtourguide.auth.domain.usecases.LoginUseCase
 import com.egtourguide.core.domain.validation.Validation
 import com.egtourguide.core.domain.validation.ValidationCases
 import com.egtourguide.core.domain.usecases.SaveInDataStoreUseCase
 import com.egtourguide.core.utils.DataStoreKeys.IS_LOGGED_KEY
 import com.egtourguide.core.utils.DataStoreKeys.TOKEN_KEY
+import com.egtourguide.core.utils.DataStoreKeys.USER_EMAIL_KEY
+import com.egtourguide.core.utils.DataStoreKeys.USER_NAME_KEY
+import com.egtourguide.core.utils.DataStoreKeys.USER_PHONE_KEY
 import com.egtourguide.core.utils.onResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -81,7 +85,7 @@ class LoginViewModel @Inject constructor(
                     _uiState.update { it.copy(isLoading = true, error = null) }
                 },
                 onSuccess = { response ->
-                    saveData(response.token)
+                    saveData(response = response)
                     _uiState.update { it.copy(isLoading = false, isSuccess = true) }
                 },
                 onFailure = { msg ->
@@ -94,10 +98,13 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    private fun saveData(token: String) {
+    private fun saveData(response: LoginResponse) {
         viewModelScope.launch(Dispatchers.IO) {
-            saveInDataStoreUseCase(key = TOKEN_KEY, value = token)
+            saveInDataStoreUseCase(key = TOKEN_KEY, value = response.token)
             saveInDataStoreUseCase(key = IS_LOGGED_KEY, value = true)
+            saveInDataStoreUseCase(key = USER_NAME_KEY, value = response.userName)
+            saveInDataStoreUseCase(key = USER_EMAIL_KEY, value = response.email)
+            saveInDataStoreUseCase(key = USER_PHONE_KEY, value = response.phone)
         }
     }
 }

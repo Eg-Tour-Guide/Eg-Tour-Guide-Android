@@ -7,6 +7,9 @@ data class SignupResponseDTO(
     val `data`: Data
 ) {
     fun toSignupResponse() = SignupResponse(
-        token = data.token
+        token = data.token,
+        userName = data.user.username,
+        email = data.user.email,
+        phone = data.user.phone
     )
 }

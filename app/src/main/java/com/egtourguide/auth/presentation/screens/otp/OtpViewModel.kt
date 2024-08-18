@@ -2,6 +2,7 @@ package com.egtourguide.auth.presentation.screens.otp
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.egtourguide.auth.domain.model.SignupResponse
 import com.egtourguide.auth.domain.usecases.GetForgotPasswordCodeUseCase
 import com.egtourguide.auth.domain.usecases.SendCodeUseCase
 import com.egtourguide.auth.domain.usecases.SignupUseCase
@@ -9,6 +10,9 @@ import com.egtourguide.core.domain.validation.Validation
 import com.egtourguide.core.domain.validation.ValidationCases
 import com.egtourguide.core.domain.usecases.SaveInDataStoreUseCase
 import com.egtourguide.core.utils.DataStoreKeys
+import com.egtourguide.core.utils.DataStoreKeys.USER_EMAIL_KEY
+import com.egtourguide.core.utils.DataStoreKeys.USER_NAME_KEY
+import com.egtourguide.core.utils.DataStoreKeys.USER_PHONE_KEY
 import com.egtourguide.core.utils.onResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -129,7 +133,7 @@ class OtpViewModel @Inject constructor(
                     _uiState.update { it.copy(isLoading = true, errorMessage = null) }
                 },
                 onSuccess = { response ->
-                    saveToken(token = response.token)
+                    saveData(response = response)
                     _uiState.update { it.copy(isLoading = false, isSignedSuccessfully = true) }
                 },
                 onFailure = { msg ->
@@ -142,10 +146,13 @@ class OtpViewModel @Inject constructor(
         }
     }
 
-    private fun saveToken(token: String) {
+    private fun saveData(response: SignupResponse) {
         viewModelScope.launch(Dispatchers.IO) {
-            saveInDataStoreUseCase(key = DataStoreKeys.TOKEN_KEY, value = token)
+            saveInDataStoreUseCase(key = DataStoreKeys.TOKEN_KEY, value = response.token)
             saveInDataStoreUseCase(key = DataStoreKeys.IS_LOGGED_KEY, value = true)
+            saveInDataStoreUseCase(key = USER_NAME_KEY, value = response.userName)
+            saveInDataStoreUseCase(key = USER_EMAIL_KEY, value = response.email)
+            saveInDataStoreUseCase(key = USER_PHONE_KEY, value = response.phone)
         }
     }
 

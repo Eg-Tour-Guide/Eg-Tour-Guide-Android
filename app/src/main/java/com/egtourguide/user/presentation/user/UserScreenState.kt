@@ -6,5 +6,6 @@ data class UserScreenState(
     val error: String? = null,
     val isDetectionLoading: Boolean = false,
     val detectedArtifact: DetectedArtifact? = null,
-    val isDetectionError: Boolean = false
+    val isDetectionError: Boolean = false,
+    val username: String = ""
 )

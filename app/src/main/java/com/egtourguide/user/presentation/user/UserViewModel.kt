@@ -4,8 +4,10 @@ import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.egtourguide.core.domain.usecases.DeleteFromDataStoreUseCase
+import com.egtourguide.core.domain.usecases.GetFromDataStoreUseCase
 import com.egtourguide.core.utils.DataStoreKeys.IS_LOGGED_KEY
 import com.egtourguide.core.utils.DataStoreKeys.TOKEN_KEY
+import com.egtourguide.core.utils.DataStoreKeys.USER_NAME_KEY
 import com.egtourguide.core.utils.onResponse
 import com.egtourguide.home.domain.usecases.DetectArtifactUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,8 +21,13 @@ import javax.inject.Inject
 @HiltViewModel
 class UserViewModel @Inject constructor(
     private val detectArtifactUseCase: DetectArtifactUseCase,
-    private val deleteFromDataStoreUseCase: DeleteFromDataStoreUseCase
+    private val deleteFromDataStoreUseCase: DeleteFromDataStoreUseCase,
+    private val getFromDataStoreUseCase: GetFromDataStoreUseCase
 ) : ViewModel() {
+
+    init {
+        getUsername()
+    }
 
     private val _uiState = MutableStateFlow(UserScreenState())
     val uiState = _uiState.asStateFlow()
@@ -55,6 +62,15 @@ class UserViewModel @Inject constructor(
 
     fun clearDetectionError() {
         _uiState.update { it.copy(isDetectionError = false) }
+    }
+
+    private fun getUsername() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val username = getFromDataStoreUseCase(key = USER_NAME_KEY)
+            username?.let { it2 ->
+                _uiState.update { it.copy(username = it2) }
+            }
+        }
     }
 
     fun logout() {
