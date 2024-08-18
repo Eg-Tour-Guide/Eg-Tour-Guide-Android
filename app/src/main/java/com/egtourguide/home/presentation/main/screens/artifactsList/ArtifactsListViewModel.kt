@@ -64,7 +64,8 @@ class ArtifactsListViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             isRefreshing = false,
-                            artifacts = response.artifacts
+                            artifacts = response.artifacts,
+                            refreshFilters = true
                         )
                     }
                     setArtifactFilters(response.artifactTypes, response.materials)
@@ -150,5 +151,9 @@ class ArtifactsListViewModel @Inject constructor(
 
     fun clearDetectionError() {
         _uiState.update { it.copy(isDetectionError = false) }
+    }
+
+    fun whenFiltersRefreshed() {
+        _uiState.update { it.copy(refreshFilters = false) }
     }
 }

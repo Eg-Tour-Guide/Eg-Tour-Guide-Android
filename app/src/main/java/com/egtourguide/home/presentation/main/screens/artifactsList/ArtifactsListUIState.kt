@@ -8,6 +8,7 @@ data class ArtifactsListUIState(
     val isLoading: Boolean = true,
     val isNetworkError: Boolean = false,
     val isRefreshing: Boolean = false,
+    val refreshFilters: Boolean = false,
     val artifacts: List<AbstractedArtifact> = emptyList(),
     val displayedArtifacts: List<AbstractedArtifact> = emptyList(),
     val error: String? = null,

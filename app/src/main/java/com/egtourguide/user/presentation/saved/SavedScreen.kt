@@ -105,6 +105,13 @@ fun SavedScreen(
         )
     }
 
+    LaunchedEffect(key1 = uiState.refreshFilters) {
+        if (uiState.refreshFilters) {
+            filterViewModel.resetFilters()
+            viewModel.whenFiltersRefreshed()
+        }
+    }
+
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_CREATE && !uiState.isCallSent) {

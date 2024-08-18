@@ -65,7 +65,8 @@ class SavedViewModel @Inject constructor(
                         it.copy(
                             savedList = response,
                             displayedSavedList = response,
-                            isRefreshing = false
+                            isRefreshing = false,
+                            refreshFilters = true
                         )
                     }
                 },
@@ -130,6 +131,10 @@ class SavedViewModel @Inject constructor(
 
     fun clearSaveError() {
         _uiState.update { it.copy(isSaveError = false) }
+    }
+
+    fun whenFiltersRefreshed() {
+        _uiState.update { it.copy(refreshFilters = false) }
     }
 
     fun filterSavedItems(filterState: FilterScreenState) {

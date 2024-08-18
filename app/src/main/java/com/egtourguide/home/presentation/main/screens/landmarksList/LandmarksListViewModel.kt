@@ -64,7 +64,8 @@ class LandmarksListViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             isRefreshing = false,
-                            landmarks = response.landmarks
+                            landmarks = response.landmarks,
+                            refreshFilters = true
                         )
                     }
                     setLandmarkFilters(response.tourismTypes, response.locations)
@@ -85,6 +86,10 @@ class LandmarksListViewModel @Inject constructor(
 
     fun clearSaveError() {
         _uiState.update { it.copy(isSaveError = false) }
+    }
+
+    fun whenFiltersRefreshed() {
+        _uiState.update { it.copy(refreshFilters = false) }
     }
 
     fun filterLandmarks(filterState: FilterScreenState) {

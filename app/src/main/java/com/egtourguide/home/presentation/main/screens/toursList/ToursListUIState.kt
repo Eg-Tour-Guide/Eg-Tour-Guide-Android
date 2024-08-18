@@ -8,6 +8,7 @@ data class ToursListUIState(
     val isLoading: Boolean = true,
     val isNetworkError: Boolean = false,
     val isRefreshing: Boolean = false,
+    val refreshFilters: Boolean = false,
     val error: String? = null,
     val tours: List<AbstractedTour> = emptyList(),
     val displayedTours: List<AbstractedTour> = emptyList(),

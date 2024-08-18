@@ -63,7 +63,8 @@ class SearchResultsViewModel @Inject constructor(
                         it.copy(
                             isRefreshing = false,
                             results = response,
-                            displayedResults = response
+                            displayedResults = response,
+                            refreshFilters = true
                         )
                     }
                 },
@@ -131,5 +132,9 @@ class SearchResultsViewModel @Inject constructor(
 
     fun clearSaveError() {
         _uiState.update { it.copy(isSaveError = false) }
+    }
+
+    fun whenFiltersRefreshed() {
+        _uiState.update { it.copy(refreshFilters = false) }
     }
 }

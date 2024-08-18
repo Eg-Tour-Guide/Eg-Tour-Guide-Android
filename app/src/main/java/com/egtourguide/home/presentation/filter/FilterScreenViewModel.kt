@@ -105,7 +105,7 @@ class FilterScreenViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun onResetClicked() {
+    fun resetFilters() {
         _uiState.update {
             it.copy(
                 appliedCategory = "",

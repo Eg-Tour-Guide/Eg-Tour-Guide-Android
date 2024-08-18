@@ -8,6 +8,7 @@ data class LandmarksListUIState(
     val isNetworkError: Boolean = false,
     val isLoading: Boolean = false,
     val isRefreshing: Boolean = false,
+    val refreshFilters: Boolean = false,
     val landmarks: List<AbstractedLandmark> = emptyList(),
     val displayedLandmarks: List<AbstractedLandmark> = emptyList(),
     val error: String? = null,

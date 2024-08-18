@@ -193,7 +193,7 @@ fun FilterScreen(
                         viewModel.onApplyClicked()
                         onNavigateBack()
                     },
-                    onResetClick = viewModel::onResetClicked
+                    onResetClick = viewModel::resetFilters
                 )
             }
         }

@@ -7,6 +7,7 @@ data class SavedScreenUIState(
     val isNetworkError: Boolean = false,
     val isCallSent: Boolean = false,
     val isRefreshing: Boolean = false,
+    val refreshFilters: Boolean = false,
     val savedList: List<AbstractSavedItem> = emptyList(),
     val displayedSavedList: List<AbstractSavedItem> = emptyList(),
     val error: String? = null,

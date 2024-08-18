@@ -60,7 +60,8 @@ class MyToursViewModel @Inject constructor(
                         it.copy(
                             isRefreshing = false,
                             myTours = response,
-                            displayedTours = response
+                            displayedTours = response,
+                            refreshFilters = true
                         )
                     }
                 },
@@ -117,5 +118,9 @@ class MyToursViewModel @Inject constructor(
 
     fun clearError() {
         _uiState.update { it.copy(error = null) }
+    }
+
+    fun whenFiltersRefreshed() {
+        _uiState.update { it.copy(refreshFilters = false) }
     }
 }

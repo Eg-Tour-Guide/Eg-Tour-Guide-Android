@@ -61,7 +61,13 @@ class ToursListViewModel @Inject constructor(
                     _uiState.update { it.copy(isRefreshing = true) }
                 },
                 onSuccess = { response ->
-                    _uiState.update { it.copy(isRefreshing = false, tours = response.tours) }
+                    _uiState.update {
+                        it.copy(
+                            isRefreshing = false,
+                            tours = response.tours,
+                            refreshFilters = true
+                        )
+                    }
                     setFilters(response.tourTypes)
                 },
                 onFailure = {
@@ -102,6 +108,10 @@ class ToursListViewModel @Inject constructor(
 
     fun clearSaveError() {
         _uiState.update { it.copy(isSaveError = false) }
+    }
+
+    fun whenFiltersRefreshed() {
+        _uiState.update { it.copy(refreshFilters = false) }
     }
 
     fun filterTours(filterState: FilterScreenState) {
