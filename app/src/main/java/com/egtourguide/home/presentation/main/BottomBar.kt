@@ -44,7 +44,8 @@ fun BottomBar(
         BottomBarScreen.values().forEach { screen ->
             BottomBarItem(
                 item = screen,
-                isSelected = selectedScreen == screen.route,
+                // TODO: Fix this complex logic - navigation graph issue!!
+                isSelected = (selectedScreen == screen.route || (screen.route == AppGraph.User.route && selectedScreen == AppScreen.User.route)),
                 onItemClicked = { onItemSelected(screen.route) }
             )
         }
