@@ -19,13 +19,11 @@
     <string name="verification">Verification</string>
     <string name="verification_code">Verification code</string>
     <string name="enter_verification_code_we_sent">Enter the verification code we just\nsent to you on your email address</string>
-    <string name="code">Code</string>
     <string name="enter_verification_code">Enter verification code</string>
     <string name="didn_t_receive_code">Didn’t Receive Code?</string>
     <string name="resend_code">Resend Code</string>
     <string name="verify">Verify</string>
     <string name="logo">Logo</string>
-    <string name="we_sent_new_code">We sent a new code</string>
     <string name="welcome_Back">Welcome Back!</string>
     <string name="login">Login</string>
     <string name="dont_have_account">Don’t Have An Account?</string>
@@ -37,9 +35,6 @@
     <string name="enter_the_email_address_associated">Enter the email address associated with your account</string>
     <string name="reset_password">Reset Password</string>
     <string name="next">Next</string>
-    <string name="confirm_password_error_msg">Password and confirm password doesn\'t match</string>
-    <string name="password_error_msg">Password should be at least 8 characters</string>
-    <string name="email_error_msg">Enter valid email \nexample: user@gmail.com </string>
     <string name="name_empty_error">Please enter your name!</string>
     <string name="name_form_error">Name length must be more than 3 characters!</string>
     <string name="email_empty_error">Please enter your Email!</string>
@@ -54,7 +49,6 @@
     <string name="code_not_matched_error">Codes do not match!</string>
     <string name="back">Back</string>
     <string name="go_to_search">Go To Search</string>
-    <string name="go_to_notifications">Go To Notifications</string>
     <string name="unsave">Unsave</string>
     <string name="save">Save</string>
     <string name="location">Location</string>
@@ -76,14 +70,11 @@
     <string name="top_rated_places">Top Rated Places</string>
     <string name="explore_egypt_s_landmarks">Explore Egypt’s Landmarks</string>
     <string name="recently_added">Recently Added</string>
-    <string name="you_might_also_like">You Might Also Like</string>
     <string name="recently_viewed">Recently Viewed</string>
-    <string name="more">More…</string>
     <string name="rating">Rating</string>
     <string name="write_review">Write your review (optional)</string>
     <string name="submit">Submit</string>
     <string name="add_to_tour">Add to Tour</string>
-    <string name="got_to_active_tour">Go to Active Tour</string>
     <string name="detect_object">Detect Object</string>
     <string name="show_vr_view">Show VR View</string>
     <string name="show_ar_view">Show AR View</string>
@@ -105,12 +96,9 @@
     <string name="settings">Settings</string>
     <string name="change_password">Change Password</string>
     <string name="logout">Logout</string>
-    <string name="start_tour">Start Tour</string>
     <string name="day">Day\n%s</string>
     <string name="hours_count">%s hours</string>
-    <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
-    <string name="select_date">Select date</string>
     <string name="tour">Tour</string>
     <string name="please_pick_the_tour">Please, pick the tour you wish to add this landmark to.</string>
     <string name="please_choose_the_duration">Please, choose the duration you would like to spend at this landmark.</string>
@@ -166,7 +154,6 @@
     <string name="failed_to_register_please_try_again">Failed to register, Please try again.</string>
     <string name="a_new_verification_code_has_been_sent_to_your_email">A new verification code has been sent to your email.</string>
     <string name="failed_to_reset_password_please_try_again">Failed to reset password, Please try again.</string>
-    <string name="camera_access_denied">Camera access denied.</string>
     <string name="internet_connection_error">Unable to connect, Check your internet connection</string>
     <string name="no_content_available">No content available</string>
     <string name="profile_updated_successfully">Profile updated successfully!</string>

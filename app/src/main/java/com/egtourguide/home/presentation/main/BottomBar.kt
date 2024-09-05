@@ -41,7 +41,7 @@ fun BottomBar(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        BottomBarScreen.values().forEach { screen ->
+        BottomBarScreen.entries.forEach { screen ->
             BottomBarItem(
                 item = screen,
                 // TODO: Fix this complex logic - navigation graph issue!!
